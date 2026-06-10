@@ -1,54 +1,62 @@
-HAVEN Engineering Design Suite
-Version: 1.1.0
-Status: Approved — Single Source of Truth
-Date: 2026-06-10
-Jurisdiction: Netherlands (nl-NL) / EU / Dutch law
+---
+title: HAVEN Engineering Design Suite
+version: 1.1.1
+status: Approved — Single Source of Truth
+locale: Netherlands (nl-NL)
+jurisdiction: EU / Dutch law (AVG/UAVG/WGBO)
+timezone: Europe/Amsterdam
+last_updated: 2026-06-10
 
-CHANGES FROM v1.0.0:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Change 1: Fraud statistics corrected
-  63,469 meldingen (2024, +10% YoY) — not "580,000"
-  101,734 meldingen (2025, +60% YoY)
-  Source: Fraudehelpdesk Jaarverslag 2024 + Terugblik 2025
+changelog:
+  1.0.0: Initial SSOT
+  1.1.0: BSN removed; fraud/loneliness stats corrected; WGBO 15→20y;
+         AI Act transparency fixed; RLS canonicality resolved
+  1.1.1: Schema field names reconciled (canonical reference table added);
+         Addendum A rewritten to match Doc 05 field names;
+         Companion memory DDL unified (single canonical definition);
+         Retention table unified (single canonical table);
+         Seed SQL rewritten to match canonical schema;
+         MVP scope labels fixed (G-standaard Phase 3; PSD2 Phase 2 consistent);
+         Medication adherence stat corrected with sourcing
 
-Change 2: Loneliness statistics corrected + sourced
-  ~10% sterk eenzaam 15+ (CBS SSW 2024)
-  ~7.5% sterk eenzaam 65+ (RIVM/CBS 2024)
-  ~13% sterk eenzaam 18+ (GGD/CBS/RIVM Gezondheidsmonitor 2024)
-  "1 in 3 severe loneliness 75+" claim removed (unsupported)
-  Sources: CBS, RIVM, vzinfo.nl
+items_requiring_human_dpo_action:
+  - Addendum J (DPIA — AVG Art. 35): must be completed + signed before production
+  - Addendum K (Vendor Register): DPA column must be filled for every vendor
+  - Doc 06: Named DPO must be recorded before production launch
+---
 
-Change 3: BSN removed from entire document
-  No BSN columns in schema
-  No BSN in vault product promises
-  No BSN in security asset lists
-  Dutch UAVG Art. 46 constraint documented
+## v1.1.1 Patch Summary Card
 
-Change 4: WGBO retention corrected
-  15 years → 20 years (Art. 7:454 BW)
-  Applies only to WACHT (Phase 2, professional care context)
-  Consumer app retention periods clarified separately
+```
+PATCH  WHAT CHANGED                          IMPACT IF SKIPPED
+─────  ────────────────────────────────────  ─────────────────────────────────
+P1     Canonical field name table added       Engineers implement wrong field
+       (elder_id, family_member_id,           names; broken FK joins; broken
+       can_view_medications, etc.)            RLS at runtime
 
-Change 5: EU AI Act transparency corrected
-  "als AI" is no longer a banned phrase
-  REQUIRED disclosure copy defined in Dutch
-  Deceptive "I am human" phrases now banned instead
-  Hard product rule: HAVEN must answer "ben jij een mens?" honestly
+P2     Addendum A fully rewritten             "Canonical" RLS crashes on first
+       to match Doc 05 field names            migration apply; silent over-
+                                             permissive access possible
 
-Change 6: RLS canonicality resolved
-  Addendum A declared canonical RLS source
-  Doc 05 declared illustrative only
-  Precedence banner added to both sections
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+P3     companion_memory DDL unified           Two incompatible memory schemas;
+       importance → importance_score          broken Addendum O RPC + TS types;
+       memory_type enum canonical             broken seed inserts
 
-ITEMS STILL REQUIRING HUMAN ACTION (not engineering):
-  ⚠️ Addendum J (DPIA) — DPO must complete before production
-  ⚠️ Addendum K (Vendor Register) — DPO must sign off DPA column
-  ⚠️ Doc 06 — Named DPO must be recorded
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+P4     Single canonical retention table       cron jobs implement wrong windows;
+       (replaces two conflicting ones)        GDPR erasure SLA missed;
+       WGBO 20y confirmed for WACHT          WGBO non-compliance in Phase 2
+
+P5     Seed SQL fully rewritten               supabase db reset fails on day 1
+       (Dutch enums, canonical fields)        for every new engineer
+
+P6     G-standaard labelled Phase 3           Scope creep / engineer confusion
+       PSD2 Phase 2 consistent               on what is in MVP
+       Adherence stat sourced properly        False claim in public documents
+```
+
 
 HAVEN — Engineering Design Document Suite
-Version: 1.1.0 Status: Approved — Single Source of Truth Locale: Netherlands (nl-NL) | Jurisdiction: EU / Dutch Law Last Updated: 2026-06-10 Replaces: README.md, HAVEN_BLUEPRINT.md, UIUXRENDER
+Version: 1.1.1 Status: Approved — Single Source of Truth Locale: Netherlands (nl-NL) | Jurisdiction: EU / Dutch Law Last Updated: 2026-06-10 Replaces: README.md, HAVEN_BLUEPRINT.md, UIUXRENDER
 
 Document 01 — Product Specification
 1. Mission
@@ -77,7 +85,11 @@ HAVEN's KRING pillar addresses a structural and growing loneliness challenge in 
 > Both are valid; cite the source explicitly when using either figure.
 > The "1 in 3 severe loneliness 75+" figure is NOT supported by either source and must not be used.
 > Sources: CBS cbs.nl/nl-nl/nieuws/2025/39 | vzinfo.nl/eenzaamheid | rivm.nl/mentale-gezondheid
-Medication non-adherence	Approximately 50% of Dutch older adults with chronic conditions take medications incorrectly, per RIVM data.
+Medication non-adherence	Medication non-adherence is a structural challenge in the Netherlands. RIVM and IGJ monitoring consistently highlight **polypharmacy** — the use of five or more medications simultaneously — as a major risk factor among Dutch older adults.
+
+WHO (2003, "Adherence to Long-Term Therapies") estimated ~50% adherence for chronic therapies in developed countries as a general benchmark. HAVEN does not claim a specific Dutch statistic here; the product justification is grounded in the **cognitive and logistical complexity of multi-drug regimens for older adults** as documented in Dutch pharmacovigilance and primary care literature.
+
+**Source:** WHO "Adherence to Long-Term Therapies" (2003) for the 50% benchmark; RIVM polypharmacy monitoring (rivm.nl/geneesmiddelen) for the Dutch context.
 Cognitive safety	Over 290,000 people in the Netherlands live with dementia (Alzheimer Nederland, 2025). Safe navigation and orientation support is an unmet gap in consumer tech.
 3. Target Users
 3.1 Primary User — The Elder
@@ -113,7 +125,7 @@ Document Vault (SCHILD): Securely store and label important documents — such a
   - Do not upload documents showing your full BSN. If you wish to store an identity document, redact the BSN number before uploading.
   - HAVEN does not process or read BSN numbers and cannot validate identity documents.
   - DigiD integration: DigiD is explicitly out of scope for MVP. Any future DigiD integration (e.g. for MedMij access) requires a separate legal basis assessment and technical security review before implementation.
-Transaction intercept for flagged anomalies (via PSD2 Open Banking APIs)
+[Phase 2 — PSD2 transaction intercept] Transaction intercept for flagged anomalies (via PSD2 Open Banking APIs)
 Alert levels: Amber (worth knowing) → Rood (take action) → Zwart (transaction blocked)
 Social engineering memory: tracks escalating "grooming" patterns across time
 Weekly "Veiligheidsoverzicht" (safety digest) for family
@@ -123,7 +135,10 @@ Warm voice reminders with escalation after misses
 Daily rhythm board ("Vandaag")
 Voice task manager
 Wellness check-ins
-G-standaard / Z-index integration for Dutch medication name resolution
+~~G-standaard/Z-index integration~~ *(Phase 3 — not MVP, not Phase 2)*
+
+> **Phase label rule:** G-standaard requires an AGB-code and a formal Vecozo/ZIN 
+> agreement. This is out of scope until HAVEN is a registered healthcare application.
 MedMij/PGO integration for Dutch personal health record access
 Huisarts (GP) appointment reminders
 Pillar 3 — KRING (Connection & Community)
@@ -163,7 +178,7 @@ KOMPAS	Safe zone alerts, emergency medical profile
 STEM	nl-NL voice companion (online), crisis phrase detection
 WACHT	Read-only family dashboard; carer portal: Phase 2
 Explicitly Out of MVP Scope
-Transaction intercept / banking integration (PSD2)
+[Phase 2 — PSD2 transaction intercept] Transaction intercept / banking integration (PSD2)
 MedMij / PGO health record integration
 Cognitive driving event detection
 Community event aggregation
@@ -747,6 +762,36 @@ location-events	location_events	elder_id = :id AND event_type = 'safe_zone_exit'
 All channels are authenticated — Supabase Realtime validates the JWT before subscribing and RLS applies to the underlying data.
 
 Document 05 — Database Specification
+
+---
+## 🔴 CANONICAL FIELD NAME REFERENCE — v1.1.1
+This table is the authoritative source for every column name in HAVEN.
+If any addendum, Edge Function spec, or seed file conflicts with this table,
+this table wins. Update the addendum — never this table without a version bump.
+Last reconciled: 2026-06-10
+
+| Table                  | Canonical field name       | NOT (old/wrong name)     |
+|------------------------|---------------------------|--------------------------|
+| elder_profiles         | elder_id                  | profile_id               |
+| family_relationships   | family_member_id          | family_user_id           |
+| family_relationships   | can_view_medications      | can_view_meds            |
+| family_relationships   | can_view_location_events  | can_view_location        |
+| family_relationships   | can_view_alerts           | can_view_alerts ✅       |
+| family_relationships   | can_view_stories          | can_view_stories ✅      |
+| family_relationships   | can_view_financials       | can_view_financials ✅   |
+| family_relationships   | is_active                 | active                   |
+| carer_relationships    | carer_member_id           | carer_id / carer_user_id |
+| carer_relationships    | is_active                 | active                   |
+| medications            | name_nl                   | name / medication_name   |
+| medications            | dose_description_nl       | dosage                   |
+| medications            | frequency                 | frequency ✅             |
+| medications            | schedule_times            | schedule_times ✅        |
+| medications            | is_active                 | active                   |
+| companion_memory       | memory_type (see Patch 3) | type / kind              |
+| companion_memory       | content_nl                | content / text           |
+| companion_memory       | importance_score          | importance               |
+---
+
 1. Principles
 All tables have UUID primary keys (gen_random_uuid())
 All tables have created_at TIMESTAMPTZ DEFAULT NOW() and updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -812,9 +857,7 @@ CREATE TYPE notification_type AS ENUM (
   'wekelijks_overzicht', 'systeem'
 );
 
-CREATE TYPE memory_type AS ENUM (
-  'voorkeur', 'feit', 'gebeurtenis', 'relatie'
-);
+
 
 CREATE TYPE story_status AS ENUM ('opname', 'transcriberen', 'gereed', 'gearchiveerd');
 
@@ -852,59 +895,31 @@ CREATE TRIGGER profiles_updated_at
 SQL
 
 CREATE TABLE elder_profiles (
-  id                        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  profile_id                UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
-
-  -- Dutch healthcare identifiers
-  -- ⚠️ BSN (Burgerservicenummer) is explicitly NOT stored.
-  -- Under Dutch law (UAVG Art. 46), organizations outside government may only
-  -- process BSN if a specific law grants them this right. HAVEN has no such basis
-  -- in MVP or Phase 2 (consumer wellness product).
-  -- If HAVEN later enters a regulated healthcare chain requiring BSN (e.g. as a
-  -- recognised zorgaanbieder under a specific WMO/Zvw context), this must be
-  -- re-assessed by legal counsel before any BSN field is introduced.
-  -- Reference: rijksoverheid.nl/onderwerpen/privacy/burgerservicenummer-bsn
-  zorgverzekering_nummer    TEXT,                        -- health insurance number
-  huisarts_naam             TEXT,
-  huisarts_praktijk         TEXT,
-  huisarts_telefoon         TEXT,
-  apotheker_naam            TEXT,
-  apotheker_adres           TEXT,
-
-  -- Emergency medical profile
-  medical_conditions        TEXT[],
-  allergies                 TEXT[],
-  current_medications_count INT,
-  blood_type                TEXT,
-  dnr_on_file               BOOLEAN DEFAULT FALSE,
-  emergency_contact_name    TEXT,
-  emergency_contact_phone   TEXT,
-
-  -- Cognitive / care support
-  cognitive_support_enabled BOOLEAN NOT NULL DEFAULT FALSE,
-  cognitive_trend           cognitive_trend DEFAULT 'onbekend',
-  bereavement_active        BOOLEAN NOT NULL DEFAULT FALSE,
-  bereavement_start_date    DATE,
-  bereavement_person_name   TEXT,
-
+  id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  elder_id              uuid UNIQUE NOT NULL
+                          REFERENCES profiles(id) ON DELETE CASCADE,
   -- Safe zone (PostGIS)
-  safe_zone_centre          GEOMETRY(POINT, 4326),
-  safe_zone_radius_metres   INT DEFAULT 500,
-  safe_zone_label           TEXT DEFAULT 'Thuis',        -- "Thuis", "Dagopvang", etc.
-
-  -- Night mode
-  night_mode_enabled        BOOLEAN NOT NULL DEFAULT FALSE,
-  night_mode_start          TIME DEFAULT '22:00',
-  night_mode_end            TIME DEFAULT '07:00',
-
-  -- Legacy
-  legacy_setup_complete     BOOLEAN NOT NULL DEFAULT FALSE,
-
-  created_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at                TIMESTAMPTZ,
-
-  UNIQUE(profile_id)
+  safe_zone_centre      geography(POINT, 4326),
+  safe_zone_radius_m    integer DEFAULT 500,
+  safe_zone_label_nl    text,
+  -- Night safety
+  night_mode_start      time DEFAULT '22:00',
+  night_mode_end        time DEFAULT '08:00',
+  night_mode_active     boolean DEFAULT false,
+  -- Cognitive support
+  cognitive_support     boolean DEFAULT false,
+  bereavement_active    boolean DEFAULT false,
+  bereavement_since     date,
+  -- Emergency
+  emergency_contacts    jsonb DEFAULT '[]',
+  medical_summary_nl    text,
+  -- Accessibility prefs (mirrors profiles but elder-specific overrides)
+  font_scale            numeric(3,2) DEFAULT 1.0,
+  high_contrast         boolean DEFAULT false,
+  -- Timestamps
+  created_at            timestamptz DEFAULT now(),
+  updated_at            timestamptz DEFAULT now(),
+  deleted_at            timestamptz
 );
 
 ALTER TABLE elder_profiles ENABLE ROW LEVEL SECURITY;
@@ -913,37 +928,34 @@ FORCE ROW LEVEL SECURITY ON elder_profiles;
 SQL
 
 CREATE TABLE family_relationships (
-  id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  elder_id                UUID NOT NULL REFERENCES profiles(id),
-  family_member_id        UUID NOT NULL REFERENCES profiles(id),
-  relationship_type       relationship_type NOT NULL,
-  is_primary              BOOLEAN NOT NULL DEFAULT FALSE,
-
-  -- Consent & permissions (elder controls these)
-  elder_consented         BOOLEAN NOT NULL DEFAULT FALSE,
-  elder_consented_at      TIMESTAMPTZ,
-  can_view_location       BOOLEAN NOT NULL DEFAULT FALSE,
-  can_view_financials     BOOLEAN NOT NULL DEFAULT FALSE,   -- Phase 2
-  can_view_medications    BOOLEAN NOT NULL DEFAULT TRUE,
-  can_view_messages       BOOLEAN NOT NULL DEFAULT TRUE,
-  can_view_wellness       BOOLEAN NOT NULL DEFAULT TRUE,
-  can_view_stories        BOOLEAN NOT NULL DEFAULT FALSE,   -- elder chooses
-  can_manage_medications  BOOLEAN NOT NULL DEFAULT FALSE,
-  can_manage_safe_zone    BOOLEAN NOT NULL DEFAULT FALSE,
-
+  id                        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  elder_id                  uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  family_member_id          uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  relation_label_nl         text,                    -- "dochter", "zoon", "partner"
+  is_primary                boolean DEFAULT false,
+  -- Consent (set by elder, never by family member)
+  elder_consented           boolean DEFAULT false,
+  elder_consented_at        timestamptz,
+  is_active                 boolean DEFAULT true,
+  -- Granular view permissions (all false until elder explicitly grants)
+  can_view_medications      boolean DEFAULT false,
+  can_view_messages         boolean DEFAULT false,
+  can_view_location_events  boolean DEFAULT false,
+  can_view_alerts           boolean DEFAULT false,
+  can_view_stories          boolean DEFAULT false,
+  can_view_financials       boolean DEFAULT false,
   -- Alert subscriptions
-  alert_amber             BOOLEAN NOT NULL DEFAULT TRUE,
-  alert_rood              BOOLEAN NOT NULL DEFAULT TRUE,
-  alert_zwart             BOOLEAN NOT NULL DEFAULT TRUE,
-  alert_medication_missed BOOLEAN NOT NULL DEFAULT TRUE,
-  alert_crisis            BOOLEAN NOT NULL DEFAULT TRUE,
-  alert_safe_zone_exit    BOOLEAN NOT NULL DEFAULT FALSE,
-
-  created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at              TIMESTAMPTZ,
-
-  UNIQUE(elder_id, family_member_id)
+  notify_on_scam_amber      boolean DEFAULT true,
+  notify_on_scam_rood       boolean DEFAULT true,
+  notify_on_scam_zwart      boolean DEFAULT true,
+  notify_on_missed_meds     boolean DEFAULT true,
+  notify_on_safe_zone_exit  boolean DEFAULT true,
+  notify_on_crisis          boolean DEFAULT true,
+  -- Timestamps
+  created_at                timestamptz DEFAULT now(),
+  updated_at                timestamptz DEFAULT now(),
+  deleted_at                timestamptz,
+  UNIQUE (elder_id, family_member_id)
 );
 
 ALTER TABLE family_relationships ENABLE ROW LEVEL SECURITY;
@@ -952,23 +964,24 @@ FORCE ROW LEVEL SECURITY ON family_relationships;
 SQL
 
 CREATE TABLE carer_relationships (
-  id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  elder_id              UUID NOT NULL REFERENCES profiles(id),
-  carer_id              UUID NOT NULL REFERENCES profiles(id),
-  organisation_name     TEXT NOT NULL,
-  carer_role            carer_role NOT NULL,
-  big_register_nummer   TEXT,                            -- Dutch BIG register
-  active                BOOLEAN NOT NULL DEFAULT TRUE,
-  start_date            DATE NOT NULL,
-  end_date              DATE,
-  can_view_medications  BOOLEAN NOT NULL DEFAULT TRUE,
-  can_log_visits        BOOLEAN NOT NULL DEFAULT TRUE,
-  can_report_incidents  BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at            TIMESTAMPTZ,
-
-  UNIQUE(elder_id, carer_id)
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  elder_id          uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  carer_member_id   uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  organisation_nl   text,
+  role_label_nl     text,          -- "wijkverpleegkundige", "verzorgende IG"
+  elder_consented   boolean DEFAULT false,
+  elder_consented_at timestamptz,
+  is_active         boolean DEFAULT true,
+  -- Permissions (more restricted than family by default)
+  can_view_medications     boolean DEFAULT false,
+  can_view_visit_logs      boolean DEFAULT true,
+  can_create_visit_logs    boolean DEFAULT true,
+  can_file_incidents       boolean DEFAULT false,
+  -- Timestamps
+  created_at        timestamptz DEFAULT now(),
+  updated_at        timestamptz DEFAULT now(),
+  deleted_at        timestamptz,
+  UNIQUE (elder_id, carer_member_id)
 );
 
 ALTER TABLE carer_relationships ENABLE ROW LEVEL SECURITY;
@@ -1130,27 +1143,32 @@ FORCE ROW LEVEL SECURITY ON safety_digests;
 SQL
 
 CREATE TABLE medications (
-  id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  elder_id                UUID NOT NULL REFERENCES profiles(id),
-  name_nl                 TEXT NOT NULL,               -- Dutch medication name
-  generic_name            TEXT,
-  brand_name              TEXT,
-  g_standaard_code        TEXT,                        -- Dutch G-Standaard (Phase 2)
-  dose_description_nl     TEXT NOT NULL,               -- "1 tablet van 10mg"
-  frequency               medication_frequency NOT NULL,
-  schedule_times          TIME[] NOT NULL,             -- array of daily times
-  with_food               BOOLEAN DEFAULT FALSE,
-  special_instructions_nl TEXT,
-  prescribing_huisarts    TEXT,
-  pharmacy_name           TEXT,
-  refill_date             DATE,
-  refill_reminder_days    INT DEFAULT 7,
-  ocr_source              BOOLEAN DEFAULT FALSE,       -- was this set up via OCR?
-  fhir_medication_id      TEXT,                        -- MedMij Phase 2
-  active                  BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at              TIMESTAMPTZ
+  id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  elder_id              uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  -- Identity
+  name_nl               text NOT NULL,              -- "Metformine"
+  brand_name_nl         text,                       -- "Glucophage"
+  dose_description_nl   text NOT NULL,              -- "500mg per tablet"
+  frequency             medication_frequency NOT NULL,
+  schedule_times        time[] NOT NULL,            -- e.g. {08:00, 18:00}
+  -- Instructions
+  instructions_nl       text,                       -- "Met voedsel innemen"
+  with_food             boolean DEFAULT false,
+  -- Refill
+  current_stock         integer,
+  refill_threshold      integer,
+  refill_pharmacy_nl    text,
+  -- Provenance
+  ocr_source_path       text,                       -- Storage path of original photo
+  prescribed_by_nl      text,                       -- GP/specialist name (free text)
+  -- Status
+  is_active             boolean DEFAULT true,
+  start_date            date,
+  end_date              date,
+  -- Timestamps
+  created_at            timestamptz DEFAULT now(),
+  updated_at            timestamptz DEFAULT now(),
+  deleted_at            timestamptz
 );
 
 ALTER TABLE medications ENABLE ROW LEVEL SECURITY;
@@ -1388,27 +1406,81 @@ CREATE INDEX idx_voice_interactions_embedding ON voice_interactions
 9.2 companion_memory
 SQL
 
-CREATE TABLE companion_memory (
-  id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  elder_id                UUID NOT NULL REFERENCES profiles(id),
-  memory_type             memory_type NOT NULL,
-  content_nl              TEXT NOT NULL,
-  embedding               VECTOR(1536) NOT NULL,
-  confidence              DECIMAL(4,3) DEFAULT 1.000,
-  source_interaction_id   UUID REFERENCES voice_interactions(id),
-  source_story_id         UUID REFERENCES life_stories(id),
-  last_recalled_at        TIMESTAMPTZ,
-  recall_count            INT NOT NULL DEFAULT 0,
-  created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at              TIMESTAMPTZ
+-- ============================================================
+-- CANONICAL companion_memory schema  (v1.1.1)
+-- memory_type enum values are English keys, displayed in Dutch in UI
+-- ============================================================
+
+CREATE TYPE memory_type AS ENUM (
+  'personal_fact',      -- Persoonlijk feit: naam kleinkind, huisdier, etc.
+  'preference',         -- Voorkeur: muziek, eten, gewoonten
+  'recurring_event',    -- Terugkerend moment: wekelijks telefoontje, etc.
+  'life_event',         -- Levensgebeurtenis (uit Mijn Verhaal)
+  'emotional_state',    -- Emotionele context: rouw, vreugde
+  'medical_context'     -- Medicijncontext: naam, bijwerking (alleen lezen uit ANKER)
 );
 
-ALTER TABLE companion_memory ENABLE ROW LEVEL SECURITY;
-FORCE ROW LEVEL SECURITY ON companion_memory;
+CREATE TABLE companion_memory (
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  elder_id          uuid NOT NULL
+                      REFERENCES profiles(id) ON DELETE CASCADE,
+  memory_type       memory_type NOT NULL,
+  content_nl        text NOT NULL,              -- Always stored in Dutch
+  importance_score  integer DEFAULT 5           -- canonical: importance_score
+                    CHECK (importance_score BETWEEN 1 AND 10),
+  embedding         vector(1536),               -- text-embedding-3-small
+  source            text
+                    CHECK (source IN (
+                      'voice_interaction',
+                      'life_story',
+                      'manual',
+                      'anker_sync'
+                    )),
+  source_id         uuid,                       -- FK to voice_interactions or life_stories
+  last_referenced   timestamptz,
+  expires_at        timestamptz,               -- NULL = permanent
+  created_at        timestamptz DEFAULT now(),
+  updated_at        timestamptz DEFAULT now(),
+  deleted_at        timestamptz
+);
 
-CREATE INDEX idx_companion_memory_embedding ON companion_memory
-  USING hnsw (embedding vector_cosine_ops) WITH (m = 16, ef_construction = 64);
+-- Retention expiry (pg_cron)
+SELECT cron.schedule(
+  'expire-companion-memories',
+  '0 2 * * *',
+  $$
+    UPDATE companion_memory
+    SET deleted_at = now()
+    WHERE expires_at IS NOT NULL
+      AND expires_at < now()
+      AND deleted_at IS NULL;
+  $$
+);
+
+-- Default expiry per type (applied on INSERT via trigger)
+CREATE OR REPLACE FUNCTION set_memory_expiry()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  IF NEW.expires_at IS NULL THEN
+    NEW.expires_at := CASE NEW.memory_type
+      WHEN 'personal_fact'    THEN NULL              -- permanent
+      WHEN 'preference'       THEN now() + interval '1 year'
+      WHEN 'recurring_event'  THEN now() + interval '6 months'
+      WHEN 'life_event'       THEN NULL              -- permanent
+      WHEN 'emotional_state'  THEN now() + interval '90 days'
+      WHEN 'medical_context'  THEN now() + interval '1 year'
+      ELSE now() + interval '6 months'
+    END;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER trg_memory_expiry
+  BEFORE INSERT ON companion_memory
+  FOR EACH ROW EXECUTE FUNCTION set_memory_expiry();
 10. WACHT Tables
 10.1 carer_visit_logs
 SQL
@@ -1823,43 +1895,91 @@ Edge Functions	Injection via malformed audio/text	Input validation + sanitisatio
 Push notifications	Spoofed notifications	Notifications only sent server-side via service role
 PSD2 webhooks (Phase 2)	Spoofed webhook	HMAC-SHA256 signature verification on all inbound webhooks
 BSN	Not collected	N/A — HAVEN does not store BSN (hard product rule; see Section 5.4)
-7. Data Retention & Deletion Policy
-Data Type	Retention Period	Deletion Method	AVG Right to Erasure
-Voice recordings (audio files)	30 days	Auto-delete via pg_cron	Immediate on request
-Voice interaction transcripts	12 months	Soft delete → hard delete after 30 days	Immediate on request
-Companion memory	Until elder requests deletion	Soft delete	Immediate on request
-Medication reminders	24 months	Soft delete	Elder may delete
-Scam events	36 months	Soft delete (evidence preservation)	Hard delete 30 days after request
-Location events (fuzzed)	6 months	Auto-delete via pg_cron	Immediate on request
-Location events (precise)	24 hours	pg_cron — location_precise column nulled	N/A (already auto-deleted)
-Life stories	Indefinite (elder's choice)	Elder-controlled; soft delete	Immediate on request
-Financial transactions (Phase 2)	7 years	Soft delete (Dutch accounting law: Boekhoudbesluit)	Restricted — legal retention obligation
-Carer visit logs	20 years (WGBO — Art. 7:454 BW, as amended)	Soft delete (WGBO medical record retention)	Restricted — legal retention obligation
-Incident reports (Meldcode)	5 years	Soft delete (Meldcode retention obligations)	Restricted
-Push tokens	Until unregistered	Hard delete on unregister	Immediate
-Audit logs	7 years	Immutable append-only	Not deletable — legal basis
-⚠️ WGBO RETENTION NOTE:
-The Dutch Civil Code (Art. 7:454 BW) sets a general retention period of
-20 years for medical dossiers (dossierbewaringsplicht), measured from
-the date of the last entry — or longer if medically necessary.
+## Retention policy (canonical — v1.1.1)
 
-This applies to HAVEN's professional care module (WACHT, Phase 2) when
-carer visit logs and incident reports form part of a patient dossier.
+> **SSOT rule:** This table is the single canonical retention reference.
+> Any other retention table elsewhere in this document or its addenda is
+> superseded by this one. Last reviewed: 2026-06-10.
 
-For the consumer HAVEN app (MVP — no registered healthcare provider status):
-WGBO does not directly apply. Use the general AVG proportionality test
-for retention of wellness/reminder data (shorter periods are appropriate).
+| Data category | Table / Storage bucket | Retention | Basis | Notes |
+|---|---|---|---|---|
+| Elder profile | `elder_profiles` | Until account deletion | AVG Art. 6(1)(b) | GDPR right-to-erasure applies |
+| Family relationship | `family_relationships` | Until consent revoked + 30 days | AVG Art. 6(1)(a) | Soft delete; hard delete after 30 days |
+| Medication definitions | `medications` | 12 months after `end_date` or account deletion | AVG proportionality | Elder-requested deletion honoured immediately |
+| Medication reminders | `medication_reminders` | 12 months | AVG proportionality | |
+| Family messages | `family_messages` | 24 months | AVG proportionality | Elder can delete own messages at any time |
+| Voice interaction transcripts | `voice_interactions` | 30 days | Minimal retention (sensitive) | Transcript only; no audio retained after TTS |
+| Voice audio (TTS cache) | `tts-cache` bucket | 48 hours | Transient | pg_cron auto-delete |
+| Voice notes (family↔elder) | `voice-notes` bucket | 24 months | AVG proportionality | Either party can delete |
+| Life stories (audio + transcript) | `life-story-audio`, `life_stories` | Permanent until elder requests deletion | Elder agency | Right-to-erasure: delete within 30 days of request |
+| Companion memory | `companion_memory` | Per-type (see trigger) | AVG proportionality | personal_fact + life_event = permanent; others 90 days–1 year |
+| Scam events | `scam_events` | 24 months | AVG Art. 6(1)(f) (legitimate interest) | Used for pattern detection + family digests |
+| Location events (fuzzed) | `location_events` | 90 days | AVG proportionality + ADR-005 | pg_cron auto-null of precise field after 48h |
+| Precise location field | `location_events.location_precise` | 48 hours maximum, then nulled | ADR-005 | Hard rule; pg_cron enforced |
+| OCR inbox (med photos) | `ocr-inbox` bucket | 24 hours after processing | Transient | pg_cron auto-delete |
+| Wellness check-ins | `wellness_checkins` | 12 months | AVG proportionality | |
+| Cognitive check-ins | `cognitive_checkins` | 12 months | AVG proportionality | |
+| Weekly digests | `safety_digests` | 24 months | AVG proportionality | |
+| Push tokens | `push_tokens` | Until device deregistration | Operational necessity | |
+| Audit log | `audit_log` | 5 years | AVG accountability (Art. 5(2)) | Immutable; no client access |
+| Carer visit logs (WACHT Phase 2) | `carer_visit_logs` | **20 years (WGBO Art. 7:454 BW)** | WGBO statutory | Applies only when HAVEN operates in professional care context |
+| Safeguarding incidents (WACHT Phase 2) | `incidents` | **20 years (WGBO Art. 7:454 BW)** | WGBO statutory | Same as above |
 
-Practical retention table for HAVEN:
-  Medication reminders (consumer): 12 months after last event
-  Wellness check-ins (consumer): 12 months
-  Voice interaction transcripts: 30 days (unless elder explicitly saves to story)
-  Life stories (elder-initiated): permanent until deletion request
-  Carer visit logs (WACHT, Phase 2): 20 years (WGBO)
-  Safeguarding incident reports (WACHT, Phase 2): 20 years (WGBO)
-  Scam event logs: 24 months (operational necessity + AVG proportionality)
-  Location events (fuzzed): 90 days
-  Precise location (safe-zone exit only): 48 hours maximum then nulled
+### Retention pg_cron jobs (canonical)
+
+```sql
+-- Precise location: null after 48 hours
+SELECT cron.schedule(
+  'null-precise-location',
+  '0 * * * *',
+  $$
+    UPDATE location_events
+    SET location_precise = NULL
+    WHERE location_precise IS NOT NULL
+      AND created_at < now() - interval '48 hours';
+  $$
+);
+
+-- Voice interaction transcripts: delete after 30 days
+SELECT cron.schedule(
+  'delete-voice-transcripts',
+  '0 3 * * *',
+  $$
+    UPDATE voice_interactions
+    SET transcript_nl = NULL,
+        deleted_at    = now()
+    WHERE created_at < now() - interval '30 days'
+      AND deleted_at IS NULL;
+  $$
+);
+
+-- Scam events: soft delete after 24 months
+SELECT cron.schedule(
+  'expire-scam-events',
+  '0 4 1 * *',
+  $$
+    UPDATE scam_events
+    SET deleted_at = now()
+    WHERE created_at < now() - interval '24 months'
+      AND deleted_at IS NULL;
+  $$
+);
+
+-- Location events: soft delete after 90 days
+SELECT cron.schedule(
+  'expire-location-events',
+  '0 4 2 * *',
+  $$
+    UPDATE location_events
+    SET deleted_at = now()
+    WHERE created_at < now() - interval '90 days'
+      AND deleted_at IS NULL;
+  $$
+);
+
+-- Companion memory: expire per expires_at (see Patch 3)
+-- Already scheduled in Patch 3 above.
+```
 
 7.1 Right to Erasure Process
 Elder or authorised family member submits deletion request (in-app or email to privacy@haven.nl)
@@ -3625,61 +3745,248 @@ supabase/migrations/
 ### B.2.4 Seed data (local dev only)
 
 ```sql
--- supabase/seed.sql (runs after migrations on supabase db reset)
+-- ==========================================================
+-- supabase/seed.sql  (v1.1.1 — matches canonical schema)
+-- Run via: supabase db reset
+-- ==========================================================
 
+-- -------------------------------------------------------
 -- Test elder user
-INSERT INTO auth.users (id, email, created_at)
-VALUES (
+-- -------------------------------------------------------
+INSERT INTO auth.users (
+  id, email, email_confirmed_at, created_at, updated_at
+) VALUES (
   '00000000-0000-0000-0000-000000000001',
-  'elder@haven.test',
-  now()
-) ON CONFLICT DO NOTHING;
+  'oudere@haven.test',
+  now(), now(), now()
+) ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO profiles (id, role, locale, created_at)
-VALUES (
+INSERT INTO profiles (
+  id, role, locale, timezone, created_at
+) VALUES (
   '00000000-0000-0000-0000-000000000001',
   'elder',
   'nl-NL',
+  'Europe/Amsterdam',
+  now()
+) ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO elder_profiles (
+  id,
+  elder_id,                             -- canonical: elder_id
+  safe_zone_radius_m,
+  safe_zone_label_nl,
+  night_mode_start,
+  night_mode_end,
+  night_mode_active,
+  cognitive_support,
+  created_at
+) VALUES (
+  gen_random_uuid(),
+  '00000000-0000-0000-0000-000000000001',
+  300,
+  'Thuis',
+  '22:00',
+  '08:00',
+  false,
+  false,
   now()
 ) ON CONFLICT DO NOTHING;
 
+-- -------------------------------------------------------
 -- Test family member
-INSERT INTO auth.users (id, email, created_at)
-VALUES (
+-- -------------------------------------------------------
+INSERT INTO auth.users (
+  id, email, email_confirmed_at, created_at, updated_at
+) VALUES (
   '00000000-0000-0000-0000-000000000002',
-  'family@haven.test',
-  now()
-) ON CONFLICT DO NOTHING;
+  'familie@haven.test',
+  now(), now(), now()
+) ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO profiles (id, role, locale, created_at)
-VALUES (
+INSERT INTO profiles (
+  id, role, locale, timezone, created_at
+) VALUES (
   '00000000-0000-0000-0000-000000000002',
   'family',
   'nl-NL',
+  'Europe/Amsterdam',
+  now()
+) ON CONFLICT (id) DO NOTHING;
+
+-- -------------------------------------------------------
+-- Consented family relationship
+-- (canonical fields: family_member_id, is_active, can_view_medications)
+-- -------------------------------------------------------
+INSERT INTO family_relationships (
+  id,
+  elder_id,
+  family_member_id,                     -- canonical: family_member_id
+  relation_label_nl,
+  is_primary,
+  elder_consented,
+  elder_consented_at,
+  is_active,                            -- canonical: is_active
+  can_view_medications,                 -- canonical: can_view_medications
+  can_view_messages,
+  can_view_location_events,             -- canonical: can_view_location_events
+  can_view_alerts,
+  can_view_stories,
+  can_view_financials,
+  notify_on_scam_amber,
+  notify_on_scam_rood,
+  notify_on_scam_zwart,
+  notify_on_missed_meds,
+  notify_on_safe_zone_exit,
+  notify_on_crisis,
+  created_at
+) VALUES (
+  gen_random_uuid(),
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000002',
+  'dochter',
+  true,
+  true,
+  now(),
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  false,   -- financials: off by default even in seed
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
   now()
 ) ON CONFLICT DO NOTHING;
 
--- Consented family relationship
-INSERT INTO family_relationships (
-  elder_id, family_user_id,
-  elder_consented, is_active,
-  can_view_meds, can_view_messages, can_view_location,
-  can_view_alerts, can_view_stories
+-- -------------------------------------------------------
+-- Test medications
+-- (canonical fields: name_nl, dose_description_nl, is_active, frequency as Dutch enum)
+-- -------------------------------------------------------
+INSERT INTO medications (
+  id,
+  elder_id,
+  name_nl,                              -- canonical: name_nl
+  dose_description_nl,                  -- canonical: dose_description_nl
+  frequency,                            -- enum value must match medication_frequency type
+  schedule_times,
+  instructions_nl,
+  with_food,
+  is_active,                            -- canonical: is_active
+  start_date,
+  created_at
 ) VALUES (
+  '10000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000001',
-  '00000000-0000-0000-0000-000000000002',
-  true, true, true, true, true, true, true
+  'Metformine',
+  '500mg per tablet',
+  'tweemaal_daags',                     -- Dutch enum value
+  ARRAY['08:00', '18:00']::time[],
+  'Met voedsel innemen',
+  true,
+  true,
+  CURRENT_DATE,
+  now()
+),
+(
+  '10000000-0000-0000-0000-000000000002',
+  '00000000-0000-0000-0000-000000000001',
+  'Lisinopril',
+  '10mg per tablet',
+  'eenmaal_daags',                      -- Dutch enum value
+  ARRAY['08:00']::time[],
+  NULL,
+  false,
+  true,
+  CURRENT_DATE,
+  now()
 ) ON CONFLICT DO NOTHING;
 
--- Test medication
-INSERT INTO medications (
-  elder_id, name_nl, dosage, frequency, is_active
+-- -------------------------------------------------------
+-- Test medication reminders (today)
+-- -------------------------------------------------------
+INSERT INTO medication_reminders (
+  id,
+  medication_id,
+  scheduled_for,
+  status,
+  escalation_level,
+  created_at
 ) VALUES (
+  gen_random_uuid(),
+  '10000000-0000-0000-0000-000000000001',
+  (CURRENT_DATE + TIME '08:00')::timestamptz AT TIME ZONE 'Europe/Amsterdam',
+  'pending',
+  0,
+  now()
+),
+(
+  gen_random_uuid(),
+  '10000000-0000-0000-0000-000000000002',
+  (CURRENT_DATE + TIME '08:00')::timestamptz AT TIME ZONE 'Europe/Amsterdam',
+  'pending',
+  0,
+  now()
+) ON CONFLICT DO NOTHING;
+
+-- -------------------------------------------------------
+-- Test companion memory
+-- (canonical fields: importance_score, content_nl, memory_type as enum)
+-- -------------------------------------------------------
+INSERT INTO companion_memory (
+  id,
+  elder_id,
+  memory_type,
+  content_nl,
+  importance_score,                     -- canonical: importance_score
+  source,
+  created_at
+) VALUES (
+  gen_random_uuid(),
   '00000000-0000-0000-0000-000000000001',
-  'Metformine 500mg',
-  '500mg',
-  'twice_daily',
-  true
+  'personal_fact',
+  'De kleindochter van de oudere heet Sofia.',
+  8,
+  'manual',
+  now()
+),
+(
+  gen_random_uuid(),
+  '00000000-0000-0000-0000-000000000001',
+  'preference',
+  'De oudere luistert graag naar klassieke muziek.',
+  6,
+  'manual',
+  now()
+) ON CONFLICT DO NOTHING;
+
+-- -------------------------------------------------------
+-- Test push token (dev only)
+-- -------------------------------------------------------
+INSERT INTO push_tokens (
+  id,
+  user_id,
+  token,
+  platform,
+  created_at
+) VALUES (
+  gen_random_uuid(),
+  '00000000-0000-0000-0000-000000000001',
+  'ExponentPushToken[DEV-PLACEHOLDER-ELDER]',
+  'ios',
+  now()
+),
+(
+  gen_random_uuid(),
+  '00000000-0000-0000-0000-000000000002',
+  'ExponentPushToken[DEV-PLACEHOLDER-FAMILY]',
+  'android',
+  now()
 ) ON CONFLICT DO NOTHING;
 ```
 
@@ -5219,31 +5526,7 @@ This memory is used to make STEM feel like **a companion who remembers**, not a 
 ## O.2 Data model
 
 ```sql
-CREATE TYPE memory_type AS ENUM (
-  'personal_fact',     -- name, family, pets
-  'preference',        -- music, food, routines
-  'recurring_event',   -- weekly calls, appointments
-  'life_event',        -- significant past events from stories
-  'emotional_state',   -- current grief, celebration context
-  'medical_context'    -- medication names, conditions (read-only from ANKER)
-);
-
-CREATE TABLE companion_memory (
-  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  elder_id        uuid REFERENCES profiles(id) ON DELETE CASCADE,
-  memory_type     memory_type NOT NULL,
-  content_nl      text NOT NULL,         -- stored in Dutch
-  importance      integer DEFAULT 5      -- 1(low) to 10(high)
-                  CHECK (importance BETWEEN 1 AND 10),
-  embedding       vector(1536),          -- text-embedding-3-small
-  source          text,                  -- 'voice_interaction' | 'life_story' | 'manual'
-  source_id       uuid,                  -- FK to voice_interactions or life_stories
-  last_referenced timestamptz,
-  expires_at      timestamptz,           -- NULL = permanent
-  deleted_at      timestamptz,
-  created_at      timestamptz DEFAULT now(),
-  updated_at      timestamptz DEFAULT now()
-);
+See Doc 05 (`9.2 companion_memory`) for the canonical companion_memory DDL and memory_type enum.
 ```
 
 ---
@@ -5308,17 +5591,17 @@ async function getRelevantMemories(
 ```sql
 -- Supabase RPC function for memory similarity search
 CREATE OR REPLACE FUNCTION match_companion_memory(
-  p_elder_id       uuid,
+  p_elder_id        uuid,
   p_query_embedding vector(1536),
   p_match_threshold float,
   p_match_count     int
 )
 RETURNS TABLE (
-  id          uuid,
-  memory_type memory_type,
-  content_nl  text,
-  importance  int,
-  similarity  float
+  id               uuid,
+  memory_type      memory_type,
+  content_nl       text,
+  importance_score int,                          -- canonical: importance_score
+  similarity       float
 )
 LANGUAGE plpgsql
 AS $$
@@ -5328,16 +5611,16 @@ BEGIN
     cm.id,
     cm.memory_type,
     cm.content_nl,
-    cm.importance,
+    cm.importance_score,                         -- canonical: importance_score
     1 - (cm.embedding <=> p_query_embedding) AS similarity
   FROM companion_memory cm
-  WHERE cm.elder_id = p_elder_id
+  WHERE cm.elder_id   = p_elder_id
     AND cm.deleted_at IS NULL
     AND (cm.expires_at IS NULL OR cm.expires_at > now())
     AND 1 - (cm.embedding <=> p_query_embedding) > p_match_threshold
   ORDER BY
-    similarity DESC,
-    cm.importance DESC
+    similarity       DESC,
+    cm.importance_score DESC                     -- canonical: importance_score
   LIMIT p_match_count;
 END;
 $$;
@@ -5349,22 +5632,22 @@ $$;
 
 ```typescript
 function buildCompanionPrompt(
-  memories: CompanionMemory[],
+  memories: CompanionMemoryRow[],
   currentScreen: string,
-  recentInteractions: VoiceInteraction[]
 ): string {
 
   const memoryContext = memories
-    .slice(0, 6) // max 6 memories to keep context window manageable
+    .sort((a, b) => b.importance_score - a.importance_score)  // canonical sort
+    .slice(0, 6)
     .map(m => `- ${m.content_nl}`)
     .join('\n');
 
   return `
 Je bent HAVEN, een vriendelijke digitale hulp voor een oudere in Nederland.
 Je spreekt altijd respectvol Nederlands met "u" en "uw".
+Je bent een digitale hulp — geen echte persoon. Wees eerlijk als iemand dit vraagt.
 Je geeft korte, duidelijke antwoorden van maximaal twee zinnen.
 Je bent geen arts en geeft geen medisch advies.
-Je bent een AI-hulp. Zeg dit als iemand ernaar vraagt.
 
 Wat je weet over deze persoon:
 ${memoryContext}
@@ -5380,28 +5663,7 @@ Antwoord altijd in het Nederlands. Wees warm maar beknopt.
 
 ## O.7 Memory retention policy
 
-| Memory type | Retention |
-|---|---|
-| `personal_fact` | Permanent (until elder deletes account) |
-| `preference` | 1 year (refreshed on re-confirmation) |
-| `recurring_event` | 6 months (refreshed if event recurs) |
-| `life_event` | Permanent |
-| `emotional_state` | 90 days |
-| `medical_context` | Derived from ANKER; deleted when medication deleted |
-
-```sql
--- pg_cron: expire old memories
-SELECT cron.schedule(
-  'expire-companion-memories',
-  '0 2 * * *',  -- daily at 02:00
-  $$
-    UPDATE companion_memory
-    SET deleted_at = now()
-    WHERE expires_at IS NOT NULL
-      AND expires_at < now()
-      AND deleted_at IS NULL;
-  $$
-);
+See Doc 05 retention table.
 ```
 
 ---
@@ -5413,24 +5675,46 @@ SELECT cron.schedule(
 
 **Input:**
 ```typescript
-interface MemoryUpdateInput {
+// packages/utils/companion-memory.types.ts  (v1.1.1 canonical)
+
+export type MemoryType =
+  | 'personal_fact'
+  | 'preference'
+  | 'recurring_event'
+  | 'life_event'
+  | 'emotional_state'
+  | 'medical_context';
+
+export interface ExtractedMemory {
+  type: MemoryType;
+  content_nl: string;
+  importance_score: number;          // canonical: importance_score (1-10)
+}
+
+export interface MemoryUpdateInput {
   elder_id: string;
   interaction_id: string;
   transcript_nl: string;
-  extracted_memories: Array<{
-    type: MemoryType;
-    content_nl: string;
-    importance: number;
-  }>;
+  extracted_memories: ExtractedMemory[];
 }
-```
 
-**Output:**
-```typescript
-interface MemoryUpdateOutput {
+export interface MemoryUpdateOutput {
   memories_created: number;
   memories_updated: number;
-  memories_skipped: number; // duplicates
+  memories_skipped: number;         // near-duplicates (cosine sim > 0.92)
+}
+
+export interface CompanionMemoryRow {
+  id: string;
+  elder_id: string;
+  memory_type: MemoryType;
+  content_nl: string;
+  importance_score: number;          // canonical: importance_score
+  source: 'voice_interaction' | 'life_story' | 'manual' | 'anker_sync';
+  source_id: string | null;
+  last_referenced: string | null;
+  expires_at: string | null;
+  created_at: string;
 }
 ```
 

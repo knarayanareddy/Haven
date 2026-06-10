@@ -3751,3 +3751,986 @@ The Companion never lies, never manipulates, never up-sells — written into the
 )
 
 
+
+
+
+
+
+
+
+🎨 HAVEN — Complete UI/UX Design Specification
+The Design Mandate
+"It should feel like a warm hug from someone who knows exactly what you need, before you know you need it."
+
+This is not a medical app. This is not a safety app. This is not a reminder app. This is the most trusted companion an elderly person has ever held in their hand.
+
+Every pixel, every animation, every word, every sound must reinforce one feeling: you are safe, you are loved, and someone is watching over you.
+
+Part 1 — Design Philosophy: The 7 Laws of HAVEN
+These are inviolable. Every design decision is measured against them.
+
+Law 1 — "The Grandmother Test"
+If your grandmother with arthritis, reading glasses, and zero smartphone experience can complete a task in one attempt without asking for help — it passes. If not — it fails and gets redesigned from scratch.
+
+Law 2 — "The 3am Rule"
+Every screen must be completely usable by someone who has just woken from deep sleep, is frightened, and has not yet put on their glasses. This means: maximum contrast, minimum choices, enormous targets, immediate clarity.
+
+Law 3 — "The No-Shame Principle"
+Nothing in HAVEN should ever make a user feel:
+
+Confused (that they lack intelligence)
+Slow (that they took too long)
+Surveilled (that someone is watching judgementally)
+Patronised (that they are being treated as less capable)
+HAVEN is a peer. A warm, knowledgeable peer. Never a guardian. Never a nanny.
+
+Law 4 — "One Truth Per Screen"
+Every screen communicates exactly one primary message. The user should be able to understand what the screen is about within 1 second of it appearing. No exceptions.
+
+Law 5 — "The Voice is the Interface"
+The visual screen is confirmation of what HAVEN has already said aloud. A user who is visually impaired, anxious, or confused should be able to navigate the entire app by voice alone.
+
+Law 6 — "Calm is a Feature"
+Speed, urgency, and busyness are hostile to elderly users. HAVEN moves with deliberate, unhurried grace. Animations are slow and smooth. Transitions are gentle. Alerts are soft. The only exception: genuine emergencies — which are designed to feel unmistakably serious without causing panic.
+
+Law 7 — "Beauty Earns Trust"
+A beautiful interface signals: someone cared about making this for you. Not clinical. Not corporate. Not "designed for old people." Warm, sophisticated, considered — the kind of design that makes someone feel respected.
+
+Part 2 — Visual Identity System
+2.1 — The HAVEN Aesthetic
+The Reference World: Think warm Scandinavian interiors. Linen textures. Soft morning light through net curtains. A well-made cup of tea. The reading corner of a trusted library. Understated luxury — not a hospital, not a tech startup, not a toy.
+
+The Anti-References (what HAVEN is explicitly NOT):
+
+❌ Bright primary colours like a children's app
+❌ Clinical blue/white sterility of medical apps
+❌ Dark mode tech-bro aesthetic
+❌ Generic flat icons from a free library
+❌ Anything that looks like it was designed for someone "old"
+2.2 — Colour System
+text
+
+HAVEN COLOUR PALETTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PRIMARY PALETTE — "Morning Light"
+──────────────────────────────────────────────────────
+
+  Slate Dusk         #2C3E6B   ← Primary brand. Deep, trustworthy navy-slate.
+                                 Not corporate blue. Not cold. Warm undertone.
+                                 Use: Primary buttons, key headings, active states.
+
+  Slate Light        #4A6FA5   ← Interactive / hover states
+  Slate Pale         #E8EEF7   ← Tinted backgrounds, selected states
+  Slate Ghost        #F4F7FC   ← Subtle section backgrounds
+
+
+WARMTH PALETTE — "Hearth Tones"
+──────────────────────────────────────────────────────
+
+  Amber Glow         #E8A030   ← Shield amber alert. Warm, honey amber.
+                                 NOT traffic-light yellow. Evokes candlelight.
+  Amber Pale         #FDF3E0   ← Amber alert background wash
+  Amber Border       #F0C060   ← Amber card borders
+
+  Terracotta         #C96B3A   ← Accent. Grounding, warm, human.
+                                 Use: Life story archive, memory features.
+  Terracotta Pale    #FAF0E8   ← Memory card backgrounds
+
+  Sage               #4A7B5A   ← Safe/confirmed state. Muted forest green.
+                                 NOT traffic-light green. Natural, calming.
+  Sage Pale          #EBF4EE   ← Medication taken, safe confirmations
+  Sage Border        #7AAF8A   ← Confirmed/taken borders
+
+
+ALERT PALETTE — "Never Alarming"
+──────────────────────────────────────────────────────
+
+  Alert Rose         #C94A4A   ← Shield red. Deep rose-red, not emergency red.
+                                 Serious but not panic-inducing.
+  Alert Rose Pale    #FAE8E8   ← Red alert background wash
+  Emergency Red      #A83232   ← Emergency button only. Deeper, serious.
+  Emergency Pale     #FDEAEA   ← Emergency button background
+
+
+NEUTRAL PALETTE — "Paper and Linen"
+──────────────────────────────────────────────────────
+
+  Ink                #1A1F2E   ← Primary text. Near-black with blue undertone.
+                                 Softer than pure #000000. Less harsh on eyes.
+  Graphite           #3D4558   ← Secondary text
+  Pewter             #6B7490   ← Tertiary text, placeholders
+  Ash                #9AA0B0   ← Disabled states
+  Silver             #C8CEDD   ← Borders, dividers
+  Mist               #E8EBF2   ← Input backgrounds, subtle borders
+  Linen              #F5F3EE   ← App background. Warm off-white.
+                                 NOT pure #FFFFFF. Has warmth.
+  White              #FFFFFF   ← Card surfaces, overlaid content
+
+
+PILLAR ACCENT PALETTE
+──────────────────────────────────────────────────────
+
+  Shield Blue        #2C5F8A   ← SHIELD pillar. Protective, serious.
+  Anchor Teal        #2A7A6F   ← ANCHOR pillar. Health, grounding.
+  Circle Violet      #5E4A8A   ← CIRCLE pillar. Community, connection.
+  Compass Gold       #8A6A2A   ← COMPASS pillar. Navigation, wisdom.
+  Voice Rose         #8A3A5A   ← VOICE pillar. Warmth, companionship.
+  Guardian Steel     #3A4A5A   ← GUARDIAN pillar. Professional, reliable.
+
+
+HIGH CONTRAST MODE — "Crystal Clear"
+──────────────────────────────────────────────────────
+  (Activated by one tap on home screen — never hidden)
+
+  HC Background      #0A0A0A
+  HC Surface         #1A1A1A
+  HC Primary Text    #F8F8F8
+  HC Secondary Text  #C8C8C8
+  HC Brand           #6A9FE0   ← Brand blue adjusted for dark bg
+  HC Amber           #FFD060
+  HC Red             #FF7070
+  HC Green           #70E070
+  HC Border          #3A3A3A
+2.3 — Typography System
+text
+
+HAVEN TYPE SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TYPEFACES
+──────────────────────────────────────────────────────
+
+  PRIMARY UI FONT:     "Nunito"
+  ──────────────────────────────────────────────────
+  Why: Rounded terminals. Extremely legible at large sizes.
+  Warm and approachable without being childish.
+  Excellent at weights 400–800. Perfect for large-print UI.
+  Supports full Latin extended for multilingual use.
+
+  STORY / MEMOIR FONT: "Lora"
+  ──────────────────────────────────────────────────
+  Why: Elegant serif. Used ONLY for life story content,
+  memory lane, and keepsake book generation.
+  Evokes personal letters and handwritten memory.
+  Never used for UI navigation or instructions.
+
+  MONOSPACE (rare):    "JetBrains Mono"
+  ──────────────────────────────────────────────────
+  Why: Used ONLY for reference numbers, medication codes,
+  case numbers. Never for reading text.
+
+
+TYPE SCALE (base 18px — never below this)
+──────────────────────────────────────────────────────
+
+  Display        60px / Nunito 800 / leading 1.1
+                 → Elder's name in greeting. Once per session.
+
+  Hero           48px / Nunito 700 / leading 1.15
+                 → Screen greetings: "Good Morning"
+                 → Emergency states
+
+  Title          40px / Nunito 700 / leading 1.2
+                 → Screen headings (1 per screen)
+
+  Heading        34px / Nunito 600 / leading 1.25
+                 → Section titles, card headings
+
+  Subheading     28px / Nunito 600 / leading 1.3
+                 → Card labels, list headers
+
+  Body Large     26px / Nunito 400 / leading 1.6
+                 → Primary reading text. Default for instructions.
+
+  Body           24px / Nunito 400 / leading 1.65
+                 → Secondary reading text. MINIMUM for body copy.
+
+  Label          22px / Nunito 600 / leading 1.4
+                 → Button labels (always semibold)
+
+  Caption        18px / Nunito 400 / leading 1.5
+                 → Supplementary info ONLY. Never primary.
+                 → ABSOLUTE MINIMUM. Never below.
+
+
+LETTER SPACING
+──────────────────────────────────────────────────────
+  Display / Hero:   -0.5px   (tight — large sizes need this)
+  Title / Heading:  0px      (neutral)
+  Subheading:       0.2px    (slightly open)
+  Body:             0.3px    (open — maximises legibility)
+  Label:            0.5px    (buttons — tracking improves readability)
+  Caption:          0.4px
+
+
+FONT SIZE MULTIPLIER
+──────────────────────────────────────────────────────
+  1.0  Default (above scale)
+  1.25 Large (all sizes × 1.25)
+  1.5  Very Large (all sizes × 1.5)
+  2.0  Maximum (all sizes × 2.0)
+
+  → Multiplier set once during setup, stored in profile
+  → Toggle always accessible from home screen (Aa button)
+  → Entire app re-renders with new multiplier instantly
+  → Never requires app restart
+2.4 — Spacing & Grid System
+text
+
+SPACING SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BASE UNIT: 8px
+
+  4px    → Micro gaps (icon to label, tight pairs)
+  8px    → XS — inline spacing
+  12px   → SM — component internal padding
+  16px   → MD — standard internal card padding
+  20px   → LG — generous component spacing
+  24px   → XL — section separation
+  32px   → 2XL — major section breaks
+  40px   → 3XL — screen-level breathing room
+  48px   → 4XL — hero spacing
+  64px   → 5XL — full-screen section spacing
+
+SCREEN MARGINS
+──────────────────────────────────────────────────────
+  Phone:   24px left/right (NOT 16px — more breathing room)
+  Tablet:  48px left/right (centred content max 680px wide)
+
+TAP TARGET RULES
+──────────────────────────────────────────────────────
+  Absolute minimum:    44 × 44px   (WCAG 2.5.5 AA)
+  HAVEN minimum:       72 × 72px   (ALL interactive elements)
+  Standard buttons:    Full width × 80px height
+  Hero buttons:        Full width × 96px height  
+  Emergency button:    Full width × 108px height
+  Home screen tiles:   (Screen width ÷ 2 - 32px) × 160px
+
+  ╔══════════════════════════════════╗
+  ║  KEY RULE: If a finger with      ║
+  ║  mild arthritis cannot hit it    ║
+  ║  reliably first try — it fails.  ║
+  ╚══════════════════════════════════╝
+
+BORDER RADIUS
+──────────────────────────────────────────────────────
+  Cards:         20px   ← Generous, friendly, not sharp
+  Buttons:       16px   ← Consistent with cards
+  Input fields:  14px
+  Chips/tags:    999px  ← Fully rounded
+  Avatar:        999px  ← Fully rounded
+  Alert overlays: 28px  ← Softer, less alarming
+
+  ╔══════════════════════════════════╗
+  ║  Sharp corners = clinical/harsh  ║
+  ║  Over-rounded = childish         ║
+  ║  20px = warm, trusted, premium   ║
+  ╚══════════════════════════════════╝
+2.5 — Elevation & Shadow System
+text
+
+SHADOW SYSTEM — "Light from above, always warm"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Shadow colour is NEVER pure black (#000000).
+Use Slate Dusk (#2C3E6B) at low opacity for warm shadows.
+
+  Level 0 (flat):
+    No shadow. Background sections, subtle containers.
+
+  Level 1 (lifted):
+    shadowColor: #2C3E6B
+    shadowOffset: { width: 0, height: 2 }
+    shadowOpacity: 0.06
+    shadowRadius: 8
+    elevation: 2
+    → Default cards, list items
+
+  Level 2 (floating):
+    shadowColor: #2C3E6B
+    shadowOffset: { width: 0, height: 4 }
+    shadowOpacity: 0.09
+    shadowRadius: 16
+    elevation: 4
+    → Medication cards, today cards, active selections
+
+  Level 3 (prominent):
+    shadowColor: #2C3E6B
+    shadowOffset: { width: 0, height: 8 }
+    shadowOpacity: 0.12
+    shadowRadius: 24
+    elevation: 8
+    → Home screen tiles, important modals
+
+  Level 4 (hero):
+    shadowColor: #2C3E6B
+    shadowOffset: { width: 0, height: 12 }
+    shadowOpacity: 0.16
+    shadowRadius: 32
+    elevation: 12
+    → Emergency button, voice button when active
+
+ALERT GLOW SHADOWS (unique to HAVEN)
+──────────────────────────────────────────────────────
+  Amber Glow:
+    shadowColor: #E8A030
+    shadowOffset: { width: 0, height: 0 }
+    shadowOpacity: 0.35
+    shadowRadius: 20
+    → Shield amber alerts
+
+  Rose Glow:
+    shadowColor: #C94A4A
+    shadowOffset: { width: 0, height: 0 }
+    shadowOpacity: 0.35
+    shadowRadius: 20
+    → Shield red alerts
+
+  Sage Glow:
+    shadowColor: #4A7B5A
+    shadowOffset: { width: 0, height: 0 }
+    shadowOpacity: 0.30
+    shadowRadius: 16
+    → Medication confirmed, safe states
+
+  Voice Pulse:
+    shadowColor: #5E4A8A
+    shadowOffset: { width: 0, height: 0 }
+    shadowOpacity: 0.50
+    shadowRadius: 28
+    → Voice button when actively listening
+2.6 — Iconography System
+text
+
+ICON PHILOSOPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DO NOT use generic icon libraries (Feather, Heroicons, Material).
+They look generic. They look like every other app.
+
+HAVEN uses a custom icon set with these characteristics:
+  ● 2.5px stroke weight (heavier than standard — legible at large sizes)
+  ● Rounded line caps and joins (consistent with Nunito's warmth)
+  ● Slightly larger hit area (drawn to 28px in a 32px frame)
+  ● Filled variants for active/selected states
+  ● Outline variants for inactive states
+
+ICON SIZE RULES
+──────────────────────────────────────────────────────
+  Navigation icons:    32px icon in 48px frame
+  Button icons:        28px icon in 40px frame
+  Card icons:          40px icon in 56px frame
+  Hero icons:          56px icon in 72px frame
+  Home screen tiles:   64px icon in 80px frame
+
+ICONS ARE NEVER ALONE
+──────────────────────────────────────────────────────
+  Every icon must have a visible text label.
+  Always. Without exception.
+  Label minimum: 20px, Nunito 500
+
+  ✅ 💊 My Pills
+  ✅ 📅 Today
+  ❌ 💊 (no label — fails)
+
+CUSTOM ICON DESCRIPTIONS
+──────────────────────────────────────────────────────
+  Pill Cup       → stylised medicine cup (not a generic pill)
+  Calendar Leaf  → calendar with a small leaf detail (warmth)
+  Family Circle  → three people in a warm embrace arc
+  Shield Leaf    → shield with subtle leaf motif (protection + nature)
+  Voice Wave     → sound wave that curves like a human voice (not a mic)
+  Memory Book    → open book with a soft heart on page
+  Compass Rose   → elegant compass, simplified
+  Star Path      → navigation star (used for COMPASS pillar)
+  Document Fold  → paper with gentle fold (warm, not clinical)
+  Heart Pulse    → pulse line ending in a small heart
+Part 3 — Motion & Animation Design
+text
+
+MOTION PHILOSOPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HAVEN never startles. Every animation is:
+  ● Intentional — it communicates something
+  ● Gentle — never fast, never jarring
+  ● Meaningful — motion tells a story, not just decoration
+  ● Interruptible — user can always abort mid-animation
+
+TIMING REFERENCE
+──────────────────────────────────────────────────────
+  Instant:       0–100ms   → Immediate feedback (tap state)
+  Snap:          150ms     → State changes (toggle on/off)
+  Transition:    300ms     → Screen transitions, card expand
+  Reveal:        450ms     → New content appearing
+  Gentle:        600ms     → Modal entry, alert overlay
+  Breath:        800ms     → Hero animations, background pulses
+  Story:         1200ms    → Deliberate, meaningful transitions
+
+EASING CURVES
+──────────────────────────────────────────────────────
+  Enter:         cubic-bezier(0.0, 0.0, 0.2, 1.0)
+                 → Content entering: starts fast, settles gently
+  Exit:          cubic-bezier(0.4, 0.0, 1.0, 1.0)
+                 → Content leaving: gentle start, clean exit
+  Emphasise:     cubic-bezier(0.0, 0.0, 0.0, 1.0)
+                 → Alert states: soft start, decisive landing
+  Spring:        { damping: 18, stiffness: 180 }
+                 → Touch feedback, confirmations
+
+
+SPECIFIC ANIMATIONS
+──────────────────────────────────────────────────────
+
+  1. APP LAUNCH — "The Morning Light"
+  ─────────────────────────────────
+  Duration: 1800ms total
+  
+  Frame 0–400ms:
+    Background fades from #F5F3EE (linen) to background
+    HAVEN logo appears: scale 0.8 → 1.0, opacity 0 → 1
+    Easing: spring (damping 15, stiffness 120)
+  
+  Frame 400–800ms:
+    Logo settles. Brief hold.
+  
+  Frame 800–1200ms:
+    Greeting text slides up: translateY(20) → translateY(0)
+    Opacity 0 → 1
+    Easing: Enter curve
+  
+  Frame 1200–1800ms:
+    Home screen tiles cascade in with stagger:
+    Tile 1: delay 0ms
+    Tile 2: delay 80ms
+    Tile 3: delay 160ms
+    Tile 4: delay 240ms
+    Each: scale(0.95) → scale(1.0), opacity 0 → 1
+  
+  Total feel: Waking up gently, not booting up.
+
+
+  2. SCREEN TRANSITIONS — "Warm Slide"
+  ─────────────────────────────────────
+  Forward navigation:
+    Current screen: translateX(0) → translateX(-30px), opacity 1 → 0
+    New screen: translateX(30px) → translateX(0), opacity 0 → 1
+    Duration: 350ms, Enter/Exit curves
+    NOTE: Only 30px (not 100% width) — never disorientating
+  
+  Back navigation:
+    Reverse of above. Feels like retreating, not going somewhere.
+  
+  Modal / bottom sheet:
+    translateY(100%) → translateY(0)
+    Duration: 450ms, Enter curve
+    Background overlay: opacity 0 → 0.5, rgba(26,31,46,0.5)
+    Background is NEVER fully black — 50% opacity max
+
+
+  3. HOME SCREEN TILES — "Living Tiles"
+  ─────────────────────────────────────
+  Resting state:
+    Tiles breathe with a very subtle shadow pulse:
+    Level 3 shadow → Level 2 shadow → Level 3 shadow
+    Duration: 4000ms loop, sine easing. Nearly imperceptible.
+    Purpose: Makes the screen feel alive, not static.
+  
+  Press state (immediate):
+    scale(1.0) → scale(0.97)
+    Duration: 100ms
+    Shadow: Level 3 → Level 1
+    Haptic: impactLight
+  
+  Release state:
+    scale(0.97) → scale(1.02) → scale(1.0)
+    Duration: 200ms (spring, damping:12, stiffness:200)
+    Haptic: impactMedium
+    Feel: The tile "bounces" reassuringly when tapped
+
+
+  4. MEDICATION TAKEN — "The Satisfying Completion"
+  ──────────────────────────────────────────────────
+  This is the most-used daily interaction. It must feel deeply satisfying.
+  
+  User taps "I took it":
+  
+  Frame 0–100ms:
+    Button scales down: scale(1.0) → scale(0.95)
+    Haptic: impactMedium
+  
+  Frame 100–300ms:
+    Button scales up with spring: scale(0.95) → scale(1.05) → scale(1.0)
+    Button colour transitions: Slate → Sage (green)
+    Checkmark icon draws from center outward (path animation, 200ms)
+    Text changes: "I took it" → "✓ Done!"
+    Haptic: notificationSuccess
+  
+  Frame 300–700ms:
+    Sage glow shadow pulses outward once (radius 16 → 32 → 0)
+    Small particle burst: 8 soft green dots scatter outward
+    (Not confetti — subtle, dignified. Just small circles.)
+  
+  Frame 700–1200ms:
+    Card gently slides upward and fades out
+    (Separates completed from pending items visually)
+  
+  Voice confirmation fires simultaneously:
+    HAVEN says: "Perfect. Done."  (2 words. Warm tone. Short.)
+
+
+  5. SHIELD AMBER ALERT — "Gentle Attention"
+  ──────────────────────────────────────────
+  This must get attention WITHOUT causing panic.
+  
+  Entry (600ms):
+    A warm amber glow appears at screen edges (not center):
+    Screen border: 0px → 8px amber glow (inset box shadow)
+    Opacity: 0 → 1, 600ms, Emphasise curve
+  
+  Simultaneously:
+    Small amber banner slides down from top (not full screen)
+    Height: 80px. Text: "HAVEN noticed something — tap to see"
+    Slide: translateY(-80px) → translateY(0), 450ms
+  
+  Continuing state:
+    Border glow pulses slowly: opacity 0.6 → 1.0 → 0.6
+    Period: 3000ms. Never frantic.
+  
+  Voice fires:
+    "Something looks a little unusual. Want me to check it for you?"
+    Tone: Concerned friend. Not alarm system.
+
+
+  6. SHIELD RED ALERT — "Serious Calm"
+  ─────────────────────────────────────
+  Serious. Unmistakable. But never panic-inducing.
+  
+  Entry (800ms):
+    Overlay appears from BOTTOM (not center drop — less alarming)
+    translateY(100%) → translateY(0), 600ms, Emphasise curve
+    Covers bottom 75% of screen
+    Background: Alert Rose Pale (#FAE8E8) with rose border
+    Background blur on content beneath: blur(4px)
+  
+  Header:
+    HAVEN shield icon (40px) in Alert Rose
+    Fades in + scales: scale(0.8) → scale(1.0), 300ms, delay 400ms
+  
+  Text fades in by line:
+    Line 1 (delay 600ms): "HAVEN thinks this might be a scam."
+    Line 2 (delay 800ms): "Here's why:"
+    Red flags (delay 1000ms, stagger 100ms each)
+  
+  Pulse glow:
+    Screen edge glow: Alert Rose, opacity 0.4, static (not pulsing)
+    One pulse on entry only, then static — pulsing during read is distracting
+  
+  Voice fires (after 500ms delay — letting visual land first):
+    "HAVEN thinks this might be a scam. I've noted why below.
+     You don't have to do anything right now."
+
+
+  7. VOICE BUTTON — "Breathing Life"
+  ────────────────────────────────────
+  Idle state:
+    Slate Dusk circle, Voice Pulse shadow at low opacity
+    Very slight pulse: scale(1.0) → scale(1.02) → scale(1.0)
+    Period: 3500ms. The button "breathes."
+  
+  Activated (tap):
+    Haptic: impactMedium
+    scale(1.0) → scale(0.92) → scale(1.08) → scale(1.0), 300ms spring
+    Colour: Slate → Circle Violet
+    Shadow: Voice Pulse glow appears, full opacity
+  
+  Listening state:
+    Outer ring 1: scale(1.0) → scale(1.3), opacity(0.4) → opacity(0)
+    Outer ring 2: same, delay 400ms
+    Outer ring 3: same, delay 800ms
+    Loop continuously. The classic "listening pulse" but softer.
+    Centre icon: mic → animated sound wave (reacts to audio level)
+  
+  Processing state:
+    Three dots appear in sequence: · → ·· → ···
+    Rotation: 0° → 360°, 1200ms, linear, loop
+    HAVEN says: "Mmm..." (thinking sound — like a human)
+  
+  Response ready:
+    All rings collapse inward to centre
+    Scale: 1.0 → 0.9 → 1.0, 200ms spring
+    Colour returns to Slate Dusk
+    Voice response begins playing
+
+
+  8. DAILY BRIEF CARD — "Morning Reveal"
+  ────────────────────────────────────────
+  When the Daily Brief screen opens:
+  
+  Background first: gradient washes in (300ms)
+  Greeting appears: opacity 0 → 1, translateY(10) → 0 (400ms)
+  Time: same, delay 150ms
+  Weather: same, delay 200ms
+  
+  Medication rows cascade in with stagger:
+    Row 1: delay 300ms
+    Row 2: delay 380ms
+    Row 3: delay 460ms
+    Each: translateX(-20px) → translateX(0), opacity 0 → 1, 350ms
+  
+  Voice button: scale 0 → 1, spring, delay 600ms
+  "Hear your brief" button: same, delay 700ms
+  
+  Feel: The day arriving, piece by piece. Not dumped all at once.
+
+
+  9. LIFE STORY RECORDING — "Sacred Space"
+  ──────────────────────────────────────────
+  This deserves the most considered animation in the app.
+  It is capturing something irreplaceable.
+  
+  Screen entry:
+    Background: warm ivory (#FAF6EF), not white
+    Prompt text fades in with Lora serif: opacity 0 → 1, 800ms
+    Breathing pause: 500ms
+    Mic button fades in: opacity 0 → 1, 600ms, scale 0.9 → 1.0
+  
+  Recording active:
+    Background warms subtly: #FAF6EF → #FDF2E4, 800ms (barely perceptible)
+    Mic button: Alert Rose filled circle, soft glow
+    Waveform visualiser: lines grow from centre, react to voice amplitude
+    Each bar: rounded cap, 3px wide, spacing 4px, Terracotta colour
+    Waveform feels like a heartbeat — organic, not mechanical
+  
+  Recording complete:
+    Mic button transforms: mic icon → small heart icon
+    Scale: 1.0 → 0.8 → 1.0, spring, 400ms
+    Colour: Alert Rose → Terracotta → Sage
+    HAVEN says warmly: "Beautiful. I've saved that for your family."
+    A small golden star particle appears and floats upward (subtle, 600ms)
+Part 4 — Haptic Language
+text
+
+HAPTIC FEEDBACK SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HAVEN uses haptics as a second language — communicating
+meaning through touch that reinforces visual and audio.
+
+  Pattern                    Haptic                    Meaning
+  ─────────────────────────────────────────────────────────────
+  Any tap (immediate)        impactLight               "I registered that"
+  Button press confirm       impactMedium              "This is happening"
+  Successful action          notificationSuccess       "Done. Well done."
+  Gentle alert (amber)       impactLight × 1           "Notice this"
+  Serious alert (red)        impactHeavy × 1           "Pay attention"
+  Emergency                  impactHeavy × 3           "This is important"
+  Shield intercept           impactMedium + 200ms      "I caught something"
+                             + impactLight
+  Medication taken           notificationSuccess       "Excellent."
+  Task completed             impactMedium + 150ms      "Good."
+                             + impactLight (soft echo)
+  Voice button activate      impactMedium              "I'm listening"
+  Voice processing           impactLight × 1           "I heard you"
+  Story recorded             notificationSuccess       "Treasured."
+  Error / can't do this      notificationWarning       "Not quite right"
+
+HAPTIC PRINCIPLES
+──────────────────────────────────────────────────────
+  ● Never use haptics for purely decorative animation
+  ● Every haptic pattern means exactly ONE thing
+  ● Haptics are optional — off by default for some users
+  ● Never rapid-fire haptics — minimum 150ms between patterns
+Part 5 — Sound Design
+text
+
+HAVEN SOUND SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHILOSOPHY: HAVEN does not beep, buzz, or alarm.
+HAVEN sounds like a warm, attentive human presence.
+
+AMBIENT AUDIO IDENTITY
+──────────────────────────────────────────────────────
+
+  The HAVEN Sound Mark (500ms):
+    A single, soft, rising note
+    Instrument: Muted piano, lightly reverbed
+    Pitch: C4 → E4 (perfect third, rising)
+    Character: Like someone gently saying "Hello"
+    Used: App launch, positive confirmations
+
+  Notification Tone (600ms):
+    Two soft chimes: C5, G5
+    Instrument: Vibraphone-like, soft mallet
+    Character: Gentle door knock
+    Used: New messages, gentle reminders
+
+  Alert Tone — Amber (800ms):
+    Three notes: A4, B4, A4 (unresolved — creates gentle attention)
+    Instrument: Warm marimba
+    Character: Someone clearing their throat softly
+    Used: Amber scam alerts
+
+  Alert Tone — Red (never jarring):
+    Four notes: G4, G4, C5, G4 (repeating G, like a watch chime)
+    Instrument: Soft orchestra bell
+    Played ONCE only — not repeating
+    Character: A hand on the shoulder
+    Used: Red scam alerts only
+
+  Completion Sound (400ms):
+    Single note: D5, fading gently
+    Instrument: Soft piano with subtle string overtone
+    Character: A contented exhale
+    Used: Medication taken, task completed, story saved
+
+  Emergency Sound (do not underestimate this):
+    Must be unmistakable but not panic-inducing
+    Three descending notes: E5, C5, G4 (quarter note each)
+    Instrument: Clear piano, no reverb, sustained
+    Followed by: "I'm calling [Name] for you now"
+    Character: Serious. Decisive. Calm.
+
+
+VOICE DESIGN — "HAVEN'S VOICE"
+──────────────────────────────────────────────────────
+
+  HAVEN has ONE voice. It is not a robot.
+  It is not a generic TTS voice.
+  It sounds like:
+    → A trusted GP who also happens to be a friend
+    → Warm, unhurried, slightly lower register
+    → Mid-Atlantic accent or user's locale equivalent
+    → Never clipped. Always speaks in complete thoughts.
+    → Pauses naturally — 400ms between sentences
+
+  ElevenLabs Voice Configuration:
+    Model: eleven_multilingual_v2
+    Stability: 0.72 (consistent but not robotic)
+    Similarity Boost: 0.80
+    Style: 0.15 (subtle expressiveness)
+    Speaking Rate: 0.88 (slightly slower than default)
+    Pitch: Neutral (0)
+
+  Voice Vocabulary Rules:
+    ✅ "Good morning, Margaret" — always uses name
+    ✅ "I noticed..." — ownership, active involvement
+    ✅ "It looks like..." — tentative, not accusatory
+    ✅ "That's done. Well done." — affirming, not patronising
+    ✅ "You don't need to do anything right now"
+    ✅ "Shall I read that for you?"
+    ✅ "I'll remember that for you."
+    ✅ "Your [family member] is thinking of you."
+
+    ❌ "Error" / "Invalid" / "Failed"
+    ❌ "Warning!" / "Alert!" / "Danger!"
+    ❌ "You forgot to..." — never accusatory
+    ❌ "Don't worry" — dismissive
+    ❌ "As an AI..." — breaks the companion illusion
+    ❌ "I cannot..." — always offer an alternative
+    ❌ Technical jargon of any kind
+
+  Sentence Length:
+    Instructions: max 12 words per sentence
+    Reminders: max 8 words
+    Confirmations: max 5 words ("Done." "All set." "Saved for them.")
+    Alerts: max 15 words, then pause
+Part 6 — Screen-by-Screen Specification
+6.1 — Onboarding Flow
+text
+
+ONBOARDING PHILOSOPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Onboarding is done BY THE FAMILY MEMBER, not the elder.
+The elder should receive a fully configured app on first open.
+The elder's first experience is:
+  "Good morning, [Name]. HAVEN is ready for you."
+  — no setup, no configuration, no questions.
+
+
+FAMILY ONBOARDING — 6 Steps (web + mobile)
+──────────────────────────────────────────────────────
+
+  ┌─────────────────────────────────────────────────┐
+  │  STEP 1 — "Tell us about your loved one"       │
+  │                                                 │
+  │  ☀️ What's their name?                          │
+  │  [First name only — large input, 40px]          │
+  │                                                 │
+  │  And what do they prefer to be called?          │
+  │  [Preferred name — "Mum", "Margaret", "Gran"]   │
+  │                                                 │
+  │  Progress: ● ○ ○ ○ ○ ○                         │
+  └─────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────┐
+  │  STEP 2 — "Help HAVEN recognise their voice"   │
+  │                                                 │
+  │  Ask [Name] to say these 3 phrases:            │
+  │  "Good morning, HAVEN"                          │
+  │  "I took my pill"                               │
+  │  "Call my daughter"                             │
+  │                                                 │
+  │  [Large MIC button — tap to record each]        │
+  │  [Skip this step →] (can set up later)          │
+  │                                                 │
+  │  Progress: ● ● ○ ○ ○ ○                         │
+  └─────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────┐
+  │  STEP 3 — "Tell us about their medications"    │
+  │                                                 │
+  │  Take a photo of each pill bottle.             │
+  │  HAVEN will read it and set up reminders.      │
+  │                                                 │
+  │  [Big camera icon — tap to photograph]          │
+  │  [I'll add medications later →]                 │
+  │                                                 │
+  │  Progress: ● ● ● ○ ○ ○                         │
+  └─────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────┐
+  │  STEP 4 — "Who else should HAVEN keep in touch │
+  │            with?"                               │
+  │                                                 │
+  │  [You] ✅ (already set as primary)              │
+  │  + Add family member (name + phone)             │
+  │  + Add family member                            │
+  │                                                 │
+  │  [Continue with just me →]                      │
+  │                                                 │
+  │  Progress: ● ● ● ● ○ ○                         │
+  └─────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────┐
+  │  STEP 5 — "What font size works best?"         │
+  │                                                 │
+  │  [Preview text shown live as slider moves]      │
+  │                                                 │
+  │  Good morning, Margaret ☀️                      │
+  │  ←————————●————————————→                       │
+  │  Small              Large                       │
+  │                                                 │
+  │  [This looks perfect →]                         │
+  │                                                 │
+  │  Progress: ● ● ● ● ● ○                         │
+  └─────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────┐
+  │  STEP 6 — "HAVEN is ready for Margaret"        │
+  │                                                 │
+  │  🛡️ SHIELD is on                               │
+  │  💊 3 medications set up                        │
+  │  👪 2 family members connected                  │
+  │                                                 │
+  │  Here's what Margaret will see when she         │
+  │  opens HAVEN for the first time:               │
+  │                                                 │
+  │  [Preview of elder home screen]                 │
+  │                                                 │
+  │  [Open HAVEN together →] ← this is the CTA     │
+  │                                                 │
+  │  Progress: ● ● ● ● ● ●                         │
+  └─────────────────────────────────────────────────┘
+6.2 — The Home Screen
+text
+
+THE HOME SCREEN — FULL SPECIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LAYOUT (phone — portrait):
+──────────────────────────────────────────────────────
+
+┌────────────────────────────────────────────┐
+│  Status bar (system)                       │
+├────────────────────────────────────────────┤
+│                    40px top padding        │
+│  Good Morning ☀️           [Aa] [◐]        │  ← 48px hero text
+│  Margaret                                  │  ← 60px display text (name)
+│                                            │
+│  Tuesday, 10 June                          │  ← 26px, Pewter colour
+│  🌤️  18° and sunny                        │  ← 24px, Pewter
+│                    24px gap                │
+├────────────────────────────────────────────┤
+│  🛡️ HAVEN is keeping you safe  ●green     │  ← Status bar, 20px, full width
+│     [tap to learn more]                    │    bg: Sage Pale, 56px height
+├────────────────────────────────────────────┤
+│                    20px gap                │
+│  ┌──────────────┐    ┌──────────────┐     │
+│  │              │    │              │     │
+│  │  💊 (64px)   │    │  📅 (64px)   │     │
+│  │              │    │              │     │  ← Each tile: (width÷2 - 36px) wide
+│  │  My Pills    │    │    Today     │     │    160px tall
+│  │              │    │              │     │    bg: White, Level 3 shadow
+│  │  3 due today │    │  2 items     │     │  ← 20px subtext (Badge/count)
+│  └──────────────┘    └──────────────┘     │
+│                    16px gap                │
+│  ┌──────────────┐    ┌──────────────┐     │
+│  │              │    │              │     │
+│  │  👪 (64px)   │    │  🆘 (64px)   │     │
+│  │              │    │              │     │
+│  │   Family     │    │     Help     │     │
+│  │              │    │              │     │
+│  │  1 message   │    │  Call Sarah  │     │
+│  └──────────────┘    └──────────────┘     │
+│                    24px gap                │
+└────────────────────────────────────────────┘
+
+TILE VISUAL SPECIFICATION
+──────────────────────────────────────────────────────
+
+  Default tile:
+    Background: #FFFFFF
+    Border: none
+    Border radius: 20px
+    Shadow: Level 3
+    Icon: custom HAVEN icon, 64px, Pillar accent colour
+    Label: 28px Nunito 600, Ink (#1A1F2E)
+    Sublabel: 20px Nunito 400, Pewter (optional count/status)
+
+  Attention tile (medication due now):
+    Background: Linear gradient (Sage Pale to White, 135°)
+    Left border accent: 4px solid Sage
+    Icon: animated subtle pulse
+    Sublabel colour: Sage
+
+  Urgent tile (message unread / alert):
+    Top-right badge: 24px circle, Slate Dusk fill, white number
+    Badge appears with scale(0) → scale(1) spring animation
+
+  Help tile (always distinct):
+    Background: Linear gradient (Alert Rose Pale to White, 135°)
+    Left border accent: 4px solid Emergency Red
+    Icon: Emergency Red (not Pillar colour)
+    Label: "Help" in Emergency Red
+    Sublabel: "Call [Primary Contact Name]"
+    This tile always looks slightly different — it is never forgotten
+
+
+STATUS BAR (between greeting and tiles)
+──────────────────────────────────────────────────────
+
+  Safe state:
+    Background: Sage Pale (#EBF4EE)
+    Left icon: Shield (24px, Sage)
+    Text: "HAVEN is keeping you safe" (22px, Sage)
+    Right: Green dot (12px, Sage fill, soft glow pulse)
+
+  Amber state:
+    Background: Amber Pale (#FDF3E0)
+    Left icon: Shield (24px, Amber Glow)
+    Text: "HAVEN noticed something — tap to see" (22px, Amber)
+    Right: Amber dot, faster pulse (2s period)
+    Full bar tappable → Shield alert screen
+
+  Red state:
+    Background: Alert Rose Pale (#FAE8E8)
+    Left icon: Shield (24px, Alert Rose)
+    Text: "HAVEN thinks something needs attention" (22px, Alert Rose)
+    Right: Rose dot, pulsing
+    Full bar tappable → Shield alert screen
+    Status bar also: subtle left/right animated gradient 

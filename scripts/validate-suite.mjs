@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const required = [
   'apps/iphone-suite/index.html',
   'supabase/migrations/20260611000001_haven_v121_production_schema.sql',
@@ -31,6 +32,11 @@ const required = [
   'apps/elder/src/services/voiceRecorder.ts',
   'apps/elder/src/services/documentCamera.ts',
   'apps/elder/src/services/pushRegistration.ts',
+  'apps/elder/src/state/networkResilience.ts',
+  'apps/elder/src/state/offlineSyncMachine.ts',
+  'apps/elder/src/state/voiceRecordingMachine.ts',
+  'apps/family/src/services/realtime.ts',
+  'apps/grandchild/src/state.ts',
   'apps/elder/src/schema/screens.ts',
   'apps/family/src/services/dashboard.ts',
   'apps/grandchild/App.tsx',
@@ -59,11 +65,22 @@ const required = [
   'docs/implementation/DESIGN_DOC_DIFF.md',
   'docs/implementation/PHASE_COVERAGE_AUDIT.md',
   'docs/implementation/HARDENING_CLOSURE_REPORT.md',
+
+  'docs/PROJECT_PACKAGE_INDEX.md',
+  'docs/ENVIRONMENT.md',
+  'docs/ARCHITECTURE.md',
+  'docs/DATA_MODEL.md',
+  'docs/DEVELOPMENT.md',
+  'docs/OPERATIONS.md',
+  'docs/SECURITY.md',
+  'docs/TESTING.md',
+  'docs/COMPLIANCE.md',
   'docs/release/ACCESSIBILITY_AUDIT_PROTOCOL.md',
   'docs/release/PENTEST_SCOPE.md',
   'docs/release/ELDER_USABILITY_PROTOCOL.md',
   'docs/release/COPY_REVIEW.md',
   'scripts/check-local-supabase.sh',
+  'tests/integration/live-rls.test.mjs',
   'docs/api/openapi.yaml',
   'docs/api/EDGE_FUNCTION_CATALOG.md',
   'scripts/deploy/check-production-env.sh',

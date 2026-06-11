@@ -3,6 +3,18 @@ import { admin } from './core.ts';
 const OPENAI_BASE = 'https://api.openai.com/v1';
 const ELEVEN_BASE = 'https://api.elevenlabs.io/v1';
 
+function mockEnabled() {
+  return Deno.env.get('HAVEN_AI_MOCK') === 'true' || Boolean(Deno.env.get('HAVEN_AI_MOCK_URL'));
+}
+
+async function mockJson(path: string, body: unknown) {
+  const base = Deno.env.get('HAVEN_AI_MOCK_URL');
+  if (!base) return null;
+  const response = await fetch(`${base}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  if (!response.ok) throw new Error(`Mock AI endpoint failed: ${path}`);
+  return response.json();
+}
+
 function requireEnv(name: string) {
   const value = Deno.env.get(name);
   if (!value) throw new Error(`${name} is not configured`);
@@ -10,6 +22,10 @@ function requireEnv(name: string) {
 }
 
 export async function transcribeDutchAudio(audioBase64: string) {
+  if (mockEnabled()) {
+    const mocked = await mockJson('/transcribe', { audio_base64: audioBase64 });
+    return String(mocked?.text ?? 'Ik heb mijn pillen ingenomen.');
+  }
   const key = requireEnv('OPENAI_API_KEY');
   const bytes = Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0));
   const file = new File([bytes], 'voice.wav', { type: 'audio/wav' });
@@ -29,6 +45,10 @@ export async function transcribeDutchAudio(audioBase64: string) {
 }
 
 export async function generateEmbedding(input: string) {
+  if (mockEnabled()) {
+    const mocked = await mockJson('/embedding', { input });
+    return (mocked?.embedding ?? Array.from({ length: 1536 }, (_, i) => ((input.charCodeAt(i % Math.max(input.length, 1)) || 1) % 100) / 1000)) as number[];
+  }
   const key = requireEnv('OPENAI_API_KEY');
   const response = await fetch(`${OPENAI_BASE}/embeddings`, {
     method: 'POST',
@@ -41,6 +61,11 @@ export async function generateEmbedding(input: string) {
 }
 
 export async function companionReply(params: { locale: 'en-GB' | 'nl-NL'; transcript: string; memories: string[]; screenId: string }) {
+  if (mockEnabled()) {
+    const mocked = await mockJson('/chat', params);
+    if (mocked?.text) return String(mocked.text);
+    return params.locale === 'nl-NL' ? 'Ik ben bij u. Ik help rustig verder.' : 'I am with you. I will help calmly.';
+  }
   const key = Deno.env.get('OPENAI_API_KEY');
   if (!key) {
     return params.locale === 'nl-NL'
@@ -68,6 +93,11 @@ export async function companionReply(params: { locale: 'en-GB' | 'nl-NL'; transc
 }
 
 export async function synthesizeSpeechToStorage(params: { elderId: string; interactionId: string; text: string; locale: 'en-GB' | 'nl-NL' }) {
+  if (mockEnabled()) {
+    const mocked = await mockJson('/tts', params);
+    if (mocked?.audio_url) return String(mocked.audio_url);
+    return null;
+  }
   const key = Deno.env.get('ELEVENLABS_API_KEY');
   const voiceId = Deno.env.get(params.locale === 'nl-NL' ? 'ELEVENLABS_VOICE_ID_NL' : 'ELEVENLABS_VOICE_ID_EN');
   if (!key || !voiceId) return null;

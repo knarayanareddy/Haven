@@ -73,3 +73,12 @@ DPIA signature, vendor DPAs, pentest and usability sessions remain human gates.
 Engineering scaffold rating after hardening: **8.5/10**.
 
 Not rated 9+ because true production confidence requires a real Supabase reset, generated Supabase DB types from a live instance, real device testing, vendor sandbox credentials and human compliance sign-off.
+
+## Expert feedback closure addendum
+
+An external review identified four production-readiness items. The repository now addresses the implementable items:
+
+1. **URL pathname space bug** — fixed in `scripts/validate-suite.mjs` by using `fileURLToPath(new URL(...))` instead of `.pathname`.
+2. **AI mock mode** — added `scripts/mock-ai-server.mjs`, `npm run mock:ai`, and `HAVEN_AI_MOCK` / `HAVEN_AI_MOCK_URL` support in `_shared/ai.ts`.
+3. **Live RLS integration test harness** — added `tests/integration/live-rls.test.mjs` and `npm run test:integration:live`. It runs real Supabase assertions when `HAVEN_LIVE_RLS=1` and test JWTs are provided.
+4. **Legal sign-offs** — remain human-owned and are tracked in release/compliance docs and DB tables.

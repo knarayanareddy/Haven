@@ -1,21 +1,13 @@
 ---
 title: HAVEN Engineering Design Suite
-version: 1.2.4
+version: 1.2.1
 status: Approved — Single Source of Truth
 locale: Netherlands (nl-NL)
 jurisdiction: EU / Dutch law (AVG/UAVG/WGBO)
 timezone: Europe/Amsterdam
-last_updated: 2026-06-11
+last_updated: 2026-06-10
 
 changelog:
-  1.2.4: Solutions Architect Review Patch (HAVEN-SSOT-003) applied:
-         reconciled push_tokens, helper functions, and storage paths in Addendum A and designdoc.md.
-  1.2.3: Solutions Architect Review Patch (HAVEN-SSOT-002) applied:
-         reconciled column names (family_member_id, carer_member_id,
-         can_view_medications, can_view_location_events, profile_id);
-         aligned Next.js middleware routing page permissions;
-         aligned family_relationships and carer_relationships DDL/seed SQL;
-         extended docs/canonical-fields.json registry.
   1.0.0: Initial SSOT
   1.1.0: BSN removed; fraud/loneliness stats corrected; WGBO 15→20y;
          AI Act transparency fixed; RLS canonicality resolved
@@ -38,12 +30,6 @@ changelog:
          TTL unified to 24h (ADR + schema + cron); BSN removed from Class 4
          examples; DigiD removed from onboarding + documents; CloudWatch
          references replaced with Supabase-native observability stack
-  1.2.2: Solutions Architect review patch; voice transcripts nullability & redaction
-         chk_transcript_redaction and chk_memory_redaction constraints;
-         audit log retention unified to 7y (pg_cron auto-delete forbidden);
-         medication reminders seed columns corrected; PSD2 AISP alert wording;
-         Threat Model (§TM), Data Classification Registry (§DC), RLS Test Harness (§RT),
-         and Voice Failure-Mode Design (§VF) appended; Addendum A referenced as separate file.
 
 items_requiring_human_dpo_action:
   - Addendum J (DPIA — AVG Art. 35): must be completed + signed before production
@@ -51,70 +37,63 @@ items_requiring_human_dpo_action:
   - Doc 06: Named DPO must be recorded before production launch
 ---
 
-## v1.2.4 Patch Summary Card
+## v1.2.1 Patch Summary Card
 
 ```
 HAVEN Engineering Design Suite
-Version: 1.2.4
+Version: 1.2.1
 Status:  Approved — Single Source of Truth
-Date:    2026-06-11
+Date:    2026-06-10
 
-v1.2.4 PATCH SUMMARY (Solutions Architect Review - HAVEN-SSOT-003):
+v1.2.1 PATCH SUMMARY (10 P0/P1 fixes):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[Addendum A] HUNK 1-2:   auth.family_can() & auth.carer_can() helper
-                         functions reconciled with canonical schema columns.
-[Addendum A] HUNKS 3-8:  All inline family/carer policy bodies updated
-                         with canonical column names.
-[Addendum A] HUNK 9:     push_tokens policies - replaced user_id with profile_id.
-[Addendum A] HUNK 10:    RLS test fixture comments corrected.
-[Addendum A] HUNK 11:    Metadata block updated.
-[designdoc]  HUNK 12:    Storage path {user_id} → {profile_id} updated
-                         in path convention table.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ITEMS STILL REQUIRING HUMAN DPO ACTION (unchanged):
-  ⚠️ Addendum J (DPIA) — must be completed + signed before production
-  ⚠️ Addendum K (Vendor Register) — DPA column must be filled per vendor
-  ⚠️ Doc 06 — Named DPO must be recorded before production launch
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-After applying this patch: designdoc.md is production-grade SSOT.
-```
+P0-1  RLS FORCE syntax       FORCE ROW LEVEL SECURITY ON x →
+      corrected (global)     ALTER TABLE x FORCE ROW LEVEL SECURITY;
+                             Affects: all 24 user-data tables
 
-## v1.2.2 Patch Summary Card
+P0-2  connection_status      CREATE TYPE connection_status AS ENUM (...)
+      enum added             Added to enums section before BUURT DDL.
+                             Migration: 20260610000009_v121_hardening.sql
 
-```
-HAVEN Engineering Design Suite
-Version: 1.2.2
-Status:  Approved — Single Source of Truth
-Date:    2026-06-11
+P0-3  Seed SQL aligned       medication_reminders: scheduled_for → scheduled_time,
+      to canonical schema    'pending' → 'gepland' (Dutch enum)
+                             push_tokens: user_id → profile_id, added is_active
+                             BUURT seed: neighbourhood_profile + interest_tags added
 
-v1.2.2 PATCH SUMMARY (Solutions Architect Review):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FIX-A  Transcripts Nullability  voice_interactions.transcript_nl and
-       & Redaction Constraints  companion_memory.content_nl made nullable.
-                                Constraints chk_transcript_redaction and
-                                chk_memory_redaction added to enforce that
-                                redacted fields are NULL. pg_cron retention
-                                updated to redact transcripts.
-FIX-B  Audit Log Retention      Unified to exactly 7 years in retention table.
-       7y / No pg_cron          Exclusion added: auto-deletion via pg_cron is
-                                strictly forbidden; manual DPO sign-off only.
-FIX-C  Medication Seeds         Corrected DDL schema columns (id, medication_id,
-                                elder_id, scheduled_time, status, snooze_count,
-                                created_at) in B.2.4 seed data.
-FIX-D  PSD2 Alert Wording       Removed references to "transaction blocked" or
-                                "intercept" since HAVEN has read-only AISP scope.
-                                Updated to alert warnings + bank deep-linking.
-                                Renamed fn-transaction-intercept to fn-transaction-alert.
-FIX-E  Addendum A RLS SSOT      Moved canonical RLS SQL to a separate file:
-                                docs/addenda/addendum-a-rls-canonical.md.
-ADD-1  Threat Model             Appended Threat Model (§TM) detailing HAVEN
-                                specific threats and mitigations.
-ADD-2  Data Classification      Appended Data Classification Registry (§DC)
-                                cataloging security classes and Sentry scrubbing.
-ADD-3  RLS Test Harness         Appended RLS Test Harness (§RT) defining pgTAP
-                                automated test setup and execution.
-ADD-4  Voice Failure-Mode       Appended Voice Failure-Mode Design (§VF)
-                                detailing cached audio fallback and timeouts.
+P0-4  voice_interactions     deleted_at column added to DDL + migration.
+      deleted_at added       Retention cron updated: nulls transcript_nl AND
+                             response_text_nl, then soft-deletes row.
+
+P0-5  fn-companion-memory    Old: 'preference' | 'fact' | 'event' | 'relationship'
+      enum contract fixed    New: 'personal_fact' | 'preference' | 'recurring_event'
+                                  | 'life_event' | 'emotional_state' | 'medical_context'
+                             LLM extraction prompt added (nl-NL, with rules).
+
+P0-6  Precise location TTL   48h unified to 24h throughout:
+      unified to 24h         - ADR-007 rationale updated
+                             - location_events auto_delete_at comment fixed
+                             - fn-location-ingest timestamp fixed
+                             - pg_cron job logic changed to use auto_delete_at field
+                             - Canonical retention table row corrected
+
+P1-1  BSN removed from       BSN moved from Class 4 (storable) to
+      Class 4 data           Class 5 (forbidden to collect).
+      classification         Class 5 row added to data classification table.
+
+P1-2  DigiD removed from     Onboarding flow: "email + DigiD optional" removed.
+      onboarding flow        ADR-011 added: DigiD DEFERRED (Phase 3+) with
+                             pre-conditions listed.
+
+P1-3  DigiD + BSN removed    Document vault DDL comments: DigiD kaart + BSN
+      from document vault    examples replaced with permitted document types.
+      examples               UI warning copy added (BSN redaction instruction).
+
+P1-4  CloudWatch replaced    Replaced with:
+      with Supabase-native   - Sentry (EU) for errors
+      observability          - Logflare/Axiom for Edge Function logs
+                             - perf_metrics table + pg_notify for SLOs
+                             - Slack webhook alerting via pg_notify
+                             - p50/p95 SQL queries (no external dashboard needed)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ITEMS STILL REQUIRING HUMAN DPO ACTION (unchanged):
   ⚠️ Addendum J (DPIA) — must be completed + signed before production
@@ -127,7 +106,7 @@ building all six pillars without hitting schema/contract mismatches.
 ```
 
 HAVEN — Engineering Design Document Suite
-Version: 1.2.4 Status: Approved — Single Source of Truth Locale: Netherlands (nl-NL) | Jurisdiction: EU / Dutch Law Last Updated: 2026-06-11 Replaces: README.md, HAVEN_BLUEPRINT.md, UIUXRENDER
+Version: 1.2.1 Status: Approved — Single Source of Truth Locale: Netherlands (nl-NL) | Jurisdiction: EU / Dutch Law Last Updated: 2026-06-10 Replaces: README.md, HAVEN_BLUEPRINT.md, UIUXRENDER
 
 Document 01 — Product Specification
 1. Mission
@@ -196,8 +175,8 @@ Document Vault (SCHILD): Securely store and label important documents — such a
   - Do not upload documents showing your full BSN. If you wish to store an identity document, redact the BSN number before uploading.
   - HAVEN does not process or read BSN numbers and cannot validate identity documents.
   - DigiD integration: DigiD is explicitly out of scope for MVP. Any future DigiD integration (e.g. for MedMij access) requires a separate legal basis assessment and technical security review before implementation.
-[Phase 2 — PSD2 transaction alerts] Anomalous transaction warnings & alerts (via PSD2 Open Banking APIs)
-Alert levels: Amber (worth knowing) → Rood (take action) → Zwart (urgent transaction warning & bank deep-link alert)
+[Phase 2 — PSD2 transaction intercept] Transaction intercept for flagged anomalies (via PSD2 Open Banking APIs)
+Alert levels: Amber (worth knowing) → Rood (take action) → Zwart (transaction blocked)
 Social engineering memory: tracks escalating "grooming" patterns across time
 Weekly "Veiligheidsoverzicht" (safety digest) for family
 Pillar 2 — ANKER (Health, Meds, Daily Rhythm)
@@ -272,7 +251,7 @@ KOMPAS	Safe zone alerts, emergency medical profile
 STEM	nl-NL voice companion (online), crisis phrase detection
 WACHT	Read-only family dashboard; carer portal: Phase 2
 Explicitly Out of MVP Scope
-[Phase 2 — PSD2 transaction alerts] Anomalous transaction alerts / bank deep-linking (PSD2)
+[Phase 2 — PSD2 transaction intercept] Transaction intercept / banking integration (PSD2)
 MedMij / PGO health record integration
 Cognitive driving event detection
 Community event aggregation
@@ -297,7 +276,7 @@ STEM: nl-NL voice companion (online)
 KOMPAS: safe zone + emergency profile
 Beta launch: 50 households
 Phase 2 — Depth (Months 6–9)
-SCHILD: anomalous transaction alerts (PSD2)
+SCHILD: transaction intercept (PSD2)
 KOMPAS: cognitive check-ins + "Wat is dit?"
 STEM: offline fallback
 ANKER: MedMij integration
@@ -595,7 +574,7 @@ text
 │  │  GUARDIAN PORTAL     │────▶│  │  fn-medication-escalation           │  │  │
 │  │  Next.js 14          │     │  │  fn-companion-memory                │  │  │
 │  │  Role-scoped         │     │  │  fn-notification-dispatch           │  │  │
-│  └──────────────────────┘     │  │  fn-transaction-alert (Phase 2)    │  │  │
+│  └──────────────────────┘     │  │  fn-transaction-intercept (Ph.2)   │  │  │
 │                               │  │  fn-weekly-digest                   │  │  │
 │                               │  └─────────────────────────────────────┘  │  │
 │                               │                                            │  │
@@ -667,7 +646,7 @@ Incoming call / message / link received
      │         └──▶ elder: calm voice alert ("Dit gesprek lijkt verdacht")
      │         └──▶ family: push notification (if rood/zwart)
      │
-     └──▶ [Zwart only] → fn-transaction-alert (Phase 2)
+     └──▶ [Zwart only] → fn-transaction-intercept (Phase 2)
 5. Medication Escalation State Machine
 text
 
@@ -856,8 +835,8 @@ Logic: Looks up push_tokens for recipient → dispatches via Expo Push API (whic
 2.6 fn-weekly-digest
 Trigger: pg_cron every Monday 08:00 Europe/Amsterdam Auth: Service role Logic: Aggregates prior 7 days of scam_events, medication_reminders, wellness_checkins, voice_interactions per elder → INSERTs to safety_digests → dispatches push/email to linked family members.
 
-2.7 fn-transaction-alert (Phase 2)
-Trigger: Webhook from PSD2/Tink on new transaction Auth: Tink webhook signature verification (HMAC-SHA256) Input: Tink transaction payload (normalised) Logic: Runs anomaly scoring → if score > threshold, INSERTs financial_transactions with flagged = true, warning_dispatched = true, creates linked scam_event, dispatches fn-notification-dispatch at zwart level (triggering urgent push/SMS warnings with deep-linking to the bank app for transaction cancellation/review).
+2.7 fn-transaction-intercept (Phase 2)
+Trigger: Webhook from PSD2/Tink on new transaction Auth: Tink webhook signature verification (HMAC-SHA256) Input: Tink transaction payload (normalised) Logic: Runs anomaly scoring → if score > threshold, INSERTs financial_transactions with flagged = true, creates linked scam_event, dispatches fn-notification-dispatch at zwart level.
 
 2.8 fn-location-event
 Trigger: POST from elder app (background location update) Auth: Bearer JWT (elder role) Input:
@@ -992,9 +971,7 @@ Last reconciled: 2026-06-10
 | family_relationships   | family_member_id          | family_user_id           |
 | family_relationships   | can_view_medications      | can_view_meds            |
 | family_relationships   | can_view_location_events  | can_view_location        |
-| family_relationships   | can_view_safety           | can_view_alerts          |
-| family_relationships   | can_view_voice            | (correct — no change)    |
-| family_relationships   | can_view_health           | can_view_wellness        |
+| family_relationships   | can_view_alerts           | can_view_alerts ✅       |
 | family_relationships   | can_view_stories          | can_view_stories ✅      |
 | family_relationships   | can_view_financials       | can_view_financials ✅   |
 | family_relationships   | is_active                 | active                   |
@@ -1202,16 +1179,16 @@ CREATE TABLE family_relationships (
   can_view_medications      boolean DEFAULT false,
   can_view_messages         boolean DEFAULT false,
   can_view_location_events  boolean DEFAULT false,
+  can_view_alerts           boolean DEFAULT false,
   can_view_stories          boolean DEFAULT false,
   can_view_financials       boolean DEFAULT false,
-  can_view_voice            boolean DEFAULT false,   -- ✅ canonical
-  can_view_health           boolean DEFAULT false,   -- ✅ canonical
-  can_view_safety           boolean DEFAULT false,   -- ✅ canonical
   -- Alert subscriptions
-  notify_on_scam              boolean DEFAULT true,  -- ✅ canonical
-  notify_on_missed_medication boolean DEFAULT true,  -- ✅ canonical
-  notify_on_safe_zone_exit    boolean DEFAULT true,  -- ✅ canonical
-  notify_on_weekly_digest     boolean DEFAULT true,  -- ✅ canonical
+  notify_on_scam_amber      boolean DEFAULT true,
+  notify_on_scam_rood       boolean DEFAULT true,
+  notify_on_scam_zwart      boolean DEFAULT true,
+  notify_on_missed_meds     boolean DEFAULT true,
+  notify_on_safe_zone_exit  boolean DEFAULT true,
+  notify_on_crisis          boolean DEFAULT true,
   -- Timestamps
   created_at                timestamptz DEFAULT now(),
   updated_at                timestamptz DEFAULT now(),
@@ -1280,7 +1257,7 @@ CREATE TABLE scam_events (
 
   -- Transaction linkage (Phase 2)
   linked_transaction_id     UUID REFERENCES financial_transactions(id),
-  transaction_flagged       BOOLEAN DEFAULT FALSE,
+  transaction_intercepted   BOOLEAN DEFAULT FALSE,
 
   created_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -1387,7 +1364,7 @@ CREATE TABLE financial_transactions (
   anomaly_score           SMALLINT DEFAULT 0,
   flagged                 BOOLEAN NOT NULL DEFAULT FALSE,
   linked_scam_event_id    UUID REFERENCES scam_events(id),
-  warning_dispatched      BOOLEAN DEFAULT FALSE,
+  intercepted             BOOLEAN DEFAULT FALSE,
   elder_reviewed          BOOLEAN DEFAULT FALSE,
   created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -1866,8 +1843,7 @@ CREATE TABLE voice_interactions (
   id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   elder_id              UUID NOT NULL REFERENCES profiles(id),
   screen_id             TEXT NOT NULL,
-  transcript_nl         TEXT,                          -- nullable: NULLed by retention job after 30 days
-  transcript_redacted   BOOLEAN NOT NULL DEFAULT FALSE,
+  transcript_nl         TEXT NOT NULL,
   intent                TEXT,
   entities              JSONB,
   confidence_score      DECIMAL(4,3),
@@ -1882,15 +1858,7 @@ CREATE TABLE voice_interactions (
   created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   auto_delete_audio_at  TIMESTAMPTZ DEFAULT NOW() + INTERVAL '30 days',
   updated_at            timestamptz DEFAULT now(),
-  deleted_at            timestamptz,          -- v1.2.1: added for retention cron compliance
-  -- INVARIANT: when transcript_redacted = TRUE, transcript_nl MUST be NULL.
-  --            Enforced by check constraint below.
-  CONSTRAINT chk_transcript_redaction
-    CHECK (
-      (transcript_redacted = FALSE)
-      OR
-      (transcript_nl IS NULL)
-    )
+  deleted_at            timestamptz           -- v1.2.1: added for retention cron compliance
 );
 
 COMMENT ON COLUMN voice_interactions.deleted_at IS
@@ -1928,8 +1896,7 @@ CREATE TABLE companion_memory (
   elder_id          uuid NOT NULL
                       REFERENCES profiles(id) ON DELETE CASCADE,
   memory_type       memory_type NOT NULL,
-  content_nl        text,                       -- Nullable: NULLed after retention or on redaction
-  memory_redacted   boolean NOT NULL DEFAULT false,
+  content_nl        text NOT NULL,              -- Always stored in Dutch
   importance_score  integer DEFAULT 5           -- canonical: importance_score
                     CHECK (importance_score BETWEEN 1 AND 10),
   embedding         vector(1536),               -- text-embedding-3-small
@@ -1945,15 +1912,7 @@ CREATE TABLE companion_memory (
   expires_at        timestamptz,               -- NULL = permanent
   created_at        timestamptz DEFAULT now(),
   updated_at        timestamptz DEFAULT now(),
-  deleted_at        timestamptz,
-  -- INVARIANT: when memory_redacted = TRUE, content_nl MUST be NULL.
-  --            Enforced by check constraint below.
-  CONSTRAINT chk_memory_redaction
-    CHECK (
-      (memory_redacted = FALSE)
-      OR
-      (content_nl IS NULL)
-    )
+  deleted_at        timestamptz
 );
 
 -- Retention expiry (pg_cron)
@@ -2077,8 +2036,6 @@ CREATE TABLE push_tokens (
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_push_tokens_profile_id ON push_tokens(profile_id);
-
 -- push_tokens
 ALTER TABLE push_tokens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_tokens FORCE ROW LEVEL SECURITY;
@@ -2182,7 +2139,7 @@ CREATE POLICY "location_events: family read (fuzzed only)"
       SELECT 1 FROM family_relationships fr
       WHERE fr.elder_id = location_events.elder_id
         AND fr.family_member_id = auth.uid()
-        AND fr.can_view_location_events = TRUE
+        AND fr.can_view_location = TRUE
         AND fr.elder_consented = TRUE
         AND fr.deleted_at IS NULL
     )
@@ -2243,8 +2200,8 @@ CREATE POLICY "incidents: carer access"
     OR EXISTS (
       SELECT 1 FROM carer_relationships cr
       WHERE cr.elder_id = incidents.elder_id
-        AND cr.carer_member_id = auth.uid()
-        AND cr.is_active = TRUE
+        AND cr.carer_id = auth.uid()
+        AND cr.active = TRUE
         AND cr.can_report_incidents = TRUE
     )
   );
@@ -2451,7 +2408,7 @@ BSN	Not collected	N/A — HAVEN does not store BSN (hard product rule; see Secti
 | Cognitive check-ins | `cognitive_checkins` | 12 months | AVG proportionality | |
 | Weekly digests | `safety_digests` | 24 months | AVG proportionality | |
 | Push tokens | `push_tokens` | Until device deregistration | Operational necessity | |
-| Audit log | `audit_log` | **7 years** | WGBO / NEN 7510 compliance | Immutable; manual DPO sign-off required for purge (pg_cron auto-delete forbidden) |
+| Audit log | `audit_log` | 5 years | AVG accountability (Art. 5(2)) | Immutable; no client access |
 | Carer visit logs (WACHT Phase 2) | `carer_visit_logs` | **20 years (WGBO Art. 7:454 BW)** | WGBO statutory | Applies only when HAVEN operates in professional care context |
 | Safeguarding incidents (WACHT Phase 2) | `incidents` | **20 years (WGBO Art. 7:454 BW)** | WGBO statutory | Same as above |
 | Neighbourhood profile | `neighbourhood_profiles` | Until opt-out + 30 days | AVG Art. 6(1)(a) | Opt-out deletes immediately; 30-day buffer for recovery |
@@ -2483,18 +2440,18 @@ SELECT cron.schedule(
 );
 
 -- Voice interaction transcripts: null transcript + soft-delete after 30 days
+-- v1.2.1: deleted_at column now exists on voice_interactions (see schema patch P0-4)
 SELECT cron.schedule(
   'expire-voice-interactions',
   '0 3 * * *',
   $$
-    -- Step 1: null the transcript and flag as redacted (PII erasure — AVG proportionality)
+    -- Step 1: null the transcript (PII erasure — AVG proportionality)
     UPDATE voice_interactions
-    SET   transcript_nl       = NULL,
-          transcript_redacted = TRUE,
-          response_text_nl    = NULL,       -- null response too (may contain PII)
-          updated_at          = now()
+    SET   transcript_nl     = NULL,
+          response_text_nl  = NULL,       -- null response too (may contain PII)
+          updated_at        = now()
     WHERE created_at < now() - interval '30 days'
-      AND (transcript_nl IS NOT NULL OR transcript_redacted = FALSE)
+      AND transcript_nl IS NOT NULL
       AND deleted_at IS NULL;
 
     -- Step 2: soft-delete the row (retains metadata for aggregate analytics)
@@ -2561,9 +2518,7 @@ CREATE TABLE audit_log (
 
 -- No RLS delete policy — audit_log is append-only
 -- Only service role can INSERT
--- Retention: 7 years (legal obligation — WGBO / NEN 7510)
--- EXCLUSION: Automated purging of audit logs via pg_cron is strictly FORBIDDEN.
--- Purging of records older than 7 years requires manual DPO review, sign-off, and process documentation.
+-- Retention: 7 years (legal obligation)
 Audit events are triggered via Supabase database triggers on:
 
 elder_profiles (all operations)
@@ -2649,7 +2604,7 @@ export type BlockType =
   | 'voice_note_player'
   | 'story_prompt'
   | 'alert_banner'
-  | 'transaction_alert'
+  | 'transaction_intercept'
   | 'map_zone'
   | 'wellness_sliders'
   | 'cognitive_question'
@@ -3315,13 +3270,13 @@ The dashboard is role-aware — what a primary family member sees differs from a
 Screen	Route	Access	Description
 Login	/inloggen	Public	Email/password login
 Dashboard Home	/dashboard	Family	Overview: halo, alerts, quick actions
-Alerts	/dashboard/meldingen	Family (can_view_safety)	All scam alerts, medication misses, zone exits
-Alert Detail	/dashboard/meldingen/[id]	Family (can_view_safety)	Full scam event details + pipeline scores
+Alerts	/dashboard/meldingen	Family	All scam alerts, medication misses, zone exits
+Alert Detail	/dashboard/meldingen/[id]	Family	Full scam event details + pipeline scores
 Medications	/dashboard/medicijnen	Family (can_view_medications)	Today's status + history
 Messages	/dashboard/berichten	Family (can_view_messages)	Send/read family messages
 Stories	/dashboard/verhalen	Family (can_view_stories)	Life story archive (read-only)
-Wellness	/dashboard/welzijn	Family (can_view_health)	Wellness trends + check-in history
-Location	/dashboard/locatie	Family (can_view_location_events)	Fuzzed map: safe zone + last known area
+Wellness	/dashboard/welzijn	Family (can_view_wellness)	Wellness trends + check-in history
+Location	/dashboard/locatie	Family (can_view_location)	Fuzzed map: safe zone + last known area
 Buurt Connections	/dashboard/buurt	Family (can_view_stories + consent)	Neighbourhood connections overview
 Weekly Digest	/dashboard/overzicht	Family	Weekly safety + wellbeing summary
 Elder Profile	/dashboard/profiel	Primary family only	Edit elder profile, manage permissions
@@ -3352,7 +3307,7 @@ Alert tone by level:
 Level	Visual	Sound	Action Required
 Amber	Soft orange banner	Gentle chime	No — informational
 Rood	Orange/red card, pulse animation	Alert tone	Yes — review recommended
-Zwart	Full-screen warning overlay with bank deep-link	Urgent tone	Yes — immediate review and verification required
+Zwart	Full-screen intercept overlay	Urgent tone	Yes — immediate review required
 5. Permission-Scoped Views
 The dashboard checks family_relationships permissions on every sensitive page via Next.js middleware:
 
@@ -3369,10 +3324,9 @@ export async function middleware(request: NextRequest) {
 
   const PERMISSION_MAP: Record<string, keyof FamilyRelationship> = {
     '/dashboard/medicijnen': 'can_view_medications',
-    '/dashboard/locatie': 'can_view_location_events',
+    '/dashboard/locatie': 'can_view_location',
     '/dashboard/verhalen': 'can_view_stories',
-    '/dashboard/welzijn': 'can_view_health',
-    '/dashboard/meldingen': 'can_view_safety',
+    '/dashboard/welzijn': 'can_view_wellness',
   };
 
   const requiredPermission = PERMISSION_MAP[request.nextUrl.pathname];
@@ -3984,10 +3938,596 @@ Expo Push	1,000 elders
 
 # Addendum A — RLS Policies (Complete SQL)
 
-**File:** `docs/addenda/addendum-a-rls-canonical.md`
+**File:** `docs/addenda/A-rls-policies.md`
 
-> [!IMPORTANT]
-> The canonical Row-Level Security (RLS) policies have been moved to [addendum-a-rls-canonical.md](file:///Users/macbookprom1pro/.gemini/antigravity/scratch/Haven-build/docs/addenda/addendum-a-rls-canonical.md) to serve as the single source of truth for the RLS implementation. Please reference that file for all database implementation, reviews, and test validations.
+## 🟢 THIS IS THE CANONICAL RLS SOURCE
+
+This file contains the complete, production-ready `CREATE POLICY` SQL for
+every table in HAVEN. It is the single RLS source of truth.
+
+Doc 05 contains illustrative summaries only — do not implement from Doc 05.
+
+Precedence: **Addendum A > Doc 05** for all RLS definitions.
+
+---
+
+## A.1 Principles
+- Every user-data table has RLS **enabled + forced**
+- Service role (Edge Functions) bypasses RLS via `service_role` key — **never expose this to clients**
+- Policies follow the pattern: `elder owns their rows`, `family reads with consent + permission flag`, `carers read with active relationship`
+- `deleted_at IS NULL` is included in all `SELECT` policies (soft-delete enforcement)
+
+## A.2 Helper functions (create first)
+
+```sql
+-- Returns the role claim from the JWT
+CREATE OR REPLACE FUNCTION auth.user_role()
+RETURNS text
+LANGUAGE sql STABLE
+AS $$
+  SELECT COALESCE(
+    current_setting('request.jwt.claims', true)::json->>'role',
+    'anonymous'
+  )
+$$;
+
+-- Returns the elder_id the current user IS (if role = elder)
+CREATE OR REPLACE FUNCTION auth.elder_id()
+RETURNS uuid
+LANGUAGE sql STABLE
+AS $$
+  SELECT CASE
+    WHEN auth.user_role() = 'elder' THEN auth.uid()
+    ELSE NULL
+  END
+$$;
+
+-- Returns true if current user is a consented family member
+-- for the given elder_id with a specific permission flag
+CREATE OR REPLACE FUNCTION auth.family_can(
+  p_elder_id uuid,
+  p_permission text
+)
+RETURNS boolean
+LANGUAGE sql STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM family_relationships fr
+    WHERE fr.family_user_id = auth.uid()
+      AND fr.elder_id = p_elder_id
+      AND fr.elder_consented = true
+      AND fr.is_active = true
+      AND CASE p_permission
+            WHEN 'meds'      THEN fr.can_view_meds
+            WHEN 'messages'  THEN fr.can_view_messages
+            WHEN 'location'  THEN fr.can_view_location
+            WHEN 'alerts'    THEN fr.can_view_alerts
+            WHEN 'stories'   THEN fr.can_view_stories
+            WHEN 'financials' THEN fr.can_view_financials
+            ELSE false
+          END = true
+  )
+$$;
+
+-- Returns true if current user is an active carer for elder_id
+CREATE OR REPLACE FUNCTION auth.carer_can(
+  p_elder_id uuid
+)
+RETURNS boolean
+LANGUAGE sql STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM carer_relationships cr
+    WHERE cr.carer_user_id = auth.uid()
+      AND cr.elder_id = p_elder_id
+      AND cr.is_active = true
+  )
+$$;
+```
+
+---
+
+## A.3 Table-by-table RLS policies
+
+### A.3.1 `profiles`
+
+```sql
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles FORCE ROW LEVEL SECURITY;
+
+-- Users read their own profile
+CREATE POLICY "profiles_select_own"
+ON profiles FOR SELECT
+USING (id = auth.uid());
+
+-- Users update their own profile
+CREATE POLICY "profiles_update_own"
+ON profiles FOR UPDATE
+USING (id = auth.uid())
+WITH CHECK (id = auth.uid());
+
+-- Insert on sign-up (trigger-managed; policy allows service role)
+CREATE POLICY "profiles_insert_self"
+ON profiles FOR INSERT
+WITH CHECK (id = auth.uid());
+```
+
+---
+
+### A.3.2 `elder_profiles`
+
+```sql
+ALTER TABLE elder_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE elder_profiles FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "elder_profiles_select_self"
+ON elder_profiles FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "elder_profiles_select_family"
+ON elder_profiles FOR SELECT
+USING (auth.family_can(elder_id, 'alerts'));
+
+CREATE POLICY "elder_profiles_update_self"
+ON elder_profiles FOR UPDATE
+USING (elder_id = auth.uid())
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "elder_profiles_insert_self"
+ON elder_profiles FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+```
+
+---
+
+### A.3.3 `family_relationships`
+
+```sql
+ALTER TABLE family_relationships ENABLE ROW LEVEL SECURITY;
+ALTER TABLE family_relationships FORCE ROW LEVEL SECURITY;
+
+-- Elder sees all relationships for themselves
+CREATE POLICY "family_relationships_select_elder"
+ON family_relationships FOR SELECT
+USING (elder_id = auth.uid());
+
+-- Family member sees their own relationship rows
+CREATE POLICY "family_relationships_select_family"
+ON family_relationships FOR SELECT
+USING (family_user_id = auth.uid());
+
+-- Only elder can update consent + permissions on their relationships
+CREATE POLICY "family_relationships_update_elder"
+ON family_relationships FOR UPDATE
+USING (elder_id = auth.uid())
+WITH CHECK (elder_id = auth.uid());
+
+-- Family can insert a relationship (pending elder consent)
+CREATE POLICY "family_relationships_insert_family"
+ON family_relationships FOR INSERT
+WITH CHECK (family_user_id = auth.uid() AND elder_consented = false);
+
+-- Only elder can delete (revoke consent)
+CREATE POLICY "family_relationships_delete_elder"
+ON family_relationships FOR DELETE
+USING (elder_id = auth.uid());
+```
+
+---
+
+### A.3.4 `medications`
+
+```sql
+ALTER TABLE medications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medications FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "medications_select_elder"
+ON medications FOR SELECT
+USING (elder_id = auth.uid() AND deleted_at IS NULL);
+
+CREATE POLICY "medications_select_family"
+ON medications FOR SELECT
+USING (
+  auth.family_can(elder_id, 'meds')
+  AND deleted_at IS NULL
+);
+
+CREATE POLICY "medications_insert_elder"
+ON medications FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "medications_update_elder"
+ON medications FOR UPDATE
+USING (elder_id = auth.uid())
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "medications_softdelete_elder"
+ON medications FOR UPDATE
+USING (elder_id = auth.uid());
+```
+
+---
+
+### A.3.5 `medication_reminders`
+
+```sql
+ALTER TABLE medication_reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medication_reminders FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "reminders_select_elder"
+ON medication_reminders FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM medications m
+    WHERE m.id = medication_id
+      AND m.elder_id = auth.uid()
+  )
+);
+
+CREATE POLICY "reminders_select_family"
+ON medication_reminders FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM medications m
+    WHERE m.id = medication_id
+      AND auth.family_can(m.elder_id, 'meds')
+  )
+);
+
+CREATE POLICY "reminders_update_elder"
+ON medication_reminders FOR UPDATE
+USING (
+  EXISTS (
+    SELECT 1 FROM medications m
+    WHERE m.id = medication_id
+      AND m.elder_id = auth.uid()
+  )
+);
+```
+
+---
+
+### A.3.6 `family_messages`
+
+```sql
+ALTER TABLE family_messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE family_messages FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "messages_select_elder"
+ON family_messages FOR SELECT
+USING (elder_id = auth.uid() AND deleted_at IS NULL);
+
+CREATE POLICY "messages_select_family"
+ON family_messages FOR SELECT
+USING (
+  (sender_id = auth.uid() OR recipient_id = auth.uid())
+  AND auth.family_can(elder_id, 'messages')
+  AND deleted_at IS NULL
+);
+
+CREATE POLICY "messages_insert_elder"
+ON family_messages FOR INSERT
+WITH CHECK (elder_id = auth.uid() AND sender_id = auth.uid());
+
+CREATE POLICY "messages_insert_family"
+ON family_messages FOR INSERT
+WITH CHECK (
+  sender_id = auth.uid()
+  AND auth.family_can(elder_id, 'messages')
+);
+
+CREATE POLICY "messages_update_sender"
+ON family_messages FOR UPDATE
+USING (sender_id = auth.uid())
+WITH CHECK (sender_id = auth.uid());
+```
+
+---
+
+### A.3.7 `scam_events`
+
+```sql
+ALTER TABLE scam_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE scam_events FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "scam_events_select_elder"
+ON scam_events FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "scam_events_select_family"
+ON scam_events FOR SELECT
+USING (auth.family_can(elder_id, 'alerts'));
+
+-- Only service role / edge function inserts
+-- (no client-side INSERT policy = blocked by default for non-service)
+```
+
+---
+
+### A.3.8 `location_events`
+
+```sql
+ALTER TABLE location_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE location_events FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "location_events_select_elder"
+ON location_events FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "location_events_select_family"
+ON location_events FOR SELECT
+USING (auth.family_can(elder_id, 'location'));
+
+-- Inserts only via Edge Function (service role)
+```
+
+---
+
+### A.3.9 `life_stories`
+
+```sql
+ALTER TABLE life_stories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE life_stories FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "stories_select_elder"
+ON life_stories FOR SELECT
+USING (elder_id = auth.uid() AND deleted_at IS NULL);
+
+CREATE POLICY "stories_select_family"
+ON life_stories FOR SELECT
+USING (
+  auth.family_can(elder_id, 'stories')
+  AND deleted_at IS NULL
+  AND is_private = false
+);
+
+CREATE POLICY "stories_insert_elder"
+ON life_stories FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "stories_update_elder"
+ON life_stories FOR UPDATE
+USING (elder_id = auth.uid())
+WITH CHECK (elder_id = auth.uid());
+```
+
+---
+
+### A.3.10 `voice_interactions`
+
+```sql
+ALTER TABLE voice_interactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE voice_interactions FORCE ROW LEVEL SECURITY;
+
+-- Elder reads their own interactions
+CREATE POLICY "voice_select_elder"
+ON voice_interactions FOR SELECT
+USING (elder_id = auth.uid());
+
+-- No family access to raw voice interactions (privacy)
+-- Family sees summaries via safety_digests only
+
+-- Inserts only via Edge Function (service role)
+```
+
+---
+
+### A.3.11 `companion_memory`
+
+```sql
+ALTER TABLE companion_memory ENABLE ROW LEVEL SECURITY;
+ALTER TABLE companion_memory FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "companion_memory_select_elder"
+ON companion_memory FOR SELECT
+USING (elder_id = auth.uid());
+
+-- No family access to companion memory (private)
+-- Inserts/updates only via Edge Function (service role)
+```
+
+---
+
+### A.3.12 `notifications`
+
+```sql
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "notifications_select_self"
+ON notifications FOR SELECT
+USING (recipient_id = auth.uid());
+
+CREATE POLICY "notifications_update_self"
+ON notifications FOR UPDATE
+USING (recipient_id = auth.uid())
+WITH CHECK (recipient_id = auth.uid());
+-- (only to mark as read)
+```
+
+---
+
+### A.3.13 `push_tokens`
+
+```sql
+ALTER TABLE push_tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE push_tokens FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "push_tokens_select_own"
+ON push_tokens FOR SELECT
+USING (user_id = auth.uid());
+
+CREATE POLICY "push_tokens_insert_own"
+ON push_tokens FOR INSERT
+WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY "push_tokens_delete_own"
+ON push_tokens FOR DELETE
+USING (user_id = auth.uid());
+```
+
+---
+
+### A.3.14 `wellness_checkins`
+
+```sql
+ALTER TABLE wellness_checkins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wellness_checkins FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "wellness_select_elder"
+ON wellness_checkins FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "wellness_select_family"
+ON wellness_checkins FOR SELECT
+USING (auth.family_can(elder_id, 'alerts'));
+
+CREATE POLICY "wellness_insert_elder"
+ON wellness_checkins FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+```
+
+---
+
+### A.3.15 `cognitive_checkins`
+
+```sql
+ALTER TABLE cognitive_checkins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cognitive_checkins FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "cognitive_select_elder"
+ON cognitive_checkins FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "cognitive_select_family"
+ON cognitive_checkins FOR SELECT
+USING (auth.family_can(elder_id, 'alerts'));
+
+-- Inserts via Edge Function (service role)
+```
+
+---
+
+## A.4 Audit log (append-only, service role only)
+
+```sql
+CREATE TABLE audit_log (
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id       uuid,
+  actor_role     text,
+  action         text NOT NULL,
+  target_table   text NOT NULL,
+  target_id      uuid,
+  metadata       jsonb,
+  created_at     timestamptz DEFAULT now()
+);
+
+-- No client-facing RLS; only service role writes + reads
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_log FORCE ROW LEVEL SECURITY;
+-- No permissive policies = blocked for all JWT users
+-- Service role bypasses RLS by design
+```
+
+-- ============================================================
+-- BUURT RLS POLICIES (v1.0.0 — 2026-06-10)
+-- ============================================================
+
+-- interest_tags: public read (catalogue), service-only write
+ALTER TABLE interest_tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE interest_tags FORCE ROW LEVEL SECURITY;
+CREATE POLICY "interest_tags_read_all"
+ON interest_tags FOR SELECT
+USING (is_active = true);
+
+-- neighbourhood_profiles: elder owns their own; family sees
+-- ONLY if elder has set family_can_see_connections = true
+ALTER TABLE neighbourhood_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE neighbourhood_profiles FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "nbhd_profile_select_self"
+ON neighbourhood_profiles FOR SELECT
+USING (elder_id = auth.uid() AND deleted_at IS NULL);
+
+CREATE POLICY "nbhd_profile_select_family"
+ON neighbourhood_profiles FOR SELECT
+USING (
+  auth.family_can(elder_id, 'stories')    -- reuse stories permission as "kring" proxy
+  AND family_can_see_connections = true
+  AND deleted_at IS NULL
+);
+
+CREATE POLICY "nbhd_profile_insert_self"
+ON neighbourhood_profiles FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "nbhd_profile_update_self"
+ON neighbourhood_profiles FOR UPDATE
+USING  (elder_id = auth.uid())
+WITH CHECK (elder_id = auth.uid());
+
+-- elder_interest_tags: elder owns their own
+ALTER TABLE elder_interest_tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE elder_interest_tags FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "elder_tags_select_self"
+ON elder_interest_tags FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "elder_tags_insert_self"
+ON elder_interest_tags FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "elder_tags_delete_self"
+ON elder_interest_tags FOR DELETE
+USING (elder_id = auth.uid());
+
+-- neighbourhood_connections: elder sees their own connections only
+-- CRITICAL: elder must NOT see the other party's identity until status = 'accepted'
+-- Identity reveal is handled at the application layer (Edge Function)
+-- NOT by exposing the other elder's profile_id in a direct join
+ALTER TABLE neighbourhood_connections ENABLE ROW LEVEL SECURITY;
+ALTER TABLE neighbourhood_connections FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "nbhd_conn_select_participant"
+ON neighbourhood_connections FOR SELECT
+USING (
+  initiator_elder_id = auth.uid()
+  OR recipient_elder_id = auth.uid()
+);
+
+-- Inserts only via Edge Function fn-buurt-match (service role)
+-- Updates only via Edge Function fn-buurt-match (service role)
+
+-- neighbourhood_events: all active HAVEN users can read events
+-- (events are not personal data — they are public local activities)
+ALTER TABLE neighbourhood_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE neighbourhood_events FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "nbhd_events_read_authenticated"
+ON neighbourhood_events FOR SELECT
+USING (is_active = true);
+
+-- event_interests: elder owns their own
+ALTER TABLE event_interests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE event_interests FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "event_interest_select_self"
+ON event_interests FOR SELECT
+USING (elder_id = auth.uid());
+
+CREATE POLICY "event_interest_insert_self"
+ON event_interests FOR INSERT
+WITH CHECK (elder_id = auth.uid());
+
+CREATE POLICY "event_interest_delete_self"
+ON event_interests FOR DELETE
+USING (elder_id = auth.uid());
+```
+
+---
 
 # Addendum B — Database Indexes & Migration Strategy
 
@@ -4006,7 +4546,7 @@ CREATE INDEX idx_elder_profiles_elder_id ON elder_profiles(elder_id);
 
 -- family_relationships
 CREATE INDEX idx_fam_rel_elder_id ON family_relationships(elder_id);
-CREATE INDEX idx_fam_rel_family_member_id ON family_relationships(family_member_id);
+CREATE INDEX idx_fam_rel_family_user_id ON family_relationships(family_user_id);
 CREATE INDEX idx_fam_rel_active ON family_relationships(elder_id, is_active)
   WHERE is_active = true AND elder_consented = true;
 
@@ -4015,8 +4555,8 @@ CREATE INDEX idx_medications_elder_active ON medications(elder_id)
   WHERE deleted_at IS NULL;
 
 -- medication_reminders (cron query: upcoming + overdue)
-CREATE INDEX idx_reminders_scheduled ON medication_reminders(scheduled_time)
-  WHERE status IN ('gepland', 'gesnoozed');
+CREATE INDEX idx_reminders_scheduled ON medication_reminders(scheduled_for)
+  WHERE status IN ('pending', 'overdue');
 CREATE INDEX idx_reminders_medication_id ON medication_reminders(medication_id);
 
 -- family_messages
@@ -4228,24 +4768,24 @@ INSERT INTO profiles (
 INSERT INTO family_relationships (
   id,
   elder_id,
-  family_member_id,
+  family_member_id,                     -- canonical: family_member_id
   relation_label_nl,
   is_primary,
   elder_consented,
   elder_consented_at,
-  is_active,
-  can_view_medications,
+  is_active,                            -- canonical: is_active
+  can_view_medications,                 -- canonical: can_view_medications
   can_view_messages,
-  can_view_location_events,
+  can_view_location_events,             -- canonical: can_view_location_events
+  can_view_alerts,
   can_view_stories,
   can_view_financials,
-  can_view_voice,
-  can_view_health,
-  can_view_safety,
-  notify_on_scam,
-  notify_on_missed_medication,
+  notify_on_scam_amber,
+  notify_on_scam_rood,
+  notify_on_scam_zwart,
+  notify_on_missed_meds,
   notify_on_safe_zone_exit,
-  notify_on_weekly_digest,
+  notify_on_crisis,
   created_at
 ) VALUES (
   gen_random_uuid(),
@@ -4260,14 +4800,14 @@ INSERT INTO family_relationships (
   true,
   true,
   true,
+  true,
   false,   -- financials: off by default even in seed
-  true,    -- voice
-  true,    -- health
-  true,    -- safety
-  true,    -- notify_on_scam
-  true,    -- notify_on_missed_medication
-  true,    -- notify_on_safe_zone_exit
-  true,    -- notify_on_weekly_digest
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
   now()
 ) ON CONFLICT DO NOTHING;
 
@@ -4321,36 +4861,40 @@ INSERT INTO medications (
 INSERT INTO medication_reminders (
   id,
   medication_id,
-  elder_id,
   scheduled_time,                       -- canonical: scheduled_time (not scheduled_for)
   status,                               -- canonical: reminder_status enum
   snooze_count,
+  escalation_level,
+  family_notified,
   created_at
 ) VALUES (
   gen_random_uuid(),
   '10000000-0000-0000-0000-000000000001',
-  '00000000-0000-0000-0000-000000000001',
   (CURRENT_DATE + TIME '08:00')::timestamptz AT TIME ZONE 'Europe/Amsterdam',
   'gepland',                            -- canonical Dutch reminder_status enum value
   0,
+  0,
+  false,
   now()
 ),
 (
   gen_random_uuid(),
   '10000000-0000-0000-0000-000000000001',
-  '00000000-0000-0000-0000-000000000001',
   (CURRENT_DATE + TIME '18:00')::timestamptz AT TIME ZONE 'Europe/Amsterdam',
   'gepland',
   0,
+  0,
+  false,
   now()
 ),
 (
   gen_random_uuid(),
   '10000000-0000-0000-0000-000000000002',
-  '00000000-0000-0000-0000-000000000001',
   (CURRENT_DATE + TIME '08:00')::timestamptz AT TIME ZONE 'Europe/Amsterdam',
   'gepland',
   0,
+  0,
+  false,
   now()
 ) ON CONFLICT DO NOTHING;
 
@@ -4691,30 +5235,16 @@ Medication reminders and daily rhythm events are **local notifications** first (
 // Scheduled at onboarding + updated when reminder schedule changes
 import * as Notifications from 'expo-notifications';
 
-interface LocalReminder {
-  id:              string;
-  medication_name: string;
-  dosage:          string;
-  scheduled_time:  string;   // ✅ canonical (ISO 8601 timestamptz string)
-  status:          ReminderStatus;  // ✅ use enum not bare string
-}
-
-// ReminderStatus enum (matches DB reminder_status_enum):
-type ReminderStatus =
-  | 'gepland'
-  | 'herinnerd'
-  | 'gesnoozed'
-  | 'geëscaleerd'
-  | 'gemist'
-  | 'bevestigd';
-
-async function scheduleLocalReminder(reminder: LocalReminder) {
+async function scheduleLocalReminder(reminder: MedicationReminder) {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Medicijn herinnering',
-      body:  `${reminder.medication_name} — ${reminder.dosage}`,
+      title: 'Medicijntijd 💊',
+      body: `Vergeet uw ${reminder.medication_name_nl} niet.`,
+      data: { reminder_id: reminder.id, screen: 'PILLS' },
     },
-    trigger: { date: new Date(reminder.scheduled_time) },  // ✅ canonical
+    trigger: {
+      date: new Date(reminder.scheduled_for),
+    },
     identifier: reminder.id, // idempotent
   });
 }
@@ -4757,7 +5287,7 @@ life-story-photos/
   {elder_id}/{story_id}/{photo_id}.jpg
 
 profile-photos/
-  {profile_id}/avatar.jpg
+  {user_id}/avatar.jpg
 
 document-vault/
   {elder_id}/{document_id}/{filename}
@@ -6029,8 +6559,8 @@ VALUES
   ('companion_memory',
    'Persistent companion memory',
    false, 0),    -- Phase 2
-  ('psd2_transaction_alerts',
-   'PSD2 transaction anomaly alerts with bank deep-linking',
+  ('psd2_transaction_intercept',
+   'PSD2 transaction anomaly detection',
    false, 0),   -- Phase 2
   ('wacht_professional_portal',
    'Professional carer portal',
@@ -6318,10 +6848,10 @@ Als er geen herinneringen zijn, retourneer een lege array: []
 | Addendum | File | Status |
 |---|---|---|
 | A — RLS Policies (complete SQL) | `docs/addenda/A-rls-policies.md` | ✅ |
-| B — DB Indexes + Migration Strategy | `docs/addenda/B-db-indexes-migrations.md` | ⚠️ FILE PENDING — content embedded in §DB this doc |
-| C — Auth & Onboarding Flows | `docs/addenda/C-auth-flows.md` | ⚠️ FILE PENDING — content embedded in §Auth/Onboarding this doc |
-| D — Offline & Sync Strategy | `docs/addenda/D-offline-sync.md` | ⚠️ FILE PENDING — content embedded in §Offline this doc |
-| E — Supabase Storage Spec | `docs/addenda/E-storage-spec.md` | ⚠️ FILE PENDING — content embedded in §Storage this doc |
+| B — DB Indexes + Migration Strategy | `docs/addenda/B-db-indexes-migrations.md` | ✅ |
+| C — Auth & Onboarding Flows | `docs/addenda/C-auth-flows.md` | ✅ |
+| D — Offline & Sync Strategy | `docs/addenda/D-offline-sync.md` | ✅ |
+| E — Supabase Storage Spec | `docs/addenda/E-storage-spec.md` | ✅ |
 | F — Error/Empty States + Dutch Copy | `docs/addenda/F-copy-and-states.md` | ✅ |
 | G — Local Dev Environment Setup | `docs/addenda/G-local-dev-setup.md` | ✅ |
 | H — Monorepo Structure + Conventions | `docs/addenda/H-monorepo-structure.md` | ✅ |
@@ -6406,81 +6936,3 @@ This is the most privacy-sensitive feature in HAVEN. Every design decision is AV
 - A direct messaging platform (no in-app chat)
 - A social network with profiles, followers, or public presence
 - A tool for family to see who their parent is socialising with (without elder's consent)
-
-# Section §TM — Threat Model
-
-This section documents the security threat model for HAVEN, focusing on risks to dignity, privacy, and compliance in an elder-care context.
-
-## TM.1 STRIDE Threat Matrix
-
-| Threat ID | Category | Description | Target | Mitigation | Residual Risk |
-|---|---|---|---|---|---|
-| **T-01** | Information Disclosure | Authorized family member abuses location/financial read access to spy on or control the elder. | `location_events`, `financial_transactions` | Granular opt-in permissions with clear elder-facing voice review triggers. | Low |
-| **T-02** | Tampering / Elevation | Malicious actor updates medication schedules or wellness check-in records. | `medications`, `medication_reminders` | Strict RLS (only elder can write/update meds; family has read-only access). | Very Low |
-| **T-03** | Information Disclosure | Sentry error logs or analytics logs capture raw Dutch voice transcripts containing health info or BSN. | Cloud Logs, Sentry | Strict structured logging (UUIDs hashed, PII stripped) + Sentry client-side scrubbing rules (Class 4 fields). | Low |
-| **T-04** | Tampering (Injection) | Adversary injects malicious voice commands to bypass local fraud detection prompts. | STT / Whisper intake | Rigid local validation grammar + LLM prompt constraints restricting action triggers. | Medium |
-| **T-05** | Spoofing | Fraudster calls the elder pretending to be a bank helpdesk to initiate a scam call. | Phone / voice intake | SCHILD phone reputation validation + real-time audio analysis alerting family. | Medium |
-
----
-
-# Section §DC — Data Classification Registry
-
-This registry defines the security classification tiers for all data handled by HAVEN, governing logging, scrubbing, and vendor sharing bounds.
-
-## DC.1 Table and Column Classification Tiers
-
-| Tier | Security Class | Encryption & Controls | Tables & Columns |
-|---|---|---|---|
-| **Class 1** | Openbaar (Public) | Standard access; no PII | `interest_tags`, `neighbourhood_events`, UI copy strings |
-| **Class 2** | Persoonlijk (Personal) | TLS 1.3 in transit; RLS enforced | `profiles.phone_nl`, `profiles.locale`, `profiles.timezone`, `family_relationships` |
-| **Class 3** | Gevoelig (Sensitive) | Class 2 + strict audit logging | `location_events.location_fuzzed`, `scam_events`, `financial_transactions` |
-| **Class 4** | Bijzondere (Special/Health) | Class 3 + field-level encryption + 30d transcripts/voice TTL | `medications`, `medication_reminders`, `voice_interactions.transcript_nl`, `companion_memory.content_nl` |
-| **Class 5** | Verboden (Forbidden) | Strictly prohibited to collect | **BSN (Burgerservicenummer)** |
-
-## DC.2 Sentry & Logging Scrub Rules
-To prevent accidental exfiltration of Class 4 health data to logging/monitoring platforms, the following client-side scrub rules are enforced in `sentry.config.js`:
-- Hashing of all UUIDs (e.g., `elder_id_hash` = `sha256(elder_id)`).
-- Automatic regex scrubbing of BSN-like 9-digit patterns (`^[0-9]{9}$`).
-- Hard deny-list of request body keys: `transcript_nl`, `content_nl`, `dosage`, `zorgverzekering_nummer`.
-
----
-
-# Section §RT — RLS Test Harness
-
-Row-Level Security is a critical security boundary. RLS regressions are caught automatically in CI/CD using **pgTAP** tests.
-
-## RT.1 pgTAP Automated Test Execution
-pgTAP test scripts are stored under `supabase/tests/rls/`. The tests run against a localized Supabase container in the GitHub Actions workflow.
-
-```bash
-# Run the pgTAP RLS test harness locally
-supabase test db supabase/tests/rls/voice_interactions.sql
-```
-
-## RT.2 CI/CD Verification Gate
-Any PR modifying database tables or migration files must pass the pgTAP test suite. A failed assertion blocks PR merge:
-- Assert that anonymous users cannot read any tables.
-- Assert that family members cannot select raw `voice_interactions` transcripts.
-- Assert that only the elder profile owner can access their own `companion_memory`.
-
----
-
-# Section §VF — Voice Pipeline Failure-Mode Design
-
-When the voice companion loses connectivity or API timeouts occur, HAVEN must fail gracefully to protect elder dignity.
-
-## VF.1 Timeout Thresholds
-To prevent long, confusing silences for the elder, the voice pipeline enforces the following strict timeouts:
-- **Speech-to-Text (Whisper):** 3.0 seconds max.
-- **Large Language Model (GPT):** 4.0 seconds max.
-- **Text-to-Speech (ElevenLabs):** 3.0 seconds max.
-
-## VF.2 Cached Fallback Audio Assets (nl-NL)
-The HAVEN client application pre-caches audio clips on the local device storage. If a pipeline step exceeds the timeout threshold or network fails, the app plays one of these local Dutch voice clips (using polite "u" form):
-
-| Failure Mode | Trigger | Local Voice Feedback Copy (nl-NL) | Action |
-|---|---|---|---|
-| **STT Timeout / Network Failure** | Whisper API takes > 3s or fails | *"Sorry, ik kon u niet goed horen. Kunt u dat herhalen?"* | Restart voice intake |
-| **LLM / Processing Error** | LLM fails or returns error | *"Er is een kleine storing in mijn systeem. Ik probeer het over een moment opnieuw."* | Retain intent state |
-| **TTS Timeout / Error** | ElevenLabs takes > 3s or fails | *(Plays a gentle chime, then falls back to local TTS engine)* | Use default OS speech engine |
-

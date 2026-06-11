@@ -8,11 +8,18 @@
     "test:edge": "node tests/edge/scam-engine.test.mjs && node tests/edge/screen-schema.test.mjs && node tests/edge/hardening-static.test.mjs",
     "test:rls": "node tests/rls/rls-policy-audit.mjs && node tests/rls/storage-policy-audit.mjs",
     "test:e2e": "node tests/e2e/iphone-suite-smoke.test.mjs",
+    "test:integration:live": "node tests/integration/live-rls.test.mjs",
     "test": "npm run validate:suite && npm run test:edge && npm run test:rls && npm run test:e2e",
     "preview:iphone": "python3 -m http.server 4173 --directory apps/iphone-suite",
-    "preview:family": "python3 -m http.server 4174 --directory apps/family-dashboard"
+    "preview:family": "python3 -m http.server 4174 --directory apps/family-dashboard",
+    "mock:ai": "node scripts/mock-ai-server.mjs",
+    "test:e2e:browser": "playwright test -c playwright.iphone.config.ts",
+    "test:supabase:local": "./scripts/check-local-supabase.sh && HAVEN_LIVE_RLS=1 npm run test:integration:live"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "devDependencies": {
+    "@playwright/test": "latest"
+  }
 }

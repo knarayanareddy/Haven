@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     if (action === "request_transport") {
       if (!body.appointment_id || !body.pickup_label || !body.destination_label || !body.pickup_time) throw new Error('appointment_id, pickup_label, destination_label and pickup_time are required');
       if (userId !== body.elder_id) await assertElderOrFamilyCan(userId, String(body.elder_id), 'medications');
-      const { data, error } = await admin().from("transport_requests").insert({ elder_id: body.elder_id, appointment_id: body.appointment_id, requested_by_id: userId, pickup_label: body.pickup_label, destination_label: body.destination_label, pickup_time: body.pickup_time, status: "requested" }).select().single();
+      const { data, error } = await userClient(req).from("transport_requests").insert({ elder_id: body.elder_id, appointment_id: body.appointment_id, requested_by_id: userId, pickup_label: body.pickup_label, destination_label: body.destination_label, pickup_time: body.pickup_time, status: "requested" }).select().single();
       if (error) throw error;
       const { data: family } = await admin().from("family_relationships").select("family_member_id").eq("elder_id", body.elder_id).eq("elder_consented", true).eq("is_active", true);
       await Promise.all((family ?? []).map((f) => dispatchNotification({ recipient_id: f.family_member_id, elder_id: body.elder_id, notification_type: "systeem", title_nl: "Vervoer gevraagd", title_en: "Transport requested", body_nl: "Er is hulp met vervoer gevraagd voor een afspraak.", body_en: "Help with transport was requested for an appointment.", data: { transport_request_id: data.id } })));

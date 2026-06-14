@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
         if (session.status !== "created" && session.status !== "ringing" && session.status !== "joined") throw new Error(`Session is ${session.status}, cannot join`);
         await assertElderOrFamilyCan(userId, String(session.elder_id), "messages");
 
-        const token = await sha256(`${session.provider_room_id}:${userId}:${Date.now()}`);
+        const token = crypto.randomUUID();
         const expiresIn = 300; // 5 minutes
         await db.from("video_call_sessions").update({ status: "joined", started_at: new Date().toISOString() }).eq("id", session.id);
         return { body: { video_call_session_id: session.id, provider: session.provider, provider_room_id: session.provider_room_id, token, expires_in_seconds: expiresIn } };

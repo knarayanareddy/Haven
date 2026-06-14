@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
   const started = Date.now();
   try {
-    rateLimit(req, "fn-voice-pipeline");
+    await rateLimit(req, "fn-voice-pipeline");
     const body = await readJsonBody(req) as Record<string, unknown>;
     validateBody(body, { elder_id: "uuid", screen_id: "string" }, { allowUnknown: true });
     // P1-3: cap base64 audio size

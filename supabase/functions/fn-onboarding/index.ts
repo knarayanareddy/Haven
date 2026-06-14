@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
   const started = Date.now();
   try {
     // P0-4: rate limit — user creation is sensitive
-    rateLimit(req, "fn-onboarding");
+    await rateLimit(req, "fn-onboarding");
     // P1-2 FIX: requireInternalAccess now uses independent HAVEN_INTERNAL_KEY
     // (no longer falls back to SUPABASE_SERVICE_ROLE_KEY)
     requireInternalAccess(req);

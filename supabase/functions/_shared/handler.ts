@@ -21,7 +21,7 @@ export function havenHandler(
     const started = Date.now();
     try {
       // P0-4: rate limit before any processing
-      rateLimit(req, fnName);
+      await rateLimit(req, fnName);
       const body = await readJsonBody(req) as Record<string, unknown>;
       const result = await handler(req, body);
       await recordMetric(fnName, started, "success");

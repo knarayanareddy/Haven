@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
     const body = await readJsonBody(req) as Record<string, unknown>;
     if (body.action === "create_token") {
       // P0-4: rate limit token creation
-      rateLimit(req, "fn-emergency-profile-create");
+      await rateLimit(req, "fn-emergency-profile-create");
       validateBody(body, { action: 'string', elder_id: 'uuid', label: 'string' }, { allowUnknown: true });
       const userId = await getJwtUserId(req);
       assertSelf(userId, String(body.elder_id), 'emergency profile token');
@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
     }
 
     // P1-7 FIX: Rate-limit the public retrieval endpoint to prevent enumeration
-    rateLimit(req, "fn-emergency-profile-lookup");
+    await rateLimit(req, "fn-emergency-profile-lookup");
     validateBody(body, { emergency_token: 'string' }, { allowUnknown: true });
     const { data, error } = await publicClient().rpc("get_emergency_profile", { p_token: body.emergency_token });
     if (error) throw error;

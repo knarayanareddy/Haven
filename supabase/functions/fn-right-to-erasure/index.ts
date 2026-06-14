@@ -103,10 +103,12 @@ Deno.serve(async (req) => {
   const started = Date.now();
   try {
     // P0-4 FIX: rate limit — erasure is a sensitive, heavy operation
-    rateLimit(req, "fn-right-to-erasure");
+    await rateLimit(req, "fn-right-to-erasure");
     const body = await readJsonBody(req) as Record<string, unknown>;
     validateBody(body, { elder_id: 'uuid' }, { allowUnknown: true });
     const userId = await getJwtUserId(req);
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId)) throw new Error('Invalid user ID');
     assertSelf(userId, String(body.elder_id), 'elder deletion request');
     assertActorMatches(userId, typeof body.requested_by_id === 'string' ? body.requested_by_id : undefined, 'requested_by_id');
 
@@ -162,7 +164,7 @@ Deno.serve(async (req) => {
       if (recipError) throw recipError;
     }
 
-    // P1-8 FIX: Use parameterized query or safe UUID construction
+    // P1-8 FIX: Parameterized .or() via safe template literal with UUID validation
     const { error: connectionError } = await db.from("neighbourhood_connections")
       .update({ status: "ended", ended_by: userId, ended_reason_internal: "elder_erasure_request" })
       .or(`initiator_elder_id.eq.${userId},recipient_elder_id.eq.${userId}`);

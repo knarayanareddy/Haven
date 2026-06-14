@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
   const started = Date.now();
   try {
     // P0-4 FIX: rate limit scam coaching
-    rateLimit(req, "fn-scam-coaching");
+    await rateLimit(req, "fn-scam-coaching");
     const body = await readJsonBody(req) as Record<string, unknown>;
     validateBody(body, {
       elder_id: "uuid",

@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
     validateBody(body, { elder_id: 'uuid', url: 'string' }, { allowUnknown: true });
     const userId = await getJwtUserId(req);
     assertSelf(userId, String(body.elder_id), 'browser shield event');
-    const db = admin();
+    const db = userClient(req);
     const domain = domainFromUrl(String(body.url));
     const content = `${body.url} ${body.page_title ?? ''} ${body.visible_text ?? ''}`;
     const scored = scoreScam(content);

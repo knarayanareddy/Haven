@@ -845,6 +845,71 @@ function renderMore(ctx: ScreenContext) {
   );
 }
 
+// vNext: daily check-in card — rendered when todaysCheckin exists in context.
+// checkinMorning | checkinMidday | checkinEvening periods are supported.
+function renderCheckinCard(ctx: ScreenContext, period: 'morning' | 'midday' | 'evening' = 'morning') {
+  const { locale } = ctx;
+  const periodKey = period === 'morning' ? 'checkinMorning' : period === 'midday' ? 'checkinMidday' : 'checkinEvening';
+  const periodLabel = period === 'morning'
+    ? (locale === 'nl-NL' ? 'Ochtendcheck-in' : 'Morning check-in')
+    : period === 'midday'
+    ? (locale === 'nl-NL' ? 'Middagcheck-in' : 'Midday check-in')
+    : (locale === 'nl-NL' ? 'Avondcheck-in' : 'Evening check-in');
+  return (
+    <View style={{ borderRadius: 22, padding: 22, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.mist, gap: 12 }}>
+      <Text style={{ fontSize: 22, fontWeight: '900', color: colors.ink }}>{periodLabel}</Text>
+      <Text style={{ fontSize: 18, color: colors.graphite, fontWeight: '700' }}>
+        {locale === 'nl-NL' ? 'hoe voelt u zich vandaag?' : 'how are you feeling today?'}
+      </Text>
+      <View style={{ flexDirection: 'row', gap: 12, justifyContent: 'center', marginTop: 8 }}>
+        {actionButton('😊', 'safe',      `CHECKIN:${periodKey}:5`, ctx.onPrimaryAction, locale === 'nl-NL' ? 'Goed' : 'Good')}
+        {actionButton('😐', 'secondary', `CHECKIN:${periodKey}:3`, ctx.onPrimaryAction, locale === 'nl-NL' ? 'Oké' : 'Okay')}
+        {actionButton('😔', 'ghost',     `CHECKIN:${periodKey}:1`, ctx.onPrimaryAction, locale === 'nl-NL' ? 'Niet zo goed' : 'Not so good')}
+      </View>
+    </View>
+  );
+}
+
+// vNext: medication confirmation card — rendered when pending_confirmation is medication_taken.
+function renderMedicationConfirmCard(ctx: ScreenContext, medicationId: string) {
+  const { locale } = ctx;
+  // status: medication_taken — bevestig medicijn / confirm medication
+  return (
+    <View style={{ borderRadius: 22, padding: 22, backgroundColor: colors.amberPale, borderWidth: 1, borderColor: colors.mist, gap: 12 }}>
+      <Text style={{ fontSize: 22, fontWeight: '900', color: colors.ink }}>
+        {locale === 'nl-NL' ? 'Bevestig medicijn' : 'Confirm medication'}
+      </Text>
+      <Text style={{ fontSize: 16, color: colors.graphite, fontWeight: '700' }}>
+        {locale === 'nl-NL' ? 'Heeft u uw medicijn ingenomen?' : 'Have you taken your medication?'}
+      </Text>
+      <View style={{ gap: 8, marginTop: 8 }}>
+        {actionButton(locale === 'nl-NL' ? 'Ja, het gaat goed' : 'Yes, that is fine', 'safe', `CONFIRM_MED:${medicationId}`, ctx.onPrimaryAction, locale === 'nl-NL' ? 'Ja, ingenomen' : 'Yes, taken')}
+        {actionButton(locale === 'nl-NL' ? 'Nee, liever niet' : 'No, not yet', 'ghost', `DENY_MED:${medicationId}`, ctx.onPrimaryAction, locale === 'nl-NL' ? 'Nog niet' : 'Not yet')}
+      </View>
+    </View>
+  );
+}
+
+// vNext: fall response card — rendered when pending_confirmation is fall_response.
+function renderFallResponseCard(ctx: ScreenContext) {
+  const { locale } = ctx;
+  // fall_response: are you ok / gaat het goed met u
+  return (
+    <View style={{ borderRadius: 22, padding: 22, backgroundColor: colors.rosePale, borderWidth: 1, borderColor: colors.mist, gap: 12 }}>
+      <Text style={{ fontSize: 26, fontWeight: '900', color: colors.ink }}>
+        {locale === 'nl-NL' ? 'Gaat het goed met u?' : 'Are you ok?'}
+      </Text>
+      <Text style={{ fontSize: 16, color: colors.graphite, fontWeight: '700' }}>
+        {locale === 'nl-NL' ? 'We hebben een val gedetecteerd. Is alles in orde?' : 'We detected a possible fall. Are you alright?'}
+      </Text>
+      <View style={{ gap: 8, marginTop: 8 }}>
+        {actionButton(locale === 'nl-NL' ? 'Ja, ik ben oke' : 'Yes, I am fine', 'safe',   'FALL_OK:',   ctx.onPrimaryAction, locale === 'nl-NL' ? 'Alles goed' : 'All fine')}
+        {actionButton(locale === 'nl-NL' ? 'Ik heb hulp nodig' : 'I need help', 'danger', 'FALL_HELP:', ctx.onPrimaryAction, locale === 'nl-NL' ? 'Hulp nodig' : 'Need help')}
+      </View>
+    </View>
+  );
+}
+
 function renderFor(id: ScreenId, ctx: ScreenContext): React.ReactNode {
   const map: Record<ScreenId, (ctx: ScreenContext) => React.ReactNode> = {
     HOME: renderHome,
@@ -874,4 +939,7 @@ export const __test__ = {
   statusBadge,
   detectCrisisPhrase,
   renderFor,
+  renderCheckinCard,
+  renderMedicationConfirmCard,
+  renderFallResponseCard,
 };

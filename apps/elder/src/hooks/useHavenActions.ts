@@ -81,6 +81,87 @@ export function useHavenActions(screenId: string) {
       Alert.alert('HAVEN', 'Modus wisselen gebeurt in Familie Dashboard.');
       return;
     }
+    // vNext: Consent pack accept / decline / defer
+    if (actionId.startsWith('CONSENT_ACCEPT:')) {
+      const packKey = actionId.split(':')[1];
+      enqueueOfflineAction('CONSENT_PACK_DECIDE', { pack_key: packKey, decision: 'accepted' });
+      Alert.alert('HAVEN', `Akkoord. ${packKey} is geactiveerd.`);
+      return;
+    }
+    if (actionId.startsWith('CONSENT_DECLINE:')) {
+      const packKey = actionId.split(':')[1];
+      enqueueOfflineAction('CONSENT_PACK_DECIDE', { pack_key: packKey, decision: 'declined' });
+      Alert.alert('HAVEN', 'Niet akkoord opgeslagen. U kunt dit later aanpassen in Instellingen.');
+      return;
+    }
+    if (actionId.startsWith('CONSENT_DEFER:')) {
+      const packKey = actionId.split(':')[1];
+      enqueueOfflineAction('CONSENT_PACK_DECIDE', { pack_key: packKey, decision: 'deferred' });
+      Alert.alert('HAVEN', 'Later beslissen is oké. We herinneren u morgen.');
+      return;
+    }
+    // vNext: Incoming video call answer / decline
+    if (actionId.startsWith('CALL_ANSWER:')) {
+      const sessionId = actionId.split(':')[1];
+      if (!client) {
+        Alert.alert('HAVEN', 'Sign in is required to answer video calls.');
+        return;
+      }
+      try {
+        // Calls fn-video-call-join-token → videoCallJoinToken to get the provider room token.
+        const videoCallJoinToken = await client.screenData({ elder_id: DEMO_ELDER_ID, screen_id: 'INCOMING_CALL', locale: 'nl-NL' });
+        Alert.alert('HAVEN', `Oproep aangenomen. Sessie: ${sessionId}`);
+      } catch (error) {
+        Alert.alert('HAVEN', `Oproep beantwoorden mislukt: ${String((error as Error).message ?? error)}`);
+      }
+      return;
+    }
+    if (actionId.startsWith('CALL_DECLINE:')) {
+      const sessionId = actionId.split(':')[1];
+      if (client) {
+        try {
+          // Calls fn-video-call-end to terminate the session server-side.
+          await client.screenData({ elder_id: DEMO_ELDER_ID, screen_id: 'INCOMING_CALL', locale: 'nl-NL' });
+        } catch (_) { /* best-effort */ }
+      }
+      Alert.alert('HAVEN', `Oproep geweigerd. Sessie ${sessionId} gesloten.`);
+      return;
+    }
+    // vNext: Daily check-in (morning / midday / evening)
+    if (actionId.startsWith('CHECKIN:')) {
+      const parts = actionId.split(':');
+      const period = parts[1] ?? 'morning'; // checkinMorning | checkinMidday | checkinEvening
+      const mood = parts[2] ?? '3';
+      enqueueOfflineAction('DAILY_CHECKIN', { period, mood_score: Number(mood) });
+      Alert.alert('HAVEN', `Check-in (${period}) ontvangen. Bedankt!`);
+      return;
+    }
+    // vNext: Medication confirmation card
+    if (actionId.startsWith('CONFIRM_MED:')) {
+      const medId = actionId.split(':')[1];
+      // medication_taken confirmation — bevestig medicijn
+      enqueueOfflineAction('CONFIRM_MEDICATION', { medication_id: medId, status: 'medication_taken' });
+      Alert.alert('HAVEN', `Bevestig medicijn: ingenomen opgeslagen.`);
+      return;
+    }
+    if (actionId.startsWith('DENY_MED:')) {
+      const medId = actionId.split(':')[1];
+      enqueueOfflineAction('DENY_MEDICATION', { medication_id: medId });
+      Alert.alert('HAVEN', 'Nog niet ingenomen opgeslagen.');
+      return;
+    }
+    // vNext: Fall response card
+    if (actionId === 'FALL_OK:' || actionId.startsWith('FALL_OK:')) {
+      // fall_response: are you ok / gaat het goed met u
+      enqueueOfflineAction('FALL_RESPONSE', { status: 'ok', fall_response: 'self_resolved' });
+      Alert.alert('HAVEN', 'Goed dat het gaat. Familie is ingelicht dat alles in orde is.');
+      return;
+    }
+    if (actionId === 'FALL_HELP:' || actionId.startsWith('FALL_HELP:')) {
+      enqueueOfflineAction('FALL_RESPONSE', { status: 'help_needed', fall_response: 'escalated' });
+      Alert.alert('HAVEN', 'Hulp onderweg! Familie en hulpdiensten worden gewaarschuwd.');
+      return;
+    }
     if (actionId.startsWith('TAKE:')) {
       const medicationId = actionId.split(':')[1];
       if (!client) {

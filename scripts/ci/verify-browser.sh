@@ -15,6 +15,7 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$DIR"
+export PATH="$DIR/bin:$PATH"
 corepack pnpm install --frozen-lockfile
 node tests/e2e/iphone-suite-smoke.test.mjs
 node --test tests/e2e/vnext-flows.test.mjs

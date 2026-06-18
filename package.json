@@ -35,6 +35,18 @@
     "apps/*",
     "packages/*"
   ],
+  "pnpm": {
+    "overrides": {
+      "@xmldom/xmldom": ">=0.8.13",
+      "tar": ">=7.5.11",
+      "semver": ">=7.5.2"
+    },
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-2p57-rm9w-gvfp"
+      ]
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "1.60.0",

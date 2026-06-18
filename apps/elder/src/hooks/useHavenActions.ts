@@ -87,6 +87,7 @@ export function useHavenActions(screenId: string) {
     if (actionId.startsWith('CONSENT_ACCEPT:')) {
       const packKey = actionId.split(':')[1];
       enqueueOfflineAction('CONSENT_PACK_DECIDE', { pack_key: packKey, decision: 'accepted' });
+      // Fallback description: Akkoord / Accepted
       Alert.alert('HAVEN', t('actions.consent_accept.alert', { packKey }));
       return;
     }
@@ -99,6 +100,7 @@ export function useHavenActions(screenId: string) {
     if (actionId.startsWith('CONSENT_DEFER:')) {
       const packKey = actionId.split(':')[1];
       enqueueOfflineAction('CONSENT_PACK_DECIDE', { pack_key: packKey, decision: 'deferred' });
+      // Fallback description: Later / oké
       Alert.alert('HAVEN', t('actions.consent_defer.alert'));
       return;
     }
@@ -120,7 +122,14 @@ export function useHavenActions(screenId: string) {
       const sessionId = actionId.split(':')[1];
       if (client) {
         try {
-          await client.screenData({ elder_id: DEMO_ELDER_ID, screen_id: 'INCOMING_CALL', locale: 'nl-NL' });
+          await fetch(`${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/fn-video-call-end`, {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${session?.access_token}`,
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({ session_id: sessionId }),
+          });
         } catch (_) {}
       }
       Alert.alert('HAVEN', t('actions.call_declined.alert', { sessionId }));

@@ -48,19 +48,18 @@ test('HAVEN Cross-Platform Android Adaptations Suite (Minimal Scope Complete Acc
 
     // Doze DoS OEM Battery Execution Simulation
     async runDozeFallTelemetryScenario(minutesScreenOff) {
-      const self = this;
       if (minutesScreenOff > 5 && !this.batteryOptimizationsIgnored && !this.foregroundServiceActive) {
         this.dozeModeActive = true;
       }
 
       // Simulate fall sensor POST telemetry over time
       for (let min = 1; min <= minutesScreenOff; min++) {
-        if (min === 6 && self.dozeModeActive) {
+        if (min === 6 && this.dozeModeActive) {
           throw new Error('504 Gateway Timeout / Socket exception: Aggressive Doze DoS completely killed telemetry heartbeat');
         }
-        self.telemetryEvents.push({ minute: min, status: 'fall_sensor_active' });
+        this.telemetryEvents.push({ minute: min, status: 'fall_sensor_active' });
       }
-      return self.telemetryEvents.length;
+      return this.telemetryEvents.length;
     }
 
     // Android BiometricPrompt Branded Verification Simulation

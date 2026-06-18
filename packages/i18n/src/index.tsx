@@ -75,3 +75,6 @@ export function translate(key: keyof typeof enGB, locale: Locale = 'nl-NL', para
   }
   return template;
 }
+
+export { copy } from './copy';
+

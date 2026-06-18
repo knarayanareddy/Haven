@@ -11,7 +11,7 @@
       "@haven/contracts/*": ["packages/contracts/*"],
       "@haven/database": ["packages/database/src/types.ts"],
       "@haven/database/*": ["packages/database/*"],
-      "@haven/i18n": ["packages/i18n/src/copy.ts"],
+      "@haven/i18n": ["packages/i18n/src/index.tsx"],
       "@haven/i18n/*": ["packages/i18n/*"],
       "@haven/scam-engine": ["packages/scam-engine/src/rules.ts"],
       "@haven/scam-engine/*": ["packages/scam-engine/*"],

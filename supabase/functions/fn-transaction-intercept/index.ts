@@ -7,14 +7,13 @@ import { asyncWrapper } from "../_shared/async_wrapper.ts";
 Deno.serve(asyncWrapper("fn-transaction-intercept", async (req: Request) => {
   // COMPENSATING CONTROL — full proxy architecture with hold-and-release is tracked as separate milestone
   const started = Date.now();
-  let raw = "";
   let body: Record<string, unknown> = {};
   let elderId = "";
   let txId: string | null = null;
   const db = admin();
 
   try {
-    raw = await readRequestBody(req);
+    const raw = await readRequestBody(req);
     body = JSON.parse(raw) as Record<string, unknown>;
     elderId = body.elder_id ? String(body.elder_id) : "";
 

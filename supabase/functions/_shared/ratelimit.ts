@@ -46,12 +46,13 @@ async function resolveCallerId(req: Request): Promise<string> {
   // FIX B1: Do not use device header unless it matches JWT subject.
   // If headers don't match JWT -> use JWT sub as key only.
   // If no JWT -> use IP only (never use arbitrary header value).
-  let callerId = "";
+  let callerId;
   if (jwtSub) {
     callerId = (deviceHint === jwtSub) ? deviceHint : jwtSub;
   } else {
     callerId = ip;
   }
+
 
   // FIX B2: If caller ID resolves to "unknown" (no JWT, no valid IP, no header):
   // Return HTTP 400 Bad Request immediately. Do not apply rate limit bucket to "unknown".

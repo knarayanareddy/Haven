@@ -40,9 +40,8 @@ test('Critical Care Incidents Regulatory Escalation Webhook Suite (Finding R9 Ac
 
       this.webhook_payloads_intercepted.push(payload);
 
-      // Simulate Webhook Execution
-      let outcome = 'failure';
-      let httpStatus = 500;
+      let outcome;
+      let httpStatus;
 
       try {
         if (simulateWebhookFailure === true) {
@@ -52,6 +51,7 @@ test('Critical Care Incidents Regulatory Escalation Webhook Suite (Finding R9 Ac
         httpStatus = 200;
       } catch (err) {
         outcome = 'failure';
+        httpStatus = 500;
         // Closure Test 2: Webhook failure -> admin alert triggered; incident NOT silently dropped
         await this.dispatchNotification({
           recipient_id: 'admin_user_1',

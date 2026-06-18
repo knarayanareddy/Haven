@@ -13,19 +13,20 @@ export class OfflineSyncMachine {
     let action = claimNextOfflineAction();
 
     while (action !== null) {
+      const currentAction = action;
       try {
         // Enforce idempotency_key usage on backend server submissions
-        const payloadWithIdem = { ...(action.payload as any), idempotency_key: action.idempotencyKey };
+        const payloadWithIdem = { ...(currentAction.payload as any), idempotency_key: currentAction.idempotencyKey };
         await resilientCall(async () => {
-          if (action!.type === 'CONFIRM_MEDICATION') return client.voice({ ...payloadWithIdem, transcript_text: 'I took it' });
-          if (action!.type === 'SEND_MESSAGE') return client.sendFamilyMessage(payloadWithIdem);
-          if (action!.type === 'WELLNESS_CHECKIN') return client.healthLog(payloadWithIdem);
+          if (currentAction.type === 'CONFIRM_MEDICATION') return client.voice({ ...payloadWithIdem, transcript_text: 'I took it' });
+          if (currentAction.type === 'SEND_MESSAGE') return client.sendFamilyMessage(payloadWithIdem);
+          if (currentAction.type === 'WELLNESS_CHECKIN') return client.healthLog(payloadWithIdem);
           return client.screenData(payloadWithIdem);
         });
-        completeOfflineAction(action.idempotencyKey);
+        completeOfflineAction(currentAction.idempotencyKey);
         action = claimNextOfflineAction();
       } catch (_) {
-        markOfflineActionFailed(action.idempotencyKey);
+        markOfflineActionFailed(currentAction.idempotencyKey);
         this.state = 'failed';
         return;
       }

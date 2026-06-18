@@ -12,12 +12,14 @@ declare module 'react-native' {
   export const Animated: any;
   export const Easing: any;
   export const Modal: any;
+  export const StatusBar: any;
 }
 
 declare module 'expo-calendar';
 
 declare module 'react-native-safe-area-context' {
   export const SafeAreaProvider: any;
+  export const SafeAreaView: any;
 }
 
 declare module '@react-navigation/native' {
@@ -46,8 +48,10 @@ declare module '@supabase/supabase-js' {
 }
 
 declare module 'expo-haptics' {
-  export const ImpactFeedbackStyle: { Medium: string };
+  export const ImpactFeedbackStyle: { Medium: string; Light: string; Heavy: string };
   export function impactAsync(style: unknown): Promise<void>;
+  export const NotificationFeedbackType: { Success: string; Warning: string; Error: string };
+  export function notificationAsync(type: unknown): Promise<void>;
 }
 
 declare module 'expo-notifications' {

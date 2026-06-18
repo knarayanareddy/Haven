@@ -2,6 +2,6 @@
   "name": "@haven/i18n",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/index.tsx",
   "private": true
 }

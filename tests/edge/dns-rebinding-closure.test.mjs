@@ -13,25 +13,19 @@ test('Finding #3 DNS Rebinding TOCTOU SSRF Suite (Minimal Scope Compensating Con
       this.__mockDns = mockDns;
     }
 
-    // Dynamic Database Client Execution Simulation
     from(table) {
-      const self = this;
       return {
-        select() {
-          return {
-            eq(col, val) {
-              return {
-                maybeSingle() {
-                  if (table === 'integration_connections') return { data: self.integration_connections.get(val) };
-                  if (table === 'profiles') return { data: [{ id: 'admin-1' }] };
-                  return { data: null };
-                }
-              };
+        select: () => ({
+          eq: (col, val) => ({
+            maybeSingle: () => {
+              if (table === 'integration_connections') return { data: this.integration_connections.get(val) };
+              if (table === 'profiles') return { data: [{ id: 'admin-1' }] };
+              return { data: null };
             }
-          };
-        },
-        insert(record) {
-          self.audit_log.push(record);
+          })
+        }),
+        insert: (record) => {
+          this.audit_log.push(record);
           return { catch() {} };
         }
       };

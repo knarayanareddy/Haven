@@ -19,6 +19,7 @@ export interface ElderProfile {
   postCode4?: string;
   safeZoneLabel?: string;
   highContrast?: boolean;
+  fontSizeMultiplier?: number;
 }
 
 export interface FamilyMember {
@@ -129,7 +130,7 @@ export function isQuietHours(now: Date, start?: string, end?: string) {
 }
 
 export function screenTitleFor(id: ScreenId, locale: Locale) {
-  const map: Record<ScreenId, keyof typeof TR_NL> = {
+  const map: Record<ScreenId, string> = {
     HOME: 'today',
     TODAY: 'today',
     PILLS: 'pills',

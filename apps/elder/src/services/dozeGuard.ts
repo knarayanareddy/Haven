@@ -24,7 +24,7 @@ export async function initializeAndroidDozeGuard() {
           try {
             // Add battery optimization whitelist request on first launch: IntentAction IGNORE_BATTERY_OPTIMIZATIONS prompt
             await IntentLauncher.startActivityAsync(
-              IntentLauncher.ActivityAction.IGNORE_BATTERY_OPTIMIZATIONS,
+              IntentLauncher.ActivityAction.IGNORE_BATTERY_OPTIMIZATION_SETTINGS,
               { data: "package:nl.haven.elder" }
             );
           } catch {

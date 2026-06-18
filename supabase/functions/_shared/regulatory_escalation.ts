@@ -43,7 +43,7 @@ export async function executeRegulatoryEscalation(
 
   // Send signed JSON webhook to configurable endpoint in integration_connections
   const escalationTask = async () => {
-    let webhookOutcome: "success" | "failure" = "failure";
+    let webhookOutcome: "success" | "failure";
     let httpStatus: number | null = null;
     let endpointUrl = "https://igj.haven.internal/webhook/v1/escalate";
     let vendorSecret = "secret_hmac_default";

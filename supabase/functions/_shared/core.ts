@@ -215,8 +215,8 @@ export async function assertSafeLocale(attemptedLocale: unknown, actorId = '0000
 }
 
 export function sanitizeTemplateContent(title: string, body: string): { title: string; body: string } {
-  let cleanTitle = title.replace(/\{\{.*?\}\}|%\{.*?\}|<.*?>/g, '').trim();
-  let cleanBody = body.replace(/\{\{.*?\}\}|%\{.*?\}|<.*?>/g, '').trim();
+  const cleanTitle = title.replace(/\{\{.*?\}\}|%\{.*?\}|<.*?>/g, '').trim();
+  const cleanBody = body.replace(/\{\{.*?\}\}|%\{.*?\}|<.*?>/g, '').trim();
 
   const titleInvalid = cleanTitle.length > 65 || cleanTitle !== title;
   const bodyInvalid = cleanBody.length > 240 || cleanBody !== body;

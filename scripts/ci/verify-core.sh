@@ -2,7 +2,9 @@
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$DIR"
-export PATH="$DIR/bin:$PATH"
+if [ "${CI:-}" != "true" ]; then
+  export PATH="$DIR/bin:$PATH"
+fi
 corepack pnpm install --frozen-lockfile
 corepack pnpm sync:scam-rules
 git diff --exit-code -- ml/heuristics/rules.json

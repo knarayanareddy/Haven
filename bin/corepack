@@ -2,4 +2,4 @@
 if [ "$1" = "pnpm" ]; then
   shift
 fi
-exec npx pnpm "$@"
+exec npx -y pnpm "$@"

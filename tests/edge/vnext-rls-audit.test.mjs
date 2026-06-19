@@ -55,18 +55,18 @@ test('vnext: enables + forces RLS on every new user-data table', () => {
 });
 
 test('vnext: family_can() permission gate for device_health_events family read', () => {
-  assert.ok(/create policy device_health_family_read[\s\S]{0,300}auth\.family_can\(.+,\s*'alerts'\)/.test(vnextMigration), 'device_health family read policy must use auth.family_can(profile_id, alerts)');
+  assert.ok(/create policy device_health_family_read[\s\S]{0,300}(?:public|auth)\.family_can\(.+,\s*'alerts'\)/.test(vnextMigration), 'device_health family read policy must use public.family_can(profile_id, alerts)');
 });
 
 test('vnext: fall_events elder self + family alerts + carer write', () => {
   assert.ok(/create policy fall_events_self[\s\S]{0,200}elder_id\s*=\s*auth\.uid\(\)/i.test(vnextMigration));
-  assert.ok(/create policy fall_events_family_read[\s\S]{0,200}auth\.family_can\(.+,\s*'alerts'\)/i.test(vnextMigration));
-  assert.ok(/create policy fall_events_carer_write[\s\S]{0,300}detection_source\s*=\s*'carer'[\s\S]{0,200}auth\.carer_can\(.+\)/i.test(vnextMigration));
+  assert.ok(/create policy fall_events_family_read[\s\S]{0,200}(?:public|auth)\.family_can\(.+,\s*'alerts'\)/i.test(vnextMigration));
+  assert.ok(/create policy fall_events_carer_write[\s\S]{0,300}detection_source\s*=\s*'carer'[\s\S]{0,200}(?:public|auth)\.carer_can\(.+\)/i.test(vnextMigration));
 });
 
 test('vnext: medication_ocr_reviews family + carer', () => {
-  assert.ok(/create policy ocr_reviews_family[\s\S]{0,200}auth\.family_can\(.+,\s*'medications'\)/i.test(vnextMigration));
-  assert.ok(/create policy ocr_reviews_carer[\s\S]{0,300}auth\.carer_can\(.+\)/i.test(vnextMigration));
+  assert.ok(/create policy ocr_reviews_family[\s\S]{0,200}(?:public|auth)\.family_can\(.+,\s*'medications'\)/i.test(vnextMigration));
+  assert.ok(/create policy ocr_reviews_carer[\s\S]{0,300}(?:public|auth)\.carer_can\(.+\)/i.test(vnextMigration));
 });
 
 test('vnext: companion_memory is still elder-only (no family access added)', () => {

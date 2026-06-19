@@ -226,6 +226,8 @@
   "actions.call_answered.alert": "Oproep aangenomen. Sessie: {sessionId}",
   "actions.call_declined.alert": "Oproep geweigerd. Sessie {sessionId} gesloten.",
   "actions.checkin_received.alert": "Check-in ({period}) ontvangen. Bedankt!",
+  "actions.daily_rhythm.start": "Uw dagritme wordt gestart. Goedemorgen!",
+  "actions.memory_recap.alert": "Uw recente herinneringen worden opgehaald. Eén moment…",
   "actions.confirm_med.alert": "Bevestig medicijn: ingenomen opgeslagen.",
   "actions.deny_med.alert": "Nog niet ingenomen opgeslagen.",
   "actions.fall_ok.alert": "Goed dat het gaat. Familie is ingelicht dat alles in orde is.",

@@ -226,6 +226,8 @@
   "actions.call_answered.alert": "Call answered. Session: {sessionId}",
   "actions.call_declined.alert": "Call declined. Session {sessionId} closed.",
   "actions.checkin_received.alert": "Check-in ({period}) received. Thank you!",
+  "actions.daily_rhythm.start": "Starting your daily rhythm. Good morning!",
+  "actions.memory_recap.alert": "Retrieving your recent memories. One moment…",
   "actions.confirm_med.alert": "Medication confirmed: recorded as taken.",
   "actions.deny_med.alert": "Recorded as not yet taken.",
   "actions.fall_ok.alert": "Glad you are ok. Family has been informed that everything is fine.",

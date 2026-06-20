@@ -69,6 +69,12 @@
       }],
       "expo-secure-store"
     ],
-    "extra": { "locale": "en-GB", "timezone": "Europe/Amsterdam" }
+    "extra": {
+      "locale": "en-GB",
+      "timezone": "Europe/Amsterdam",
+      "eas": {
+        "projectId": "ab5368b2-8eb1-4e7a-bd18-57c8ab1ae6c6"
+      }
+    }
   }
 }

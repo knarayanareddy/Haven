@@ -9,7 +9,9 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
+    "@babel/runtime": "^7.29.6",
     "@haven/contracts": "workspace:*",
+    "@haven/i18n": "workspace:*",
     "@haven/shims": "workspace:*",
     "@haven/ui": "workspace:*",
     "@react-navigation/native": "^6.1.9",

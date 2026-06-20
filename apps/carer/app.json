@@ -22,6 +22,11 @@
       "output": "static"
     },
     "android": { "adaptiveIcon": { "backgroundColor": "#2C3E6B" }, "package": "nl.haven.carer", "windowSoftInputMode": "adjustResize" },
-    "plugins": ["expo-secure-store", "expo-local-authentication"]
+    "plugins": ["expo-secure-store", "expo-local-authentication"],
+    "extra": {
+      "eas": {
+        "projectId": "aefc3f5f-f659-4c48-8c28-b50fbd851b22"
+      }
+    }
   }
 }

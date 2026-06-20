@@ -20,6 +20,10 @@
         "UIBackgroundModes": ["audio", "fetch", "location", "remote-notification"]
       }
     },
+    "mac": {
+      "bundleIdentifier": "nl.haven.app.mac",
+      "minimumMacOSVersion": "12.0"
+    },
     "web": {
       "bundler": "metro",
       "output": "static"
@@ -45,7 +49,7 @@
       ["expo-camera", {
         "cameraPermission": "Allow HAVEN to use the camera for medication labels and care documents."
       }],
-      ["expo-av", {
+      ["expo-audio", {
         "microphonePermission": "Allow HAVEN to use the microphone for voice help and medication confirmations."
       }],
       ["expo-location", {

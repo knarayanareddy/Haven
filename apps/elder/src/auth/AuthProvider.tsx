@@ -16,7 +16,11 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = useMemo(() => createClient<Database>(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!, { auth: { persistSession: false, autoRefreshToken: true } }), []);
+  const supabase = useMemo(() => {
+    const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co';
+    const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder';
+    return createClient<Database>(url, key, { auth: { persistSession: false, autoRefreshToken: true } });
+  }, []);
   const [session, setSession] = useState<Session | null>(null);
   const [isReady, setReady] = useState(false);
 

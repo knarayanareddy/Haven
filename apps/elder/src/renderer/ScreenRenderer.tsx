@@ -9,6 +9,19 @@ import type { Locale } from '@haven/contracts/src/haven';
 import { translate, useTranslation } from '@haven/i18n';
 import { FloatingVoiceButton } from '../components/FloatingVoiceButton';
 import { HelpOverlay } from '../components/HelpOverlay';
+import {
+  renderVisionHome,
+  renderVisionToday,
+  renderVisionPills,
+  renderVisionShield,
+  renderVisionFamily,
+  renderVisionBuurt,
+  renderVisionKompas,
+  renderVisionStem,
+  renderVisionWacht,
+  renderVisionSettings,
+  renderVisionMore,
+} from '../screens/vision';
 
 let colors: Record<string, string> = { ...baseColors };
 
@@ -825,19 +838,19 @@ function renderFallResponseCard(ctx: ScreenContext) {
 
 function renderFor(id: ScreenId, ctx: ScreenContext): React.ReactNode {
   const map: Record<ScreenId, (ctx: ScreenContext) => React.ReactNode> = {
-    HOME: renderHome,
-    TODAY: renderToday,
-    PILLS: renderPills,
-    SHIELD: renderShield,
-    FAMILY: renderFamily,
-    BUURT: renderBuurt,
-    KOMPAS: renderKompas,
-    STEM: renderStem,
-    WACHT: renderWacht,
-    SETTINGS: renderSettings,
+    HOME: renderVisionHome,
+    TODAY: renderVisionToday,
+    PILLS: renderVisionPills,
+    SHIELD: renderVisionShield,
+    FAMILY: renderVisionFamily,
+    BUURT: renderVisionBuurt,
+    KOMPAS: renderVisionKompas,
+    STEM: renderVisionStem,
+    WACHT: renderVisionWacht,
+    SETTINGS: renderVisionSettings,
     ONBOARDING: renderOnboarding,
     INCOMING_CALL: renderIncomingCall,
-    MORE: renderMore,
+    MORE: renderVisionMore,
   };
   return map[id](ctx);
 }

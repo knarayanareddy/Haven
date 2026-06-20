@@ -1,31 +1,25 @@
-import { Audio } from 'expo-av';
+import { AudioModule, RecordingPresets, AudioRecorder } from 'expo-audio';
 import * as FileSystem from 'expo-file-system';
-
-type RecordingHandle = {
-  stopAndUnloadAsync: () => Promise<void>;
-  getURI: () => string | null;
-};
 
 export interface ActiveVoiceRecording {
   stop: () => Promise<{ uri: string; audioBase64: string }>;
 }
 
-async function readRecording(recording: RecordingHandle) {
-  await recording.stopAndUnloadAsync();
-  const uri = recording.getURI();
-  if (!uri) throw new Error('Recording URI missing');
-  const audioBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-  return { uri, audioBase64 };
-}
-
 export async function startVoiceRecording(): Promise<ActiveVoiceRecording> {
-  const permission = await Audio.requestPermissionsAsync();
-  if (!permission.granted) throw new Error('Microphone permission is required');
-  await Audio.setAudioModeAsync({ allowsRecordingIOS: true, playsInSilentModeIOS: true });
-  const recording = new Audio.Recording();
-  await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
-  await recording.startAsync();
-  return { stop: () => readRecording(recording) };
+  const status = await AudioModule.requestRecordingPermissionsAsync();
+  if (!status.granted) throw new Error('Microphone permission is required');
+  const recorder = new AudioRecorder(RecordingPresets.HIGH_QUALITY);
+  recorder.prepareToRecordAsync();
+  recorder.record();
+  return {
+    stop: async () => {
+      await recorder.stop();
+      const uri = recorder.uri;
+      if (!uri) throw new Error('Recording URI missing');
+      const audioBase64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+      return { uri, audioBase64 };
+    },
+  };
 }
 
 export async function recordVoiceOnce(maxDurationMs = 30000) {

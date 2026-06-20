@@ -7,8 +7,8 @@ test('Round 5 Medium Application Defects Acceptance Suite (C1, C2, C3, C4)', asy
   const coreSource = readFileSync(new URL('../../supabase/functions/_shared/core.ts', import.meta.url), 'utf8');
 
   // Assert that createClient is strictly pinned to an exact version rather than floating @2
-  assert.ok(coreSource.includes('https://esm.sh/@supabase/supabase-js@2.43.0'), 'C4 Fix: Shared database client primitive must utilize exact pinned version');
-  assert.ok(!coreSource.includes('"https://esm.sh/@supabase/supabase-js@2"'), 'C4 Fix: Floating @latest tags must be eliminated');
+  assert.ok(coreSource.includes('npm:@supabase/supabase-js@2.43.0') || coreSource.includes('https://esm.sh/@supabase/supabase-js@2.43.0'), 'C4 Fix: Shared database client primitive must utilize exact pinned version');
+  assert.ok(!coreSource.includes('"npm:@supabase/supabase-js@2"') && !coreSource.includes('"https://esm.sh/@supabase/supabase-js@2"'), 'C4 Fix: Floating @latest tags must be eliminated');
 
   // ─── Phase 2: Complete Executable Subsystem Simulation Harness ───
   class SimulatedMediumEngine {

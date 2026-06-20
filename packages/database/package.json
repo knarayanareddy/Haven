@@ -2,6 +2,9 @@
   "name": "@haven/database",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/types.ts",
-  "private": true
+  "main": "src/index.ts",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.0"
+  }
 }

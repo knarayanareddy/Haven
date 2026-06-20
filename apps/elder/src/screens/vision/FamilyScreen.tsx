@@ -17,7 +17,7 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
   const [activeTab, setActiveTab] = useState('messages');
   const [newMessage, setNewMessage] = useState('');
   const messages = ctxMsgs.length > 0
-    ? ctxMsgs.map((m) => ({ ...m, avatar: m.kind === 'heart' ? '💙' : '👤', content: m.body, type: m.kind }))
+    ? ctxMsgs.map((m) => ({ ...m, fromId: m.from, avatar: m.kind === 'heart' ? '💙' : '👤', content: m.body, type: m.kind, timestamp: new Date(), read: !m.unread }))
     : FAMILY_MESSAGES;
 
   const tabs = [

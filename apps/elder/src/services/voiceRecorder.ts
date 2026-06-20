@@ -1,4 +1,5 @@
-import { AudioModule, RecordingPresets, AudioRecorder } from 'expo-audio';
+import { AudioModule, RecordingPresets } from 'expo-audio';
+import type { AudioRecorder } from 'expo-audio';
 import * as FileSystem from 'expo-file-system';
 
 export interface ActiveVoiceRecording {
@@ -8,7 +9,9 @@ export interface ActiveVoiceRecording {
 export async function startVoiceRecording(): Promise<ActiveVoiceRecording> {
   const status = await AudioModule.requestRecordingPermissionsAsync();
   if (!status.granted) throw new Error('Microphone permission is required');
-  const recorder = new AudioRecorder(RecordingPresets.HIGH_QUALITY);
+  // AudioRecorder is exported as a type from expo-audio; access the constructor via AudioModule
+  const AudioRecorderClass = (AudioModule as any).AudioRecorder;
+  const recorder: AudioRecorder = new AudioRecorderClass(RecordingPresets.HIGH_QUALITY);
   recorder.prepareToRecordAsync();
   recorder.record();
   return {

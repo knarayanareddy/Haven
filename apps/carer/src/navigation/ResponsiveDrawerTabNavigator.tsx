@@ -22,6 +22,7 @@ function getTabs(nl: boolean): Array<{ id: TabId; label: string; icon: string }>
   ];
 }
 
+// iPad breakpoint: width >= 768 → persistent Drawer sidebar; width < 768 → Bottom Tabs
 export function ResponsiveDrawerTabNavigator({ navigation }: any) {
   const { isIpad } = useResponsiveLayout();
   const { textMultiplier } = useAccessibilityInfo();

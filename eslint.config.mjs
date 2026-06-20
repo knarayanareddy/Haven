@@ -13,6 +13,7 @@ export default [
       '**/coverage/**',
       '**/dist/**',
       '**/build/**',
+      '**/.expo/**',
       'pnpm-lock.yaml',
     ],
   },
@@ -54,6 +55,12 @@ export default [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    files: ['**/app.config.js', '**/metro.config.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 ];

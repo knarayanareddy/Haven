@@ -9,7 +9,7 @@ import type { ScreenContext } from '../../renderer/ScreenRenderer';
 export function renderVisionWacht(ctx: ScreenContext): React.ReactNode {
   const { locale, visits: ctxVisits } = ctx;
   const visits = ctxVisits.length > 0
-    ? ctxVisits.map((v) => ({ ...v, carer: v.carer, carerAvatar: '👩‍⚕️', duration: '30 min', notes: v.note, handover: { appetite: '', mood: '', mobility: '', concerns: '', administered: '' }, marEntries: [] as Array<{ medication: string; time: string; status: 'given' }>, status: 'completed' as const }))
+    ? ctxVisits.map((v, i) => ({ ...v, id: `visit-ctx-${i}`, carer: v.carer, carerAvatar: '👩‍⚕️', duration: '30 min', notes: v.note, handover: { appetite: '', mood: '', mobility: '', concerns: '', administered: '' }, marEntries: [] as Array<{ medication: string; time: string; status: 'given' }>, status: 'completed' as const }))
     : CARE_VISITS;
 
   return (

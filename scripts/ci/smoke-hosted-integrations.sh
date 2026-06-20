@@ -38,15 +38,22 @@ if (!health.success && health.status !== "degraded") {
 }
 NODE
 
-path="$HAVEN_TEST_ELDER_ID/hosted-smoke-$(date +%s).txt"
+path="$HAVEN_TEST_ELDER_ID/hosted-smoke-$(date +%s).m4a"
 upload_json="$(json_post "$SUPABASE_URL/functions/v1/fn-storage-signed-url" "$HAVEN_TEST_ELDER_JWT" "{\"bucket\":\"voice-notes\",\"path\":\"$path\",\"operation\":\"upload\"}")"
-UPLOAD_JSON="$upload_json" node <<'NODE'
+upload_url="$(UPLOAD_JSON="$upload_json" node <<'NODE'
 const res = JSON.parse(process.env.UPLOAD_JSON);
 if (!res.success || (!res.signedUrl && !res.signed_url)) {
   console.error("Signed upload URL smoke failed:", res);
   process.exit(1);
 }
+process.stdout.write(res.signedUrl ?? res.signed_url);
 NODE
+)"
+
+printf 'HAVEN hosted smoke audio placeholder\n' | curl -fsS "$upload_url" \
+  -X PUT \
+  -H "content-type: audio/mp4" \
+  --data-binary @- >/dev/null
 
 read_json="$(json_post "$SUPABASE_URL/functions/v1/fn-storage-signed-url" "$HAVEN_TEST_ELDER_JWT" "{\"bucket\":\"voice-notes\",\"path\":\"$path\",\"operation\":\"read\",\"ttl_seconds\":60}")"
 READ_JSON="$read_json" node <<'NODE'

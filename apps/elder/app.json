@@ -20,10 +20,6 @@
         "UIBackgroundModes": ["audio", "fetch", "location", "remote-notification"]
       }
     },
-    "mac": {
-      "bundleIdentifier": "nl.haven.app.mac",
-      "minimumMacOSVersion": "12.0"
-    },
     "web": {
       "bundler": "metro",
       "output": "static"

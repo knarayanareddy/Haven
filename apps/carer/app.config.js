@@ -10,4 +10,4 @@ function assertPublicEnv(name) {
 assertPublicEnv('EXPO_PUBLIC_SUPABASE_URL');
 assertPublicEnv('EXPO_PUBLIC_SUPABASE_ANON_KEY');
 
-module.exports = config;
+module.exports = config.expo;

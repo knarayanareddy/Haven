@@ -1,3 +1,4 @@
+/* eslint-disable no-alert -- demo portal uses native alerts for user feedback */
 (function(){
   const STORAGE_KEY = 'haven.wacht.handover.queue.v1';
   const form = document.getElementById('handoverForm');

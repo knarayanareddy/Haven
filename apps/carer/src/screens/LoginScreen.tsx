@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { useAuth } from '../auth/AuthProvider';
 
 export function LoginScreen() {
-  const { signInWithEmail, signInWithBiometric, isBiometricAvailable } = useAuth();
+  const { signInWithEmail, signInWithBiometric, isBiometricAvailable, supabase } = useAuth();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -99,6 +99,28 @@ export function LoginScreen() {
             <Text style={styles.backLinkText}>← Ander e-mailadres gebruiken</Text>
           </TouchableOpacity>
         )}
+
+        <TouchableOpacity
+          style={[styles.demoButton, loading && styles.buttonDisabled]}
+          onPress={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              const { error: signInError } = await supabase.auth.signInWithPassword({
+                email: 'demo-carer@haven.nl',
+                password: 'HavenDemo2026!',
+              });
+              if (signInError) throw signInError;
+            } catch (e: any) {
+              setError(e?.message ?? 'Demo login mislukt');
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          <Text style={styles.demoButtonText}>Demo Mode</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -193,5 +215,19 @@ const styles = StyleSheet.create({
   backLinkText: {
     color: '#8BA4C4',
     fontSize: 14,
+  },
+  demoButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#4A90D9',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  demoButtonText: {
+    color: '#4A90D9',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -112,6 +112,28 @@ export function LoginScreen() {
             <Text style={styles.backLinkText}>← Ander account gebruiken</Text>
           </TouchableOpacity>
         )}
+
+        <TouchableOpacity
+          style={[styles.demoButton, loading && styles.buttonDisabled]}
+          onPress={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              const { error: signInError } = await supabase.auth.signInWithPassword({
+                email: 'demo-family@haven.nl',
+                password: 'HavenDemo2026!',
+              });
+              if (signInError) throw signInError;
+            } catch (e: any) {
+              setError(e?.message ?? 'Demo login mislukt');
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          <Text style={styles.demoButtonText}>Demo Mode</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -192,5 +214,19 @@ const styles = StyleSheet.create({
   backLinkText: {
     color: '#8BBAD4',
     fontSize: 14,
+  },
+  demoButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#4A90D9',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  demoButtonText: {
+    color: '#4A90D9',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

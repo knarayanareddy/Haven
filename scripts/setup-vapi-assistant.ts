@@ -181,15 +181,15 @@ Rules:
       tools: buildTools(isNl),
     },
     voice: {
-      provider: 'elevenlabs',
+      provider: '11labs',
       voiceId,
       model: 'eleven_multilingual_v2',
       stability: 0.72,
       similarityBoost: 0.8,
     },
     transcriber: {
-      provider: 'whisper',
-      model: 'whisper-1',
+      provider: 'openai',
+      model: 'gpt-4o-mini-transcribe',
       language: isNl ? 'nl' : 'en',
     },
     firstMessage: isNl

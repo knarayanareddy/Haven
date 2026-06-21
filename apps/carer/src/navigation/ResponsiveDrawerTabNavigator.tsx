@@ -127,9 +127,14 @@ export function ResponsiveDrawerTabNavigator({ navigation }: any) {
         </View>
       )}
 
-      {/* Phone bottom tabs */}
+      {/* Content */}
+      <View style={{ flex: 1 }}>
+        {renderTab()}
+      </View>
+
+      {/* Phone fixed bottom tabs */}
       {!isIpad && (
-        <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: '#E5E7EB', backgroundColor: '#fff' }}>
+        <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: '#E5E7EB', backgroundColor: '#fff', paddingBottom: 4 }}>
           {TABS.map((tab) => (
             <TouchableOpacity
               key={tab.id}
@@ -137,24 +142,20 @@ export function ResponsiveDrawerTabNavigator({ navigation }: any) {
               onPress={() => setActiveTab(tab.id)}
               style={{
                 flex: 1, paddingVertical: 10, alignItems: 'center',
-                borderBottomWidth: 2,
-                borderBottomColor: activeTab === tab.id ? '#DC2626' : 'transparent',
+                borderTopWidth: 2,
+                borderTopColor: activeTab === tab.id ? '#DC2626' : 'transparent',
               }}
             >
-              <Text style={{ fontSize: 14 }}>{tab.icon}</Text>
+              <Text style={{ fontSize: 18 }}>{tab.icon}</Text>
               <Text style={{
                 fontSize: 10 * textMultiplier, fontWeight: '700',
                 color: activeTab === tab.id ? '#DC2626' : '#6B7280',
+                marginTop: 2,
               }}>{tab.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
       )}
-
-      {/* Content */}
-      <View style={{ flex: 1 }}>
-        {renderTab()}
-      </View>
     </View>
   );
 }

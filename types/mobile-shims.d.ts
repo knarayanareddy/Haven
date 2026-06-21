@@ -14,11 +14,24 @@ declare module 'react-native' {
   export const Easing: any;
   export const Modal: any;
   export const StatusBar: any;
+  export const StyleSheet: { create: (styles: any) => any };
+  export const ActivityIndicator: any;
+  export const KeyboardAvoidingView: any;
+  export const Linking: { openURL: (url: string) => Promise<void> };
   export const AccessibilityInfo: {
     isBoldTextEnabled: () => Promise<boolean>;
     addEventListener: (event: string, handler: (...args: any[]) => void) => { remove: () => void };
   };
   export function useWindowDimensions(): { width: number; height: number; scale: number; fontScale: number };
+}
+
+declare module '@react-native-async-storage/async-storage' {
+  const AsyncStorage: {
+    getItem: (key: string) => Promise<string | null>;
+    setItem: (key: string, value: string) => Promise<void>;
+    removeItem: (key: string) => Promise<void>;
+  };
+  export default AsyncStorage;
 }
 
 declare module 'expo-calendar';
@@ -94,6 +107,11 @@ declare module 'expo-av' {
 }
 
 declare module 'expo-file-system' {
+  export const EncodingType: { Base64: string };
+  export function readAsStringAsync(uri: string, options?: { encoding?: string }): Promise<string>;
+}
+
+declare module 'expo-file-system/legacy' {
   export const EncodingType: { Base64: string };
   export function readAsStringAsync(uri: string, options?: { encoding?: string }): Promise<string>;
 }

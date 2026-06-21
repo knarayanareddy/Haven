@@ -20,7 +20,7 @@ interface RecordingHandle {
 async function startVoiceRecording(): Promise<RecordingHandle> {
   const AudioModule = await import('expo-audio').then((m) => m.AudioModule);
   const RecordingPresets = await import('expo-audio').then((m) => m.RecordingPresets);
-  const FileSystem = await import('expo-file-system');
+  const FileSystem = await import('expo-file-system/legacy');
 
   const status = await AudioModule.requestRecordingPermissionsAsync();
   if (!status.granted) throw new Error('Microphone permission is required');

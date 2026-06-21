@@ -6,6 +6,9 @@ const securityHeaders = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
   {
     key: 'Content-Security-Policy',
+    // Next.js requires 'unsafe-inline' for script-src (hydration inline scripts)
+    // and style-src (styled-jsx / emotion). Use nonce-based CSP when migrating to
+    // Next.js middleware for stricter policies.
     value: [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline'",

@@ -146,7 +146,7 @@ export function VoiceTab({ locale }: VoiceTabProps) {
           const { Audio } = await import('expo-av');
           const { sound } = await Audio.Sound.createAsync({ uri: String(data.audio_url) });
           await sound.playAsync();
-          sound.setOnPlaybackStatusUpdate((status) => {
+          sound.setOnPlaybackStatusUpdate((status: Record<string, unknown>) => {
             if ('didJustFinish' in status && status.didJustFinish) {
               setPlayingTest(false);
               sound.unloadAsync();

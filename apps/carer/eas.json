@@ -40,7 +40,7 @@
       "env": {
         "EXPO_PUBLIC_HAVEN_ENV": "staging",
         "EXPO_PUBLIC_SUPABASE_URL": "https://vaarqsmufctmjwnblynj.supabase.co",
-        "EXPO_PUBLIC_CARER_ELDER_IDS": "00000000-0000-0000-0000-000000000001"
+        "EXPO_PUBLIC_CARER_ELDER_IDS": "eee0afd7-0a80-4d25-9d50-8f604c37cf7a"
       }
     },
     "production": {

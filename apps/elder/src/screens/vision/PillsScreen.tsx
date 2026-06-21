@@ -3,7 +3,7 @@
 // Wired to Supabase: fetches real medication_reminders, confirms via fn-voice-pipeline
 
 import React, { useEffect, useState } from 'react';
-import { Alert, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { colors } from '@haven/ui/src/tokens';
 import { ProgressBar } from '@haven/ui/src/visionComponents';
 import { MEDICATIONS } from '@haven/ui/src/mockData';
@@ -53,6 +53,11 @@ function VisionPillsInner({ ctx }: { ctx: ScreenContext }) {
 
   const [liveMeds, setLiveMeds] = useState<MedItem[] | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newDose, setNewDose] = useState('');
+  const [newTime, setNewTime] = useState('08:00');
+  const [submitting, setSubmitting] = useState(false);
 
   // Try fetching real medications from Supabase; fall back to mock data
   useEffect(() => {
@@ -71,6 +76,66 @@ function VisionPillsInner({ ctx }: { ctx: ScreenContext }) {
       })
       .catch(() => { /* fall back to mock data silently */ });
   }, [!!client, elderId]);
+
+  function refetchMeds() {
+    if (!client || !elderId) return;
+    client.rest<Array<Record<string, unknown>>>(`medication_reminders?elder_id=eq.${elderId}&select=id,medication_name,dose,reminder_time,status,stock_remaining`)
+      .then((rows) => {
+        if (rows && rows.length > 0) {
+          setLiveMeds(rows.map((r) => ({
+            id: String(r.id), name: String(r.medication_name ?? ''), dose: String(r.dose ?? ''),
+            descriptionNl: String(r.medication_name ?? ''), descriptionEn: String(r.medication_name ?? ''),
+            time: String(r.reminder_time ?? '08:00').slice(0, 5),
+            status: r.status === 'taken' ? 'taken' : 'planned',
+            stock: typeof r.stock_remaining === 'number' ? r.stock_remaining : undefined,
+          })));
+        }
+      })
+      .catch(() => {});
+  }
+
+  async function handleAddMedication() {
+    const nl = locale === 'nl-NL';
+    if (!newName.trim()) {
+      Alert.alert('HAVEN', nl ? 'Vul een medicijnnaam in.' : 'Please enter a medication name.');
+      return;
+    }
+    const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const token = session?.access_token;
+    const eid = elderId ?? process.env.EXPO_PUBLIC_ELDER_ID;
+    if (!url || !token || !eid) {
+      Alert.alert('HAVEN', nl ? 'Log eerst in om medicijnen toe te voegen.' : 'Please log in to add medications.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${url}/rest/v1/medication_reminders`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${token}`,
+          apikey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? token,
+          'content-type': 'application/json',
+          prefer: 'return=minimal',
+        },
+        body: JSON.stringify({
+          elder_id: eid,
+          medication_name: newName.trim(),
+          dose: newDose.trim() || null,
+          reminder_time: newTime,
+          status: 'pending',
+        }),
+      });
+      if (!response.ok) throw new Error('Failed');
+      Alert.alert('HAVEN', nl ? 'Medicijn toegevoegd!' : 'Medication added!');
+      setNewName(''); setNewDose(''); setNewTime('08:00');
+      setShowAddForm(false);
+      refetchMeds();
+    } catch {
+      Alert.alert('HAVEN', nl ? 'Toevoegen mislukt. Probeer later opnieuw.' : 'Failed to add. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   const baseMeds = ctxMeds.length > 0 ? ctxMeds : mockMeds();
   const meds = liveMeds ?? baseMeds;
@@ -177,6 +242,19 @@ function VisionPillsInner({ ctx }: { ctx: ScreenContext }) {
         );
       })}
 
+      {/* Add medication button */}
+      <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={locale === 'nl-NL' ? 'Nieuw medicijn toevoegen' : 'Add new medication'}
+        onPress={() => setShowAddForm(true)}
+        style={{ borderRadius: 18, padding: 16, backgroundColor: colors.sagePale, borderWidth: 1, borderColor: colors.sage, flexDirection: 'row', alignItems: 'center', gap: 10 }}
+      >
+        <Text style={{ fontSize: 22 }}>➕</Text>
+        <Text style={{ fontSize: 16, fontWeight: '800', color: colors.sage }}>
+          {locale === 'nl-NL' ? 'Nieuw medicijn toevoegen' : 'Add new medication'}
+        </Text>
+      </TouchableOpacity>
+
       {/* OCR scan placeholder */}
       <TouchableOpacity
         accessibilityRole="button"
@@ -188,6 +266,70 @@ function VisionPillsInner({ ctx }: { ctx: ScreenContext }) {
           {locale === 'nl-NL' ? 'Scan nieuw medicijn' : 'Scan new medication'}
         </Text>
       </TouchableOpacity>
+
+      {/* Add medication modal */}
+      <Modal visible={showAddForm} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', padding: 24 }}>
+          <View style={{ borderRadius: 22, padding: 24, backgroundColor: colors.paper, gap: 14 }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', color: colors.ink }}>
+              {locale === 'nl-NL' ? 'Nieuw medicijn' : 'New medication'}
+            </Text>
+            <View style={{ gap: 4 }}>
+              <Text style={{ fontSize: 14, fontWeight: '800', color: colors.graphite }}>
+                {locale === 'nl-NL' ? 'Naam *' : 'Name *'}
+              </Text>
+              <TextInput
+                value={newName}
+                onChangeText={setNewName}
+                placeholder={locale === 'nl-NL' ? 'Bijv. Metformine' : 'E.g. Metformin'}
+                placeholderTextColor={colors.pewter}
+                style={{ borderRadius: 14, padding: 14, backgroundColor: colors.linen, borderWidth: 1, borderColor: colors.mist, fontSize: 18, color: colors.ink }}
+              />
+            </View>
+            <View style={{ gap: 4 }}>
+              <Text style={{ fontSize: 14, fontWeight: '800', color: colors.graphite }}>
+                {locale === 'nl-NL' ? 'Dosering' : 'Dosage'}
+              </Text>
+              <TextInput
+                value={newDose}
+                onChangeText={setNewDose}
+                placeholder={locale === 'nl-NL' ? 'Bijv. 500 mg' : 'E.g. 500 mg'}
+                placeholderTextColor={colors.pewter}
+                style={{ borderRadius: 14, padding: 14, backgroundColor: colors.linen, borderWidth: 1, borderColor: colors.mist, fontSize: 18, color: colors.ink }}
+              />
+            </View>
+            <View style={{ gap: 4 }}>
+              <Text style={{ fontSize: 14, fontWeight: '800', color: colors.graphite }}>
+                {locale === 'nl-NL' ? 'Tijd' : 'Time'}
+              </Text>
+              <TextInput
+                value={newTime}
+                onChangeText={setNewTime}
+                placeholder="08:00"
+                placeholderTextColor={colors.pewter}
+                style={{ borderRadius: 14, padding: 14, backgroundColor: colors.linen, borderWidth: 1, borderColor: colors.mist, fontSize: 18, color: colors.ink }}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={handleAddMedication}
+              disabled={submitting}
+              style={{ backgroundColor: colors.sage, borderRadius: 16, paddingVertical: 14, alignItems: 'center', opacity: submitting ? 0.6 : 1 }}
+            >
+              <Text style={{ color: '#fff', fontSize: 18, fontWeight: '900' }}>
+                {submitting ? (locale === 'nl-NL' ? 'Bezig...' : 'Saving...') : (locale === 'nl-NL' ? 'Toevoegen' : 'Add')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { setShowAddForm(false); setNewName(''); setNewDose(''); setNewTime('08:00'); }}
+              style={{ backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.mist, borderRadius: 16, paddingVertical: 14, alignItems: 'center' }}
+            >
+              <Text style={{ color: colors.slate, fontSize: 18, fontWeight: '900' }}>
+                {locale === 'nl-NL' ? 'Annuleer' : 'Cancel'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Confirm modal */}
       <Modal visible={!!confirmMed} transparent animationType="fade">

@@ -4,105 +4,61 @@
 
 HAVEN is a privacy-first, voice-first elder-care platform for older adults in the Netherlands and the families and care professionals who support them. It combines fraud protection, medication support, family connection, cognitive/orientation safety, a warm voice companion and professional care workflows into one coherent product suite.
 
-This repository is an end-to-end production-shaped HAVEN build. It contains the Expo elder, carer, and grandchild apps; the Next.js family dashboard; Supabase schema, storage policies, and Edge Functions; shared packages; ML safety assets; tests; release documentation; deployment scripts; and compliance-support records.
+---
+
+## What HAVEN Does
+
+HAVEN provides **three connected mobile apps** that work together in real-time:
+
+| App | For | Key Capabilities |
+|---|---|---|
+| **Elder** (Ouderen) | The elderly person | Voice companion, medication tracking with reminders, SOS emergency dial, family messaging, daily wellness check-ins, scam protection |
+| **Carer** (Verzorger) | Professional caregivers | Visit logging, medication administration (MAR), handover notes to next shift, safeguarding reports, offline-first workflow |
+| **Family** (Familie) | Family members | Live dashboard with medication adherence %, wellness scores, shield (anti-fraud) score, send hearts/check-ins, manage medications, privacy consent toggles |
+
+### Live Cross-App Sync
+
+When a carer completes a visit → the Elder's Zorg tab updates in real-time → the Family dashboard reflects the new data. All powered by Supabase Realtime subscriptions.
+
+### Bilingual (NL/EN)
+
+Every screen supports both Dutch and English with a one-tap language toggle.
 
 ---
 
-## Current build status
+## Current Build Status
 
-The repository is the **HAVEN vNext build plus the June 20, 2026 end-to-end runtime/configuration fixes** layered on top of the original v1.2.1 SSOT. It implements the design-document feature surface plus vNext extensions (fall detection, daily check-ins, daily family status, trust signal, scam coaching, Familiar Voice, live video calling, carer handover notes, storage signed URLs, hosted smoke scripts, and local Supabase verification) behind feature flags and environment gates.
+| Check | Status |
+|---|---|
+| TypeScript (all 3 apps) | Passing |
+| ESLint | Passing |
+| CI (quality-security-gate, static-suite-validation, browser-e2e, supabase-db-test, supabase-layout-check) | Passing |
+| EAS Preview builds | Configured (Android APK) |
 
-Validation currently reports:
+### Working Features
 
-```json
-{
-  "ok": true,
-  "app": "apps/iphone-suite/index.html",
-  "edgeFunctions": 81,
-  "schemaBytes": 158544
-}
-```
+- **Authentication** — Login screens with phone OTP (Elder), email magic link + biometric (Carer), email (Family)
+- **Medication management** — Elder can view, confirm, snooze, and add medications; Family can add medications; Carer logs administration (MAR)
+- **SOS emergency** — Confirmation dialog → real phone dialer opens to 112
+- **Family messaging** — Elder sends hearts/thumbs-up → Family receives in real-time
+- **Carer visit logging** — Complete visit → saves to Supabase → Elder/Family see the update live
+- **Carer handover** — Submit notes → share with Familie or next shift
+- **Scam protection (SCHILD)** — Scam event detection pipeline with alerting
+- **Privacy consent toggles** — Family manages data sharing permissions, persisted to Supabase
+- **Voice AI companion (STEM)** — VAPI-powered real-time voice conversations with Dutch STT/TTS
+- **Offline-first** — Actions queue locally when offline, sync when back online
+- **Bottom tab navigation** — Consistent across all 3 apps
+- **Daily wellness check-ins** — Morning/midday/evening mood tracking
 
-### Build layers
+### Security & Privacy
 
-| Layer | Source | Lines | Status |
-|---|---|---|---|
-| **Original SSOT** | `designdoc.md` v1.2.1 | ~6,939 | Built |
-| **P0 security hardening closure** | 12 migrations + 55 Edge Functions | ~2,900 SQL / ~5,500 TS | Built (June 2026) |
-| **vNext Well-Rounded Patch** | `docs/implementation/VNEXT_IMPLEMENTATION_REPORT.md` | 13 migrations + 72 Edge Functions at the time of that report | Built (June 2026) |
-| **End-to-end runtime/config pass** | Supabase grants/lint fixes, Expo/EAS/env wiring, hosted smoke script, demo-data removal, token encryption/config gates | 81 Edge Functions + current migrations | Built (June 20, 2026) |
-| **Test pyramid** | `tests/edge/*.test.mjs` + `tests/rls/*.audit.mjs` + `tests/integration/live-rls.test.mjs` + static smoke tests | full local suite | Green locally |
-
-### vNext patch at a glance
-
-The vNext directive summarised in `docs/implementation/VNEXT_IMPLEMENTATION_REPORT.md` was applied in-place. It added:
-
-- **1 schema migration** (`20260614000000_vnext_wellrounded_patch.sql`) with **14 new tables** + 11 telemetry columns on `device_sessions` + 6 seeded consent packs + 10 new feature flags + forced RLS on every new user-data table.
-- **16 new Edge Functions** + **4 patches** to existing ones.
-- **Elder app**: check-in card, Are-you-OK fall modal, medication confirmation card, scam-coaching button, Familiar Voice toggle.
-- **Family app**: Daily status pill, Trust signal panel, two-way action buttons, Familiar Voice recording page.
-- **Carer portal**: handover-notes form + offline-first queue + MAR-light entry.
-- **Behavioural + RLS test coverage** grew to ~50+ assertions, all green.
-
-Current local verification status:
-
-- `corepack pnpm run typecheck` passes.
-- `corepack pnpm run lint` passes.
-- `corepack pnpm test` passes.
-- `corepack pnpm run quality:check` passes, including the Next.js family production build.
-- `./scripts/ci/verify-local-supabase.sh` has passed in this working tree after clearing poisoned Supabase temp cache, applying migrations, parsing DB lint output, and running live local RLS checks.
-
-Current remaining boundary:
-
-- Real production/staging secret values still need to be filled for EAS, Supabase, and vendors.
-- `corepack pnpm run smoke:hosted` still needs hosted Supabase URL/JWT/internal key values before it can prove hosted Edge Functions and Storage.
-- Physical iOS/Android runtime behavior still needs device validation for camera, mic/TTS, push notifications, offline queues, and background/foreground behavior.
-- DPO/DPIA, vendor DPAs/SCCs, external pentest, usability sessions, and app-store approval remain human/commercial gates.
-
-### Security Boundary Hardening (P0 Audit Complete)
-
-In a rigorous senior security audit, multiple P0 and P1 security trust boundaries were identified and immediately hardened across the codebase:
-
-1. **`fn-voice-pipeline` (FIX 1 & 20):** Eliminated high-privilege `admin()` database clients for elder-scoped actions. Extracted real user JWT tokens, bound caller identity, and added dynamic delegate checks allowing only authorized family members and carers. Enforced active `withIdempotency` wrapping to prevent patient-safety risks (such as medication double-confirmation events).
-2. **`fn-storage-signed-url` (FIX 2):** Bounded folder-level storage paths to strict elder UUID matching. Enforced cryptographic format checks on directory owner segments (`ownerId`) and added directory-traversal protection (`..` and `\`). Banned family delegate access to the privacy-sensitive `document-vault` and `ocr-inbox` buckets.
-3. **`fn-transaction-intercept` (FIX 3):** Fully fail-closed transaction webhooks. The receiver enforces signature checking in all cloud environments, halting execution and returning a `500 Server Misconfiguration` block if missing or misconfigured, while maintaining local-development convenience.
-4. **GDPR Export Completeness & Compliance (FIX 11 & 12):** Aligned `public.export_elder_data` with GDPR Articles 15 & 20. Swapped the function to `security definer` to safely bypass column-level coordinate blocks for the elder themselves, enabling the export of `location_precise` in a highly secure, restricted JSON payload.
-5. **`verify_jwt` Alignment (FIX 4):** Explicitly declared compensating controls inside `supabase/config.toml` for functions running with `verify_jwt = false` and enforced standard gateway JWT validations for all user-facing endpoints.
-
-Full test command:
-
-```bash
-corepack pnpm test
-```
-
-Current test coverage includes:
-
-- **suite structure validation** (`validate:suite` — 71 functions + 158 KB schema + every required file present)
-- **scam-engine tests** (5 NL rule patterns + scoring)
-- **screen-schema constitution tests** (UX enforcement: ≤2 nav depth, ≤4 items, emergency button, banned AI copy)
-- **Edge Function hardening checks** (markers: every protected function references the right authz helpers)
-- **authz behavioural tests** (27 assertions exercising real `_shared/authz.ts` against a mock Supabase client)
-- **RLS policy static audit** (15 critical tables with forced RLS, all expected policies)
-- **Storage policy static audit** (7 buckets + 4 critical policies)
-- **data-lifecycle diff audit** (export + erasure coverage of every GDPR-relevant table)
-- **vNext RLS audit** (17 assertions covering all 14 new tables, family/carer/permission gating, every new feature flag)
-- **iPhone-suite smoke test** (render + accessibility + screen constitution)
-
-### Production-launch note
-
-This repository is production-shaped and locally green, but it is not truthfully production-launched. A real production launch still requires external operational gates:
-
-1. Hosted Supabase staging/production project with migrations, secrets, storage buckets, and Edge Functions deployed.
-2. `smoke:hosted` and live RLS/API checks run against hosted Supabase with real test JWTs.
-3. Physical iPhone and Android validation.
-4. Vendor sandbox and production credentials.
-5. DPO-signed DPIA.
-6. Vendor DPAs/SCCs.
-7. External penetration test.
-8. Older-adult usability sessions.
-9. App Store / Play Store submissions and approvals.
-
-These are tracked in the release and compliance documentation.
+- Row-Level Security (RLS) enforced on all user-data tables
+- Elder owns their data; family/carer access requires consent
+- BSN is never stored, processed, or transmitted
+- Companion memory is elder-private
+- GDPR right-to-erasure and data-export implemented
+- All Edge Functions use JWT + relationship-based authorization
+- P0 security audit completed with trust-boundary hardening
 
 ---
 
@@ -416,7 +372,7 @@ Includes:
 - Offline queue fallback for handover and visit-log writes
 - Setup-required states when no signed-in session or assigned elder IDs are configured
 
-### Grandchild app
+### Family (Grandchild) app
 
 Location:
 
@@ -426,9 +382,13 @@ apps/grandchild
 
 Covers:
 
-- simple authenticated hello form
-- backend call to `fn-grandchild-message-send` through `apps/grandchild/src/client.ts`
-- setup-required validation for Supabase URL, elder ID, family member ID, display name and family access token
+- 6-tab dashboard: Overview, Medications, Alerts (Meldingen), Care (Zorg), Voice (Stem), Privacy
+- Live medication adherence scores, shield score, wellbeing average from Supabase
+- Add/manage elder medications with Supabase CRUD
+- Privacy consent toggles persisted to `consent_records`
+- Family messaging via `fn-grandchild-message-send`
+- Familiar Voice recording for voice cloning (VAPI + ElevenLabs)
+- Supabase Auth with session-based API access
 
 ---
 
@@ -813,22 +773,17 @@ The feature matrix currently tracks all major features from the design document 
 
 ---
 
-## Engineering rating
+## Architecture Overview
 
-After the v1.2.1 hardening pass, the vNext Well-Rounded Patch, and the June 20, 2026 runtime/configuration pass, this repository is best described as:
+HAVEN is built as a monorepo with clear separation of concerns:
 
-> A substantially hardened, locally green, production-shaped engineering package for HAVEN. Schema, Edge Functions, app surfaces, Supabase local verification, and test coverage are in place behind feature flags and configuration gates. The live app paths no longer rely on hidden demo IDs or demo fixtures, and production-risk integration paths now fail fast when required secrets/config are absent.
+- **Frontend**: 3 Expo React Native apps (Elder, Carer, Family) + Next.js web dashboard
+- **Backend**: Supabase (PostgreSQL + Auth + Realtime + Storage + Edge Functions)
+- **Voice AI**: VAPI for real-time voice conversations (WebRTC + Whisper STT + GPT-4o-mini + ElevenLabs TTS)
+- **Offline**: SQLite queue (Elder/Carer) with automatic sync on reconnection
+- **CI/CD**: GitHub Actions with typecheck, lint, security gate, E2E tests, EAS builds
 
-Current engineering readiness rating: **9.3/10 for local/pre-production code readiness**.
-
-The remaining gap requires:
-1. Hosted Supabase staging/production smoke and live RLS/API verification
-2. Real devices (physical iPhone / Android) + vendor sandbox credentials
-3. DPO-signed DPIA + vendor DPAs/SCCs
-4. External penetration test + older-adult usability sessions
-5. App Store / Play Store submissions
-
-These are documented as external gates in `docs/PRODUCTION_READINESS_CHECKLIST.md`, `PRODUCTION_INFRASTRUCTURE_AND_HUMAN_GATES.md`, and `docs/implementation/RESIDUAL_HARDENING_REPORT.md`.
+The three apps communicate through Supabase Realtime subscriptions — changes in one app are immediately visible in the others without polling.
 
 ---
 

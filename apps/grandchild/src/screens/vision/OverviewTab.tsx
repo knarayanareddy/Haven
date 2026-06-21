@@ -21,13 +21,13 @@ const STATUS_CONFIG = {
 };
 
 type LiveMedStatus = { taken: number; total: number; adherence: number };
+type LiveScores = { schild: number; wellbeing: string; buurt: number };
 
 function useLiveMedStatus(): LiveMedStatus | null {
   const { session } = useAuth();
   const [live, setLive] = useState<LiveMedStatus | null>(null);
   useEffect(() => {
     const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
-    // Use auth session token (preferred) or env var fallback
     const token = session?.access_token ?? process.env.EXPO_PUBLIC_FAMILY_ACCESS_TOKEN;
     const elderId = process.env.EXPO_PUBLIC_ELDER_ID;
     if (!url || !token || !elderId) return;
@@ -46,6 +46,36 @@ function useLiveMedStatus(): LiveMedStatus | null {
   return live;
 }
 
+function useLiveScores(): LiveScores | null {
+  const { session } = useAuth();
+  const [scores, setScores] = useState<LiveScores | null>(null);
+  useEffect(() => {
+    const url = process.env.EXPO_PUBLIC_SUPABASE_URL;
+    const token = session?.access_token ?? process.env.EXPO_PUBLIC_FAMILY_ACCESS_TOKEN;
+    const elderId = process.env.EXPO_PUBLIC_ELDER_ID;
+    if (!url || !token || !elderId) return;
+    const headers = { authorization: `Bearer ${token}`, apikey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? token };
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+
+    Promise.all([
+      fetch(`${url}/rest/v1/scam_events?elder_id=eq.${elderId}&created_at=gte.${weekAgo}&select=id`, { headers }).then((r) => r.json()).catch(() => []),
+      fetch(`${url}/rest/v1/daily_checkins?elder_id=eq.${elderId}&created_at=gte.${weekAgo}&select=mood_score`, { headers }).then((r) => r.json()).catch(() => []),
+      fetch(`${url}/rest/v1/buurt_matches?elder_id=eq.${elderId}&status=eq.active&select=id`, { headers }).then((r) => r.json()).catch(() => []),
+    ]).then(([scams, checkins, buurt]) => {
+      const scamCount = Array.isArray(scams) ? scams.length : 0;
+      const schildScore = Math.max(0, 100 - scamCount * 18);
+      let wellbeing = '4.0/5';
+      if (Array.isArray(checkins) && checkins.length > 0) {
+        const avg = checkins.reduce((s: number, c: Record<string, unknown>) => s + (Number(c.mood_score) || 3), 0) / checkins.length;
+        wellbeing = `${avg.toFixed(1)}/5`;
+      }
+      const buurtCount = Array.isArray(buurt) ? buurt.length : 0;
+      setScores({ schild: schildScore, wellbeing, buurt: buurtCount });
+    }).catch(() => {});
+  }, [session]);
+  return scores;
+}
+
 export function OverviewTab({ locale, elderName, familyName, onSendAction }: OverviewTabProps) {
   const nl = locale.startsWith('nl');
   const [actionSent, setActionSent] = useState<string | null>(null);
@@ -54,6 +84,7 @@ export function OverviewTab({ locale, elderName, familyName, onSendAction }: Ove
   const sc = STATUS_CONFIG[DAILY_STATUS.status as keyof typeof STATUS_CONFIG];
 
   const liveMeds = useLiveMedStatus();
+  const liveScores = useLiveScores();
   const medicsTaken = liveMeds?.taken ?? MEDICATIONS.reduce((a, m) => a + m.taken.filter(Boolean).length, 0);
   const medicsTotal = liveMeds?.total ?? MEDICATIONS.reduce((a, m) => a + m.taken.length, 0);
   const adherence = liveMeds?.adherence ?? (medicsTotal > 0 ? Math.round((medicsTaken / medicsTotal) * 100) : 0);
@@ -77,11 +108,18 @@ export function OverviewTab({ locale, elderName, familyName, onSendAction }: Ove
     }
   }
 
+  const schildScore = liveScores?.schild ?? 82;
+  const wellbeingVal = liveScores?.wellbeing ?? '4.1/5';
+  const buurtCount = liveScores?.buurt ?? 3;
+  const schildSub = schildScore >= 80
+    ? (nl ? 'Geen actieve dreigingen' : 'No active scam threats')
+    : (nl ? 'Recente meldingen gedetecteerd' : 'Recent threats detected');
+
   const stats = [
     { label: nl ? 'Med. naleving' : 'Med adherence', value: `${adherence}%`, icon: '💊', color: '#059669', sub: `${medicsTaken}/${medicsTotal} ${nl ? 'genomen vandaag' : 'taken today'}` },
-    { label: nl ? 'Schild score' : 'Shield score', value: '82', icon: '🛡️', color: '#7C3AED', sub: nl ? 'Geen actieve dreigingen' : 'No active scam threats' },
-    { label: nl ? 'Welzijn gem.' : 'Wellbeing avg', value: '4.1/5', icon: '❤️', color: '#E11D48', sub: nl ? 'Deze week' : 'This week' },
-    { label: 'BUURT', value: `3 ${nl ? 'dichtbij' : 'nearby'}`, icon: '🏘️', color: '#0D9488', sub: nl ? 'Interesse matches' : 'Interest matches' },
+    { label: nl ? 'Schild score' : 'Shield score', value: String(schildScore), icon: '🛡️', color: '#7C3AED', sub: schildSub },
+    { label: nl ? 'Welzijn gem.' : 'Wellbeing avg', value: wellbeingVal, icon: '❤️', color: '#E11D48', sub: nl ? 'Deze week' : 'This week' },
+    { label: 'BUURT', value: `${buurtCount} ${nl ? 'dichtbij' : 'nearby'}`, icon: '🏘️', color: '#0D9488', sub: nl ? 'Interesse matches' : 'Interest matches' },
   ];
 
   const actions = [

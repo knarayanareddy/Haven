@@ -1,6 +1,6 @@
 // ─── Vision Family Dashboard: Main Container (6 tabs) ───
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, Platform, StatusBar } from 'react-native';
+import { Alert, View, TouchableOpacity, Text, Platform, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@haven/ui/src/tokens';
 import { LanguageToggle } from '@haven/i18n';
@@ -58,9 +58,10 @@ export function FamilyDashboard({ locale = 'nl-NL' }: FamilyDashboardProps) {
     }
 
     if (!supabaseUrl || !accessToken || !familyMemberId) {
-      throw new Error(nl
+      Alert.alert('HAVEN', nl
         ? 'Log eerst in om berichten te versturen.'
         : 'Please log in to send messages.');
+      return;
     }
 
     const messageMap: Record<string, { type: string; content_nl: string; content_en: string }> = {

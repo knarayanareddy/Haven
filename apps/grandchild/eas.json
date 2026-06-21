@@ -37,7 +37,9 @@
         "image": "latest"
       },
       "env": {
-        "EXPO_PUBLIC_HAVEN_ENV": "staging"
+        "EXPO_PUBLIC_HAVEN_ENV": "staging",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://vaarqsmufctmjwnblynj.supabase.co",
+        "EXPO_PUBLIC_ELDER_ID": "00000000-0000-0000-0000-000000000001"
       }
     },
     "production": {

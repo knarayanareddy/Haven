@@ -4,8 +4,21 @@
     "slug": "haven-grandchild",
     "scheme": "havenhello",
     "orientation": "portrait",
+    "userInterfaceStyle": "light",
     "ios": { "bundleIdentifier": "nl.haven.grandchild" },
-    "android": { "package": "nl.haven.grandchild" },
+    "android": {
+      "package": "nl.haven.grandchild",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET"
+      ]
+    },
+    "plugins": [
+      ["expo-audio", {
+        "microphonePermission": "Allow HAVEN Hello to record your voice for Familiar Voice profiles."
+      }],
+      "expo-secure-store"
+    ],
     "extra": {
       "eas": {
         "projectId": "b9cef469-3078-4162-81d5-5a53bb6abcbe"

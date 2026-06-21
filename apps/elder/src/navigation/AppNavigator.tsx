@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { productionScreens } from '@haven/schema/src/screenSchema';
 import { ElderScreen } from '../screens/ElderScreen';
 import { LoginScreen } from '../screens/LoginScreen';
 import { useAuth } from '../auth/AuthProvider';
 
 export type ElderStackParamList = Record<string, undefined>;
-const Stack = createNativeStackNavigator<ElderStackParamList>();
 
 export function AppNavigator() {
   const { session, isReady } = useAuth();
+  const [activeScreenId, setActiveScreenId] = useState('HOME');
+
+  const onNavigate = useCallback((screenId: string) => {
+    setActiveScreenId(screenId);
+  }, []);
 
   if (!isReady) {
     return (
@@ -24,9 +27,5 @@ export function AppNavigator() {
     return <LoginScreen />;
   }
 
-  return (
-    <Stack.Navigator initialRouteName="HOME" screenOptions={{ headerShown: false, animation: 'none' }}>
-      {productionScreens.map((screen) => <Stack.Screen key={screen.screenId} name={screen.screenId} component={ElderScreen} />)}
-    </Stack.Navigator>
-  );
+  return <ElderScreen screenId={activeScreenId} onNavigate={onNavigate} />;
 }

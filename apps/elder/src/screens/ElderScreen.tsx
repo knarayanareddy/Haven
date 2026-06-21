@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { productionScreens } from '@haven/schema/src/screenSchema';
 import { useTranslation } from '@haven/i18n';
 import type { Locale } from '@haven/contracts/src/haven';
 import { ScreenRenderer, ScreenContext, ElderProfile, FamilyMember, MedicationRow, TaskRow, MessageRow, ScamEventRow, BuurtRow, VisitLogRow } from '../renderer/ScreenRenderer';
-import { ElderStackParamList } from '../navigation/AppNavigator';
 import { useHavenActions } from '../hooks/useHavenActions';
 import { useElderData } from '../hooks/useElderData';
 import { useAuth } from '../auth/AuthProvider';
 import { initializeAndroidDozeGuard } from '../services/dozeGuard';
 
-type Props = NativeStackScreenProps<ElderStackParamList>;
+interface Props {
+  screenId: string;
+  onNavigate: (screenId: string) => void;
+}
 
 function sessionUserId(session: { access_token?: string } | null): string | null {
   const directUser = (session as unknown as { user?: { id?: string } } | null)?.user?.id;
@@ -59,11 +60,11 @@ function loadShell(elderId: string, locale: Locale, t: any): {
   };
 }
 
-export function ElderScreen({ route, navigation }: Props) {
+export function ElderScreen({ screenId, onNavigate }: Props) {
   useEffect(() => {
     initializeAndroidDozeGuard().catch(() => undefined);
   }, []);
-  const schema = productionScreens.find((screen) => screen.screenId === route.name) ?? productionScreens[0];
+  const schema = productionScreens.find((screen) => screen.screenId === screenId) ?? productionScreens[0];
   const actions = useHavenActions(schema.screenId);
   const { session } = useAuth();
   const { locale, t } = useTranslation();
@@ -84,16 +85,11 @@ export function ElderScreen({ route, navigation }: Props) {
     onPrimaryAction: (actionId: string) => {
       if (actionId.startsWith('NAV_')) {
         const target = actionId.replace('NAV_', '');
-        try {
-          navigation.navigate(target as never);
-        } catch (e) {
-          console.warn('[HAVEN] Navigation error:', e);
-        }
+        onNavigate(target);
         return;
       }
       actions.handlePrimaryAction(actionId);
     },
   };
-  void session;
   return <ScreenRenderer schema={schema} context={ctx} />;
 }

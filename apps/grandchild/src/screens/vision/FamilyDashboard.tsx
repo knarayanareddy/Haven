@@ -130,31 +130,32 @@ export function FamilyDashboard({ locale = 'nl-NL' }: FamilyDashboardProps) {
         </View>
       </View>
 
-      {/* Tabs */}
-      <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: colors.mist, backgroundColor: colors.paper }}>
+      {/* Content */}
+      <View style={{ flex: 1 }}>
+        {renderTab()}
+      </View>
+
+      {/* Fixed Bottom Tab Bar */}
+      <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.mist, backgroundColor: colors.paper, paddingBottom: Platform.OS === 'android' ? 4 : 20 }}>
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab.id}
             accessibilityRole="tab"
             onPress={() => setActiveTab(tab.id)}
             style={{
-              flex: 1, paddingVertical: 8, alignItems: 'center',
-              borderBottomWidth: 2,
-              borderBottomColor: activeTab === tab.id ? '#3B82F6' : 'transparent',
+              flex: 1, paddingVertical: 10, alignItems: 'center',
+              borderTopWidth: 2,
+              borderTopColor: activeTab === tab.id ? '#3B82F6' : 'transparent',
             }}
           >
-            <Text style={{ fontSize: 14 }}>{tab.icon}</Text>
+            <Text style={{ fontSize: 20 }}>{tab.icon}</Text>
             <Text style={{
-              fontSize: 9, fontWeight: '700',
+              fontSize: 10, fontWeight: '700',
               color: activeTab === tab.id ? '#3B82F6' : '#6B7280',
+              marginTop: 2,
             }}>{tab.label}</Text>
           </TouchableOpacity>
         ))}
-      </View>
-
-      {/* Content */}
-      <View style={{ flex: 1 }}>
-        {renderTab()}
       </View>
     </SafeAreaView>
   );

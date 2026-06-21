@@ -620,37 +620,37 @@ export function ScreenRenderer({ schema, context }: ScreenRendererProps) {
         <Text style={{ fontSize: 16, color: colors.pewter, fontWeight: '700' }}>{locale === 'nl-NL' ? `${titleEn} · ${schema.maxPrimaryItems} kaarten` : `${titleNl} · ${schema.maxPrimaryItems} cards`}</Text>
         <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '700' }}>{locale === 'nl-NL' ? 'Offline-cache' : 'Offline cache'}: {schema.offlineCacheTtlSeconds}s · {schema.emergencyButton ? (locale === 'nl-NL' ? 'Noodknop aanwezig' : 'Emergency access available') : (locale === 'nl-NL' ? 'Geen noodknop' : 'No emergency access')}</Text>
       </View>
-      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 160, gap: 12 }}>
+      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 80, gap: 12 }}>
         {renderFor(schema.screenId, context)}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
-          {/* ─── Phase 1.2: Simplified home — only primary screens + MORE ─── */}
+      </ScrollView>
+      {/* ─── Fixed Bottom Tab Bar ─── */}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.paper, borderTopWidth: 1, borderTopColor: colors.mist, paddingVertical: 8, paddingHorizontal: 12 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 4 }}>
           {productionScreens
             .filter((screen) => screen.isPrimary && screen.screenId !== 'MORE')
             .map((screen) => (
-            <TouchableOpacity key={screen.screenId} accessibilityRole="button" accessibilityLabel={`Open ${locale === 'nl-NL' ? screen.titleNl : screen.titleEn}`} onPress={() => context.onPrimaryAction(`NAV_${screen.screenId}`)} style={{ minHeight: 56, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, backgroundColor: schema.screenId === screen.screenId ? colors.slate : colors.paper, borderWidth: 1, borderColor: colors.mist }}>
-              <Text style={{ color: schema.screenId === screen.screenId ? 'white' : colors.slate, fontSize: 16, fontWeight: '900' }}>{locale === 'nl-NL' ? screen.titleNl : screen.titleEn}</Text>
+            <TouchableOpacity key={screen.screenId} accessibilityRole="button" accessibilityLabel={`Open ${locale === 'nl-NL' ? screen.titleNl : screen.titleEn}`} onPress={() => context.onPrimaryAction(`NAV_${screen.screenId}`)} style={{ minHeight: 48, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 24, backgroundColor: schema.screenId === screen.screenId ? colors.slate : 'transparent' }}>
+              <Text style={{ color: schema.screenId === screen.screenId ? 'white' : colors.slate, fontSize: 15, fontWeight: '900' }}>{locale === 'nl-NL' ? screen.titleNl : screen.titleEn}</Text>
             </TouchableOpacity>
           ))}
-          {/* MORE button — shows secondary screens */}
           <TouchableOpacity
             key="MORE"
             accessibilityRole="button"
             accessibilityLabel={locale === 'nl-NL' ? 'Meer' : 'More'}
             onPress={() => context.onPrimaryAction('NAV_MORE')}
             style={{
-              minHeight: 56, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 16,
-              backgroundColor: schema.screenId === 'MORE' ? colors.slate : colors.paper,
-              borderWidth: 1, borderColor: colors.mist,
+              minHeight: 48, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 24,
+              backgroundColor: schema.screenId === 'MORE' ? colors.slate : 'transparent',
               flexDirection: 'row', alignItems: 'center', gap: 6,
             }}
           >
-            <Text style={{ fontSize: 18 }}>⋯</Text>
-            <Text style={{ color: schema.screenId === 'MORE' ? 'white' : colors.slate, fontSize: 16, fontWeight: '900' }}>
+            <Text style={{ fontSize: 16 }}>⋯</Text>
+            <Text style={{ color: schema.screenId === 'MORE' ? 'white' : colors.slate, fontSize: 15, fontWeight: '900' }}>
               {locale === 'nl-NL' ? 'Meer' : 'More'}
             </Text>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
       {/* ─── Phase 1.1: Floating voice button (always-visible mic) ─── */}
       {schema.showFloatingVoice ? (
         <FloatingVoiceButton

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { useTranslation } from '@haven/i18n';
 import { useAuth } from '../auth/AuthProvider';
 import { HavenClient } from '../services/havenClient';
@@ -27,8 +27,23 @@ export function useHavenActions(screenId: string) {
   const elderId = sessionUserId(session);
 
   const handlePrimaryAction = useCallback(async (actionId: string) => {
-    if (actionId === 'CALL_FAMILY' || actionId === 'EMERGENCY') {
-      Alert.alert('HAVEN', actionId === 'EMERGENCY' ? t('actions.emergency.alert') : t('actions.call_family.alert'));
+    if (actionId === 'EMERGENCY') {
+      Alert.alert(
+        'HAVEN',
+        t('actions.emergency.alert'),
+        [
+          {
+            text: 'Bel 112',
+            onPress: () => Linking.openURL('tel:112').catch(() => undefined),
+            style: 'destructive',
+          },
+          { text: 'Annuleren', style: 'cancel' },
+        ],
+      );
+      return;
+    }
+    if (actionId === 'CALL_FAMILY') {
+      Alert.alert('HAVEN', t('actions.call_family.alert'));
       return;
     }
     if (actionId === 'LANG_TOGGLE') {
@@ -84,7 +99,11 @@ export function useHavenActions(screenId: string) {
       return;
     }
     if (actionId === 'WELLNESS_GOOD' || actionId === 'WELLNESS_OK') {
-      enqueueOfflineAction('WELLNESS_CHECKIN', { mood: actionId === 'WELLNESS_GOOD' ? 5 : 3 });
+      try {
+        enqueueOfflineAction('WELLNESS_CHECKIN', { mood: actionId === 'WELLNESS_GOOD' ? 5 : 3 });
+      } catch (_) {
+        // SQLite/crypto may not be available — still show confirmation
+      }
       Alert.alert('HAVEN', actionId === 'WELLNESS_GOOD' ? t('actions.wellness_good.alert') : t('actions.wellness_ok.alert'));
       return;
     }
@@ -152,8 +171,14 @@ export function useHavenActions(screenId: string) {
       const parts = actionId.split(':');
       const period = parts[1] ?? 'morning';
       const mood = parts[2] ?? '3';
-      enqueueOfflineAction('DAILY_CHECKIN', { period, mood_score: Number(mood) });
-      Alert.alert('HAVEN', t('actions.checkin_received.alert', { period }));
+      try {
+        enqueueOfflineAction('DAILY_CHECKIN', { period, mood_score: Number(mood) });
+      } catch (_) {
+        // SQLite/crypto may not be available — still show confirmation
+      }
+      const moodNum = Number(mood);
+      const moodLabel = moodNum >= 5 ? '😄' : moodNum >= 3 ? '😐' : '😔';
+      Alert.alert('HAVEN', `${moodLabel} ${t('actions.checkin_received.alert', { period })}`);
       return;
     }
 

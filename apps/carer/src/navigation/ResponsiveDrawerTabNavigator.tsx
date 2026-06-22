@@ -4,8 +4,9 @@ import { useResponsiveLayout } from '../services/platform';
 import { useAccessibilityInfo } from '../services/accessibility';
 import { useTranslation, LanguageToggle } from '@haven/i18n';
 import { useAuth } from '../auth/AuthProvider';
-import { CarerClient } from '../services/havenClient';
+import { useCarerClient } from '../hooks/useCarerClient';
 import { enqueueOffline, getQueueSize } from '../services/offlineQueue';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { VandaagTab } from '../screens/vision/VandaagTab';
 import { HandoverTab } from '../screens/vision/HandoverTab';
 import { MARTab } from '../screens/vision/MARTab';
@@ -33,7 +34,7 @@ export function ResponsiveDrawerTabNavigator({ navigation }: any) {
   const nl = locale.startsWith('nl');
   const TABS = getTabs(nl);
   const [activeTab, setActiveTab] = useState<TabId>('today');
-  const [isOnline] = useState(true);
+  const isOnline = useNetworkStatus();
   const [offlineCount, setOfflineCount] = useState(getQueueSize());
   const elderName = 'Margaret van den Berg';
   const elderId = process.env.EXPO_PUBLIC_CARER_ELDER_IDS?.split(',')[0] ?? '00000000-0000-0000-0000-000000000001';
@@ -43,18 +44,18 @@ export function ResponsiveDrawerTabNavigator({ navigation }: any) {
     return () => clearInterval(interval);
   }, []);
 
+  const carerClient = useCarerClient();
+
   const handleCompleteVisit = useCallback(async () => {
-    const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-    if (!session || !supabaseUrl) {
+    if (!carerClient) {
       enqueueOffline('visit_log', { elder_id: elderId, visit_date: new Date().toISOString().slice(0, 10), check_out_time: new Date().toISOString() });
       Alert.alert('HAVEN', nl ? 'Bezoek lokaal afgerond — synchroniseert zodra online.' : 'Visit saved locally — will sync when online.');
       return;
     }
     try {
-      const client = new CarerClient({ supabaseUrl, accessToken: session.access_token });
-      await client.visitLog({
+      await carerClient.visitLog({
         elder_id: elderId,
-        carer_id: (() => { try { const [, p] = session.access_token.split('.'); return JSON.parse(atob(p))?.sub; } catch { return undefined; } })(),
+        carer_id: (() => { try { const [, p] = session!.access_token.split('.'); return JSON.parse(atob(p))?.sub; } catch { return undefined; } })(),
         visit_date: new Date().toISOString().slice(0, 10),
         check_out_time: new Date().toISOString(),
         notes_nl: 'Medicatiecontrole, Welzijnscheck',
@@ -64,7 +65,7 @@ export function ResponsiveDrawerTabNavigator({ navigation }: any) {
       enqueueOffline('visit_log', { elder_id: elderId, visit_date: new Date().toISOString().slice(0, 10), check_out_time: new Date().toISOString() });
       Alert.alert('HAVEN', nl ? 'Opslaan mislukt — lokaal bewaard voor later.' : 'Save failed — stored locally for later.');
     }
-  }, [session, elderId, nl]);
+  }, [carerClient, session, elderId, nl]);
 
   function renderTab() {
     switch (activeTab) {

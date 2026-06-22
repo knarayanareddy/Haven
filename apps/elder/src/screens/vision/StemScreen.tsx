@@ -10,7 +10,7 @@ import { pillarGradients } from '@haven/ui/src/visionColors';
 // DEMO: mock voice memory — acceptable fixture (VAPI handles real conversations)
 import { VOICE_MEMORY } from '@haven/ui/src/mockData';
 import { useAuth } from '../../auth/AuthProvider';
-import { HavenClient } from '../../services/havenClient';
+import { useHavenClient } from '../../hooks/useHavenClient';
 import { startVoiceRecording } from '../../services/voiceRecorder';
 import { translateElderError } from '../../services/errorMapper';
 import { useVapiCall } from '@haven/vapi/src/useVapiCall';
@@ -49,7 +49,7 @@ function VisionStemInner({ ctx }: { ctx: ScreenContext }) {
   const nl = locale === 'nl-NL';
   const { session } = useAuth();
   const elderId = sessionUserId(session);
-  const client = session ? new HavenClient({ supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!, accessToken: session.access_token }) : null;
+  const client = useHavenClient();
   const vapiAvailable = VapiVoiceService.isAvailable();
 
   // VAPI real-time voice hook

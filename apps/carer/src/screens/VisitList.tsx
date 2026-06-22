@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '@haven/ui/src/tokens';
 import { useAuth } from '../auth/AuthProvider';
-import { CarerClient } from '../services/havenClient';
+import { useCarerClient } from '../hooks/useCarerClient';
 import { enqueueOffline, getQueueSize } from '../services/offlineQueue';
 
 interface ElderVisit {
@@ -33,6 +33,7 @@ function sessionUserId(session: { access_token?: string } | null): string | null
 
 export function VisitList({ navigation }: { navigation: { navigate: (screen: string, params?: Record<string, string>) => void } }) {
   const { session } = useAuth();
+  const carerClient = useCarerClient();
   const elderIds = useMemo(() => (process.env.EXPO_PUBLIC_CARER_ELDER_IDS ?? '').split(',').map((id: string) => id.trim()).filter(Boolean), []);
   const [visits, setVisits] = useState<ElderVisit[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -52,14 +53,10 @@ export function VisitList({ navigation }: { navigation: { navigate: (screen: str
       }
 
       try {
-        const client = new CarerClient({
-          supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!,
-          accessToken: session.access_token,
-        });
         const shiftEnd = new Date().toISOString();
         const shiftStart = new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString();
         const rows = await Promise.all(elderIds.map(async (elderId: string) => {
-          const result = await client.shiftSummary(elderId, shiftStart, shiftEnd);
+          const result = await carerClient!.shiftSummary(elderId, shiftStart, shiftEnd);
           const summary = result.summary as {
             outstanding_tasks?: Array<{ medication_name: string; scheduled_time: string }>;
             handover_notes?: Array<{ concerns_nl: string | null }>;
@@ -102,8 +99,7 @@ export function VisitList({ navigation }: { navigation: { navigate: (screen: str
     try {
       const carerId = sessionUserId(session);
       if (!carerId) throw new Error('Missing carer profile for signed-in session');
-      const client = new CarerClient({ supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!, accessToken: session.access_token });
-      await client.visitLog({
+      await carerClient!.visitLog({
         elder_id: elderId,
         carer_id: carerId,
         visit_date: completedAt.slice(0, 10),

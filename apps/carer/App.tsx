@@ -1,25 +1,33 @@
-import React from 'react';
-import { Platform, StatusBar, View, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Platform, StatusBar, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { I18nProvider } from '@haven/i18n';
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
 import { HandoverForm } from './src/screens/HandoverForm';
 import { ShiftSummary } from './src/screens/ShiftSummary';
 import { ResponsiveDrawerTabNavigator } from './src/navigation/ResponsiveDrawerTabNavigator';
 import { LoginScreen } from './src/screens/LoginScreen';
+import { CarerErrorBoundary } from './src/components/CarerErrorBoundary';
 
-type CarerStackParamList = {
-  Main: undefined;
-  HandoverForm: { elder_id: string; elder_name: string };
-  ShiftSummary: undefined;
-};
-
-const Stack = createNativeStackNavigator<CarerStackParamList>();
+type CarerScreen =
+  | { name: 'Main' }
+  | { name: 'HandoverForm'; params: { elder_id: string; elder_name: string } }
+  | { name: 'ShiftSummary' };
 
 function AppContent() {
   const { session, isReady } = useAuth();
+  const [screen, setScreen] = useState<CarerScreen>({ name: 'Main' });
+
+  const navigation = useMemo(() => ({
+    navigate: (name: string, params?: Record<string, unknown>) => {
+      setScreen({ name, params } as unknown as CarerScreen);
+    },
+    goBack: () => setScreen({ name: 'Main' }),
+  }), []);
+
+  const route = useMemo(() => ({
+    params: 'params' in screen ? screen.params : {},
+  }), [screen]);
 
   if (!isReady) {
     return (
@@ -33,29 +41,48 @@ function AppContent() {
     return <LoginScreen />;
   }
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Main"
-        screenOptions={{
-          headerStyle: { backgroundColor: '#2C3E6B' },
-          headerTintColor: '#FFFFFF',
-          headerTitleStyle: { fontWeight: '900', fontSize: 20 },
-        }}
+  const renderHeader = (title: string) => (
+    <View style={{ backgroundColor: '#2C3E6B', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 }}>
+      <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel="Terug"
+        onPress={() => setScreen({ name: 'Main' })}
+        style={{ paddingHorizontal: 8, paddingVertical: 4 }}
       >
-        <Stack.Screen name="Main" component={ResponsiveDrawerTabNavigator as any} options={{ headerShown: false }} />
-        <Stack.Screen name="HandoverForm" component={HandoverForm as any} options={{ title: 'Handover Notitie' }} />
-        <Stack.Screen name="ShiftSummary" component={ShiftSummary as any} options={{ title: 'Overdracht' }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        <Text style={{ color: '#FFFFFF', fontSize: 22, fontWeight: '900' }}>←</Text>
+      </TouchableOpacity>
+      <Text style={{ color: '#FFFFFF', fontWeight: '900', fontSize: 20, marginLeft: 8 }}>{title}</Text>
+    </View>
   );
+
+  if (screen.name === 'HandoverForm') {
+    return (
+      <View style={{ flex: 1 }}>
+        {renderHeader('Handover Notitie')}
+        <HandoverForm route={route as any} navigation={navigation} />
+      </View>
+    );
+  }
+
+  if (screen.name === 'ShiftSummary') {
+    return (
+      <View style={{ flex: 1 }}>
+        {renderHeader('Overdracht')}
+        <ShiftSummary />
+      </View>
+    );
+  }
+
+  return <ResponsiveDrawerTabNavigator navigation={navigation} />;
 }
 
 export default function App() {
   const content = (
     <AuthProvider>
       <I18nProvider initialLocale="nl-NL">
-        <AppContent />
+        <CarerErrorBoundary>
+          <AppContent />
+        </CarerErrorBoundary>
       </I18nProvider>
     </AuthProvider>
   );

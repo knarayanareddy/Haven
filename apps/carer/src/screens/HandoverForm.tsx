@@ -3,7 +3,7 @@ import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'reac
 import { colors } from '@haven/ui/src/tokens';
 import { useTranslation } from '@haven/i18n';
 import { useAuth } from '../auth/AuthProvider';
-import { CarerClient } from '../services/havenClient';
+import { useCarerClient } from '../hooks/useCarerClient';
 import { enqueueOffline } from '../services/offlineQueue';
 
 interface HandoverFormProps {
@@ -14,6 +14,7 @@ interface HandoverFormProps {
 export function HandoverForm({ route, navigation }: HandoverFormProps) {
   const { elder_id, elder_name } = route.params;
   const { session } = useAuth();
+  const carerClient = useCarerClient();
   const { t } = useTranslation();
   
   const [appetite, setAppetite] = useState(3);
@@ -42,15 +43,8 @@ export function HandoverForm({ route, navigation }: HandoverFormProps) {
   const submitOnline = useCallback(async () => {
     setSubmitting(true);
     try {
-      const client = session
-        ? new CarerClient({
-            supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!,
-            accessToken: session.access_token,
-          })
-        : null;
-
-      if (client) {
-        const result = await client.handoverNote({
+      if (carerClient) {
+        const result = await carerClient.handoverNote({
           elder_id,
           appetite,
           mood,

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { colors } from '@haven/ui/src/tokens';
 import { useAuth } from '../../auth/AuthProvider';
-import { CarerClient } from '../../services/havenClient';
+import { useCarerClient } from '../../hooks/useCarerClient';
 import { enqueueOffline } from '../../services/offlineQueue';
 
 interface HandoverTabProps {
@@ -34,6 +34,7 @@ function getRecipients(nl: boolean) {
 export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
   const nl = locale.startsWith('nl');
   const { session } = useAuth();
+  const carerClient = useCarerClient();
   const [form, setForm] = useState<Record<string, string>>({ appetite: '', mood: '', mobility: '', concerns: '', administered: '' });
   const [recipients, setRecipients] = useState<string[]>(['family']);
   const [saved, setSaved] = useState(false);
@@ -65,11 +66,7 @@ export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
     // Online path: call fn-carer-handover-note
     setSubmitting(true);
     try {
-      const client = new CarerClient({
-        supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!,
-        accessToken: session.access_token,
-      });
-      const result = await client.handoverNote({
+      const result = await carerClient!.handoverNote({
         elder_id: elderId,
         appetite: form.appetite ? 3 : 1,
         mood: form.mood ? 3 : 1,

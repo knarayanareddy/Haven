@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useTranslation } from '@haven/i18n';
 import { useAuth } from '../auth/AuthProvider';
-import { HavenClient } from '../services/havenClient';
+import { useHavenClient } from './useHavenClient';
 import { enqueueOfflineAction } from '../services/sqliteOfflineQueue';
 import { classifyNetworkError } from '../state/networkResilience';
 import { translateElderError } from '../services/errorMapper';
@@ -23,7 +23,7 @@ function sessionUserId(session: { access_token?: string } | null): string | null
 export function useHavenActions(screenId: string) {
   const { session } = useAuth();
   const { locale, setLocale, t } = useTranslation();
-  const client = session ? new HavenClient({ supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!, accessToken: session.access_token }) : null;
+  const client = useHavenClient();
   const elderId = sessionUserId(session);
 
   const handlePrimaryAction = useCallback(async (actionId: string) => {

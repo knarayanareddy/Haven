@@ -8,7 +8,7 @@ import { colors } from '@haven/ui/src/tokens';
 import { ProgressBar } from '@haven/ui/src/visionComponents';
 import { MEDICATIONS } from '@haven/ui/src/mockData';
 import { useAuth } from '../../auth/AuthProvider';
-import { HavenClient } from '../../services/havenClient';
+import { useHavenClient } from '../../hooks/useHavenClient';
 import { enqueueOfflineAction } from '../../services/sqliteOfflineQueue';
 import { classifyNetworkError } from '../../state/networkResilience';
 import { translateElderError } from '../../services/errorMapper';
@@ -49,7 +49,7 @@ function VisionPillsInner({ ctx }: { ctx: ScreenContext }) {
   const { locale, medications: ctxMeds } = ctx;
   const { session } = useAuth();
   const elderId = sessionUserId(session);
-  const client = session ? new HavenClient({ supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!, accessToken: session.access_token }) : null;
+  const client = useHavenClient();
 
   const [liveMeds, setLiveMeds] = useState<MedItem[] | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);

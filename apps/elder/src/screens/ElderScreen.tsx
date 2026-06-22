@@ -11,6 +11,7 @@ import { initializeAndroidDozeGuard } from '../services/dozeGuard';
 interface Props {
   screenId: string;
   onNavigate: (screenId: string) => void;
+  onBack?: () => void;
 }
 
 function sessionUserId(session: { access_token?: string } | null): string | null {
@@ -60,7 +61,7 @@ function loadShell(elderId: string, locale: Locale, t: any): {
   };
 }
 
-export function ElderScreen({ screenId, onNavigate }: Props) {
+export function ElderScreen({ screenId, onNavigate, onBack }: Props) {
   useEffect(() => {
     initializeAndroidDozeGuard().catch(() => undefined);
   }, []);
@@ -91,5 +92,5 @@ export function ElderScreen({ screenId, onNavigate }: Props) {
       actions.handlePrimaryAction(actionId);
     },
   };
-  return <ScreenRenderer schema={schema} context={ctx} />;
+  return <ScreenRenderer schema={schema} context={ctx} onBack={onBack} />;
 }

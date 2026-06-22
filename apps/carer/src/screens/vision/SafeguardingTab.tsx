@@ -4,7 +4,7 @@ import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'reac
 import { colors } from '@haven/ui/src/tokens';
 import { StatusBadge } from '@haven/ui/src/visionComponents';
 import { useAuth } from '../../auth/AuthProvider';
-import { CarerClient } from '../../services/havenClient';
+import { useCarerClient } from '../../hooks/useCarerClient';
 import { enqueueOffline } from '../../services/offlineQueue';
 // DEMO: mock safeguarding — acceptable visual fixture for hackathon
 import { SAFEGUARDING_ITEMS } from '@haven/ui/src/mockData';
@@ -20,6 +20,7 @@ const MELDCODE_STEPS = [
 export function SafeguardingTab({ locale }: { locale: string }) {
   const nl = locale.startsWith('nl');
   const { session } = useAuth();
+  const carerClient = useCarerClient();
   const [showForm, setShowForm] = useState(false);
   const [severity, setSeverity] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
   const [summary, setSummary] = useState('');
@@ -38,9 +39,8 @@ export function SafeguardingTab({ locale }: { locale: string }) {
         enqueueOffline('incident_report', { elder_id: elderId, severity, summary_nl: summary });
         Alert.alert('HAVEN', nl ? 'Lokaal opgeslagen — synchroniseert zodra online.' : 'Saved locally — will sync when online.');
       } else {
-        const client = new CarerClient({ supabaseUrl, accessToken: session.access_token });
         const carerId = (() => { try { const [, p] = session.access_token.split('.'); return JSON.parse(atob(p))?.sub; } catch { return undefined; } })();
-        await client.incidentReport({ elder_id: elderId, severity, summary_nl: summary, reported_by_id: carerId });
+        await carerClient!.incidentReport({ elder_id: elderId, severity, summary_nl: summary, reported_by_id: carerId });
         Alert.alert('HAVEN', nl ? 'Veiligheidsmelding ingediend!' : 'Safeguarding report submitted!');
       }
       setSummary('');

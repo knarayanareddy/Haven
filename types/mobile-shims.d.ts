@@ -23,6 +23,10 @@ declare module 'react-native' {
     addEventListener: (event: string, handler: (...args: any[]) => void) => { remove: () => void };
   };
   export function useWindowDimensions(): { width: number; height: number; scale: number; fontScale: number };
+  export const AppState: {
+    currentState: string;
+    addEventListener: (event: string, handler: (state: string) => void) => { remove: () => void };
+  };
 }
 
 declare module '@react-native-async-storage/async-storage' {

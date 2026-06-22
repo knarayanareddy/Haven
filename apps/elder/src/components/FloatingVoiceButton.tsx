@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { colors } from '@haven/ui/src/tokens';
 import type { Locale } from '@haven/contracts/src/haven';
 import { useAuth } from '../auth/AuthProvider';
-import { HavenClient } from '../services/havenClient';
+import { useHavenClient } from '../hooks/useHavenClient';
 import { startVoiceRecording, type ActiveVoiceRecording } from '../services/voiceRecorder';
 import { useVapiCall } from '@haven/vapi/src/useVapiCall';
 import { VapiVoiceService } from '@haven/vapi/src/vapiClient';
@@ -29,6 +29,7 @@ function FloatingVoiceButtonComponent({ locale, screenId, voiceFallback, audioVo
   const lastHapticStep = useRef<number>(0);
   const recordingRef = useRef<ActiveVoiceRecording | null>(null);
   const { session } = useAuth();
+  const client = useHavenClient();
   const vapiAvailable = VapiVoiceService.isAvailable();
 
   const vapiConfig = useMemo(() => {
@@ -70,8 +71,7 @@ function FloatingVoiceButtonComponent({ locale, screenId, voiceFallback, audioVo
     setMacosState('processing');
     try {
       const { audioBase64 } = await recording.stop();
-      if (!session) throw new Error(locale === 'nl-NL' ? 'Log eerst in om spraak te gebruiken.' : 'Please sign in before using voice.');
-      const client = new HavenClient({ supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL!, accessToken: session.access_token });
+      if (!session || !client) throw new Error(locale === 'nl-NL' ? 'Log eerst in om spraak te gebruiken.' : 'Please sign in before using voice.');
       const response = await client.voice({
         elder_id: elderId,
         screen_id: screenId,

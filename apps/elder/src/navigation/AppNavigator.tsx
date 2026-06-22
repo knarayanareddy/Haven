@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { productionScreens } from '@haven/schema/src/screenSchema';
 import { ElderScreen } from '../screens/ElderScreen';
@@ -10,10 +10,22 @@ export type ElderStackParamList = Record<string, undefined>;
 export function AppNavigator() {
   const { session, isReady } = useAuth();
   const [activeScreenId, setActiveScreenId] = useState('HOME');
+  const historyRef = useRef<string[]>(['HOME']);
 
   const onNavigate = useCallback((screenId: string) => {
+    historyRef.current = [...historyRef.current, screenId];
     setActiveScreenId(screenId);
   }, []);
+
+  const onBack = useCallback(() => {
+    const history = historyRef.current;
+    if (history.length <= 1) return;
+    history.pop();
+    historyRef.current = history;
+    setActiveScreenId(history[history.length - 1]);
+  }, []);
+
+  const canGoBack = historyRef.current.length > 1;
 
   if (!isReady) {
     return (
@@ -27,5 +39,5 @@ export function AppNavigator() {
     return <LoginScreen />;
   }
 
-  return <ElderScreen screenId={activeScreenId} onNavigate={onNavigate} />;
+  return <ElderScreen screenId={activeScreenId} onNavigate={onNavigate} onBack={canGoBack ? onBack : undefined} />;
 }

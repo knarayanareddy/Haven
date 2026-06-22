@@ -5,7 +5,7 @@ import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'reac
 import { colors } from '@haven/ui/src/tokens';
 import { StatusBadge } from '@haven/ui/src/visionComponents';
 import { useAuth } from '../../auth/AuthProvider';
-import { CarerClient } from '../../services/havenClient';
+import { useCarerClient } from '../../hooks/useCarerClient';
 import { enqueueOffline } from '../../services/offlineQueue';
 // DEMO: mock care visits — fallback when not authenticated
 import { CARE_VISITS } from '@haven/ui/src/mockData';
@@ -25,6 +25,7 @@ interface VisitLog {
 export function VisitsTab({ locale }: { locale: string }) {
   const nl = locale.startsWith('nl');
   const { session } = useAuth();
+  const carerClient = useCarerClient();
   const [visits, setVisits] = useState<VisitLog[] | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newNote, setNewNote] = useState('');
@@ -63,8 +64,7 @@ export function VisitsTab({ locale }: { locale: string }) {
 
     setSubmitting(true);
     try {
-      const client = new CarerClient({ supabaseUrl, accessToken: session.access_token });
-      await client.visitLog({
+      await carerClient!.visitLog({
         elder_id: elderId,
         carer_id: (() => { try { const [, p] = session.access_token.split('.'); return JSON.parse(atob(p))?.sub; } catch { return undefined; } })(),
         visit_date: new Date().toISOString().slice(0, 10),

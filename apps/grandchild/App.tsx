@@ -5,6 +5,7 @@ import { I18nProvider, useTranslation } from '@haven/i18n';
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
 import { FamilyDashboard } from './src/screens/vision/FamilyDashboard';
 import { LoginScreen } from './src/screens/LoginScreen';
+import { GrandchildErrorBoundary } from './src/components/GrandchildErrorBoundary';
 
 function AppContent() {
   const { session, isReady } = useAuth();
@@ -34,7 +35,9 @@ export default function GrandchildApp() {
     <AuthProvider>
       <I18nProvider>
         <SafeAreaProvider>
-          <AppContent />
+          <GrandchildErrorBoundary>
+            <AppContent />
+          </GrandchildErrorBoundary>
         </SafeAreaProvider>
       </I18nProvider>
     </AuthProvider>

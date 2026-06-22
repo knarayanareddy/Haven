@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { productionScreens, ScreenSchema, ScreenId } from '@haven/schema/src/screenSchema';
 import { colors as baseColors, touch } from '@haven/ui/src/tokens';
 import { detectCrisisPhrase } from '../services/crisis';
@@ -576,12 +577,19 @@ function renderScreen(ctx: ScreenContext) {
 }
 
 // ErrorBoundary to prevent screen render crashes from force-closing the app
-class ScreenErrorBoundary extends React.Component<{ locale: Locale; children: React.ReactNode }, { hasError: boolean }> {
+class ScreenErrorBoundary extends React.Component<
+  { locale: Locale; onGoHome?: () => void; children: React.ReactNode },
+  { hasError: boolean }
+> {
   state = { hasError: false };
   static getDerivedStateFromError() { return { hasError: true }; }
   componentDidCatch(error: unknown) {
     console.warn('[HAVEN] Screen render error caught:', error);
   }
+  private handleGoHome = () => {
+    this.setState({ hasError: false });
+    this.props.onGoHome?.();
+  };
   render() {
     if (this.state.hasError) {
       const nl = this.props.locale === 'nl-NL';
@@ -594,6 +602,18 @@ class ScreenErrorBoundary extends React.Component<{ locale: Locale; children: Re
           <Text style={{ fontSize: 16, color: baseColors.pewter, textAlign: 'center' }}>
             {nl ? 'Ga terug naar het startscherm.' : 'Please go back to the home screen.'}
           </Text>
+          {this.props.onGoHome ? (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={nl ? 'Ga naar Home' : 'Go to home screen'}
+              onPress={this.handleGoHome}
+              style={{ minHeight: 48, borderRadius: 20, backgroundColor: baseColors.slate, paddingHorizontal: 24, paddingVertical: 12, marginTop: 8 }}
+            >
+              <Text style={{ color: 'white', fontSize: 20, fontWeight: '900' }}>
+                {nl ? 'Ga naar Home' : 'Go to Home'}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       );
     }
@@ -604,13 +624,14 @@ class ScreenErrorBoundary extends React.Component<{ locale: Locale; children: Re
 export interface ScreenRendererProps {
   schema: ScreenSchema;
   context: ScreenContext;
+  onBack?: () => void;
 }
 
 function hapticTrigger() {
   try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Medium ?? 'medium'); } catch (_) {}
 }
 
-export function ScreenRenderer({ schema, context }: ScreenRendererProps) {
+export function ScreenRenderer({ schema, context, onBack }: ScreenRendererProps) {
   // FIX P1: FONT SCALING Dynamic DB font_size_multiplier scaling baselines
   const fontMult = context?.profile?.fontSizeMultiplier ?? 1.0;
 
@@ -642,12 +663,23 @@ export function ScreenRenderer({ schema, context }: ScreenRendererProps) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.linen }}>
       <View style={{ padding: 20, paddingTop: 8 }}>
+        {onBack ? (
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={locale === 'nl-NL' ? 'Terug' : 'Back'}
+            onPress={onBack}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, minHeight: touch.minimum, paddingVertical: 12, paddingHorizontal: 12 }}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={22} color={colors.slate} />
+            <Text style={{ fontSize: 18, color: colors.slate, fontWeight: '700' }}>{locale === 'nl-NL' ? 'Terug' : 'Back'}</Text>
+          </TouchableOpacity>
+        ) : null}
         <Text accessibilityRole="header" style={{ fontSize: Math.round(30 * fontMult), fontWeight: '900', color: colors.ink }}>{locale === 'nl-NL' ? titleNl : titleEn}</Text>
         <Text style={{ fontSize: 16, color: colors.pewter, fontWeight: '700' }}>{locale === 'nl-NL' ? `${titleEn} · ${schema.maxPrimaryItems} kaarten` : `${titleNl} · ${schema.maxPrimaryItems} cards`}</Text>
         <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '700' }}>{locale === 'nl-NL' ? 'Offline-cache' : 'Offline cache'}: {schema.offlineCacheTtlSeconds}s · {schema.emergencyButton ? (locale === 'nl-NL' ? 'Noodknop aanwezig' : 'Emergency access available') : (locale === 'nl-NL' ? 'Geen noodknop' : 'No emergency access')}</Text>
       </View>
       <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 80, gap: 12 }}>
-        <ScreenErrorBoundary locale={context.locale}>
+        <ScreenErrorBoundary locale={context.locale} onGoHome={() => context.onPrimaryAction('NAV_HOME')}>
           {renderFor(schema.screenId, context)}
         </ScreenErrorBoundary>
       </ScrollView>

@@ -6,7 +6,7 @@ export const colors = {
   paper: '#FFFFFF',
   ink: '#1A1F2E',
   graphite: '#3D4558',
-  pewter: '#6B7490',
+  pewter: '#525A70',
   mist: '#E8EBF2',
   sage: '#4A7B5A',
   sagePale: '#EBF4EE',

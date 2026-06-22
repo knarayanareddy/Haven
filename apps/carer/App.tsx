@@ -1,14 +1,21 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Platform, StatusBar, View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { Nunito_400Regular } from '@expo-google-fonts/nunito/400Regular';
+import { Nunito_700Bold } from '@expo-google-fonts/nunito/700Bold';
+import { Nunito_900Black } from '@expo-google-fonts/nunito/900Black';
 import { I18nProvider } from '@haven/i18n';
 import { AuthProvider, useAuth } from './src/auth/AuthProvider';
 import { HandoverForm } from './src/screens/HandoverForm';
 import { ShiftSummary } from './src/screens/ShiftSummary';
 import { ResponsiveDrawerTabNavigator } from './src/navigation/ResponsiveDrawerTabNavigator';
 import { LoginScreen } from './src/screens/LoginScreen';
+
+SplashScreen.preventAutoHideAsync();
 
 type CarerStackParamList = {
   Main: undefined;
@@ -52,6 +59,20 @@ function AppContent() {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Nunito: Nunito_400Regular,
+    'Nunito-Bold': Nunito_700Bold,
+    'Nunito-Black': Nunito_900Black,
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
+
   const content = (
     <AuthProvider>
       <I18nProvider initialLocale="nl-NL">
@@ -61,7 +82,7 @@ export default function App() {
   );
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider onLayout={onLayoutRootView}>
       {Platform.OS === 'android' ? (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#2C3E6B', paddingTop: StatusBar.currentHeight }}>
           {content}

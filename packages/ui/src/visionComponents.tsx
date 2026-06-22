@@ -5,6 +5,7 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { colors, radius, touch } from './tokens';
 import { statusColors } from './visionColors';
 
@@ -43,7 +44,7 @@ export function GradientCard({ gradient, icon, title, subtitle, badge, onPress, 
         }}
       >
         <View style={{ flex: 1, gap: 4 }}>
-          {icon ? <Text style={{ fontSize: 28 }}>{icon}</Text> : null}
+          {icon ? <MaterialCommunityIcons name={icon as any} size={28} color="#FFFFFF" /> : null}
           <Text style={{ fontSize: 20, fontWeight: '900', color: '#FFFFFF' }}>{title}</Text>
           {subtitle ? <Text style={{ fontSize: 14, fontWeight: '700', color: 'rgba(255,255,255,0.85)' }}>{subtitle}</Text> : null}
         </View>
@@ -128,9 +129,12 @@ export function SubTabBar({ tabs, activeTab, onTabChange }: SubTabBarProps) {
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: tab.id === activeTab ? '900' : '700', color: tab.id === activeTab ? colors.ink : colors.pewter }}>
-            {tab.icon ? `${tab.icon} ` : ''}{tab.label}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            {tab.icon ? <MaterialCommunityIcons name={tab.icon as any} size={16} color={tab.id === activeTab ? colors.ink : colors.pewter} /> : null}
+            <Text style={{ fontSize: 14, fontWeight: tab.id === activeTab ? '900' : '700', color: tab.id === activeTab ? colors.ink : colors.pewter }}>
+              {tab.label}
+            </Text>
+          </View>
         </TouchableOpacity>
       ))}
     </View>
@@ -174,7 +178,7 @@ export function BottomNavBar({ items, activeScreen, onNavigate }: BottomNavBarPr
             style={{ flex: 1, alignItems: 'center', gap: 2 }}
           >
             <View>
-              <Text style={{ fontSize: 22 }}>{item.icon}</Text>
+              <MaterialCommunityIcons name={item.icon as any} size={22} color={active ? colors.slate : colors.pewter} />
               {item.badge !== undefined && item.badge > 0 ? (
                 <View style={{ position: 'absolute', top: -4, right: -8, minWidth: 18, height: 18, borderRadius: 9, backgroundColor: '#ef4444', justifyContent: 'center', alignItems: 'center' }}>
                   <Text style={{ color: '#fff', fontSize: 11, fontWeight: '900' }}>{item.badge > 9 ? '9+' : item.badge}</Text>
@@ -195,12 +199,12 @@ export interface MoodPickerProps {
   selected?: string;
 }
 
-const MOODS = [
-  { value: 'great', emoji: '😄', label: 'Great', color: '#22c55e' },
-  { value: 'good', emoji: '🙂', label: 'Good', color: '#84cc16' },
-  { value: 'okay', emoji: '😐', label: 'Okay', color: '#eab308' },
-  { value: 'not_great', emoji: '🙁', label: 'Not great', color: '#f97316' },
-  { value: 'bad', emoji: '😔', label: 'Difficult', color: '#ef4444' },
+const MOODS: Array<{ value: string; icon: string; label: string; color: string }> = [
+  { value: 'great', icon: 'emoticon-excited-outline', label: 'Great', color: '#22c55e' },
+  { value: 'good', icon: 'emoticon-happy-outline', label: 'Good', color: '#84cc16' },
+  { value: 'okay', icon: 'emoticon-neutral-outline', label: 'Okay', color: '#eab308' },
+  { value: 'not_great', icon: 'emoticon-sad-outline', label: 'Not great', color: '#f97316' },
+  { value: 'bad', icon: 'emoticon-cry-outline', label: 'Difficult', color: '#ef4444' },
 ];
 
 export function MoodPicker({ onSelect, selected }: MoodPickerProps) {
@@ -223,7 +227,7 @@ export function MoodPicker({ onSelect, selected }: MoodPickerProps) {
             alignItems: 'center',
           }}
         >
-          <Text style={{ fontSize: 28 }}>{m.emoji}</Text>
+          <MaterialCommunityIcons name={m.icon as any} size={28} color={selected === m.value ? '#FFFFFF' : m.color} />
         </TouchableOpacity>
       ))}
     </View>

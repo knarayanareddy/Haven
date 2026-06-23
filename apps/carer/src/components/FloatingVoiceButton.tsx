@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useResponsiveLayout } from '../services/platform';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export function FloatingVoiceButton() {
   const [isListening, setListening] = useState(false);
@@ -24,7 +25,7 @@ export function FloatingVoiceButton() {
       )}
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Spraakinvoer HAVEN" onPress={handlePress} activeOpacity={0.85}
         style={{ width: buttonSize, height: buttonSize, borderRadius: buttonSize / 2, backgroundColor: isListening ? '#2C3E6B' : '#FFFFFF', borderWidth: 2.5, borderColor: isListening ? '#2C3E6B' : '#CCCCCC', justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } }}>
-        <Text style={{ fontSize: iconSize }}>{isListening ? '🔊' : '🎤'}</Text>
+        <MaterialCommunityIcons name={isListening ? 'volume-high' : 'microphone'} size={iconSize} color={isListening ? '#FFFFFF' : '#2C3E6B'} />
       </TouchableOpacity>
     </View>
   );

@@ -40,14 +40,14 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
           style={{ flex: 1, backgroundColor: colors.rosePale, borderRadius: 16, paddingVertical: 14, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
         >
           <MaterialCommunityIcons name="heart" size={18} color={colors.rose} />
-          <Text style={{ color: colors.rose, fontWeight: '900' }}>{locale === 'nl-NL' ? 'Stuur hartje' : 'Send heart'}</Text>
+          <Text style={{ color: colors.rose, fontWeight: '900', fontFamily: 'Nunito-Black' }}>{locale === 'nl-NL' ? 'Stuur hartje' : 'Send heart'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => ctx.onPrimaryAction('SEND_OK')}
           style={{ flex: 1, backgroundColor: colors.sagePale, borderRadius: 16, paddingVertical: 14, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6 }}
         >
           <MaterialCommunityIcons name="thumb-up-outline" size={18} color={colors.sage} />
-          <Text style={{ color: colors.sage, fontWeight: '900' }}>{locale === 'nl-NL' ? 'Ik ben oké' : "I'm okay"}</Text>
+          <Text style={{ color: colors.sage, fontWeight: '900', fontFamily: 'Nunito-Black' }}>{locale === 'nl-NL' ? 'Ik ben oké' : "I'm okay"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -73,8 +73,8 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
                   backgroundColor: isElder ? colors.slate : isSystem ? colors.slatePale : colors.paper,
                   borderWidth: isElder || isSystem ? 0 : 1, borderColor: colors.mist,
                 }}>
-                  {!isElder && <Text style={{ fontSize: 13, fontWeight: '800', color: isSystem ? colors.pewter : colors.ink, marginBottom: 4 }}>{msg.from}</Text>}
-                  <Text style={{ fontSize: 16, fontWeight: '600', color: isElder ? '#fff' : colors.ink }}>{msg.content}</Text>
+                  {!isElder && <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: isSystem ? colors.pewter : colors.ink, marginBottom: 4 }}>{msg.from}</Text>}
+                  <Text style={{ fontSize: 16, fontWeight: '600', fontFamily: 'Nunito-SemiBold', color: isElder ? '#fff' : colors.ink }}>{msg.content}</Text>
                   <Text style={{ fontSize: 11, color: isElder ? 'rgba(255,255,255,0.6)' : colors.pewter, marginTop: 4 }}>
                     {msg.timestamp instanceof Date ? msg.timestamp.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : ''}
                   </Text>
@@ -101,7 +101,7 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
               onPress={() => { if (newMessage.trim()) { ctx.onPrimaryAction('SEND_MESSAGE'); setNewMessage(''); } }}
               style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: colors.slate, justifyContent: 'center', alignItems: 'center' }}
             >
-              <Text style={{ color: '#fff', fontSize: 20, fontWeight: '900' }}>↑</Text>
+              <Text style={{ color: '#fff', fontSize: 20, fontWeight: '900', fontFamily: 'Nunito-Black' }}>↑</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -112,7 +112,7 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
           {/* Video call placeholder */}
           <View style={{ borderRadius: 22, height: 200, backgroundColor: colors.slatePale, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: colors.mist }}>
             <MaterialCommunityIcons name="video-outline" size={48} color={colors.slate} />
-            <Text style={{ fontSize: 18, fontWeight: '800', color: colors.slate, marginTop: 8 }}>
+            <Text style={{ fontSize: 18, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.slate, marginTop: 8 }}>
               {locale === 'nl-NL' ? 'Video bellen' : 'Video Call'}
             </Text>
           </View>
@@ -126,8 +126,8 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
                 <MaterialCommunityIcons name={f.relation === 'kind' ? 'account' : f.relation === 'kleinkind' ? 'account' : 'account-outline'} size={24} color={colors.sage} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: '900', color: colors.ink }}>{f.name}</Text>
-                <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '700' }}>{locale === 'nl-NL' ? 'Bellen' : 'Call'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: '900', fontFamily: 'Nunito-Black', color: colors.ink }}>{f.name}</Text>
+                <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>{locale === 'nl-NL' ? 'Bellen' : 'Call'}</Text>
               </View>
               <MaterialCommunityIcons name="phone-outline" size={24} color={colors.slate} />
             </TouchableOpacity>
@@ -142,7 +142,7 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
             style={{ borderRadius: 18, padding: 16, backgroundColor: colors.amberPale, borderWidth: 1, borderColor: colors.amber, flexDirection: 'row', alignItems: 'center', gap: 10 }}
           >
             <MaterialCommunityIcons name="microphone-outline" size={22} color={colors.ink} />
-            <Text style={{ fontSize: 16, fontWeight: '900', color: colors.ink }}>
+            <Text style={{ fontSize: 16, fontWeight: '900', fontFamily: 'Nunito-Black', color: colors.ink }}>
               {locale === 'nl-NL' ? 'Nieuw verhaal opnemen' : 'Record new story'}
             </Text>
           </TouchableOpacity>
@@ -150,10 +150,10 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
             <View key={story.id} style={{ borderRadius: 18, padding: 16, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.mist, gap: 6 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Text style={{ fontSize: 24 }}>{story.emoji}</Text>
-                <Text style={{ fontSize: 18, fontWeight: '900', color: colors.ink }}>{story.title}</Text>
+                <Text style={{ fontSize: 18, fontWeight: '900', fontFamily: 'Nunito-Black', color: colors.ink }}>{story.title}</Text>
               </View>
-              <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '700' }}>{story.date}</Text>
-              <Text style={{ fontSize: 15, color: colors.graphite, fontWeight: '600' }} numberOfLines={3}>{story.content}</Text>
+              <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>{story.date}</Text>
+              <Text style={{ fontSize: 15, color: colors.graphite, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }} numberOfLines={3}>{story.content}</Text>
             </View>
           ))}
         </View>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, View, TouchableOpacity, Text } from 'react-native';
+import { Alert, BackHandler, View, TouchableOpacity, Text } from 'react-native';
 import { useResponsiveLayout } from '../services/platform';
 import { useAccessibilityInfo } from '../services/accessibility';
 import { useTranslation, LanguageToggle } from '@haven/i18n';
@@ -43,6 +43,17 @@ export function ResponsiveDrawerTabNavigator({ navigation }: any) {
     const interval = setInterval(() => setOfflineCount(getQueueSize()), 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (activeTab !== 'today') {
+        setActiveTab('today');
+        return true;
+      }
+      return false;
+    });
+    return () => subscription.remove();
+  }, [activeTab]);
 
   const carerClient = useCarerClient();
 

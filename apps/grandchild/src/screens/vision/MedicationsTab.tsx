@@ -250,7 +250,7 @@ export function MedicationsTab({ locale }: MedicationsTabProps) {
           {/* Low stock warning */}
           {med.stock < 15 && (
             <Text style={{ fontSize: 12, color: semanticColors.warningText, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>
-              ⚠️ {nl ? 'Lage voorraad — bijvullen voor' : 'Low stock — refill by'} {med.nextRefill}
+              <MaterialCommunityIcons name="alert" size={12} color={semanticColors.warningText} /> {nl ? 'Lage voorraad — bijvullen voor' : 'Low stock — refill by'} {med.nextRefill}
             </Text>
           )}
         </View>

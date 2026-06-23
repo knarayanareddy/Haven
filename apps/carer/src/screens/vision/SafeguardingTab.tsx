@@ -58,8 +58,8 @@ export function SafeguardingTab({ locale }: { locale: string }) {
     <ScrollView style={{ flex: 1, backgroundColor: colors.linen }} contentContainerStyle={{ padding: 16, gap: 12 }}>
       {/* Info banner */}
       <View style={{ backgroundColor: semanticColors.warningBg, borderWidth: 1, borderColor: semanticColors.warningBorder, borderRadius: 16, padding: 12, gap: 4 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: semanticColors.warningText }}>⚠️ {nl ? 'Meldcode Huiselijk Geweld en Kindermishandeling' : 'Domestic Violence & Child Abuse Reporting Code'}</Text>
-        <Text style={{ fontSize: 12, color: '#A16207', fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: semanticColors.warningText }}><MaterialCommunityIcons name="alert" size={14} color={semanticColors.warningText} /> {nl ? 'Meldcode Huiselijk Geweld en Kindermishandeling' : 'Domestic Violence & Child Abuse Reporting Code'}</Text>
+        <Text style={{ fontSize: 14, color: '#A16207', fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>
           {nl ? 'Stap-voor-stap begeleiding bij meldingen. Incidentrapporten via fn-incident-report.' : 'Step-by-step guidance for reporting. Incident reports via fn-incident-report.'}
         </Text>
       </View>
@@ -78,7 +78,7 @@ export function SafeguardingTab({ locale }: { locale: string }) {
             <MaterialCommunityIcons name={item.status === 'resolved' ? 'check-circle' : 'alert-outline'} size={18} color={item.status === 'resolved' ? colors.sage : colors.amber} />
             <View style={{ flex: 1, gap: 4 }}>
               <Text style={{ fontSize: 15, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{item.title}</Text>
-              <Text style={{ fontSize: 13, color: colors.graphite, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>{item.description}</Text>
+              <Text style={{ fontSize: 14, color: colors.graphite, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>{item.description}</Text>
               <StatusBadge
                 status={item.status === 'resolved' ? 'green' : 'amber'}
                 label={item.status}
@@ -87,7 +87,7 @@ export function SafeguardingTab({ locale }: { locale: string }) {
           </View>
           {item.resolution && (
             <View style={{ backgroundColor: semanticColors.successBg, borderRadius: 12, padding: 10 }}>
-              <Text style={{ fontSize: 12, color: semanticColors.successText, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>✓ {item.resolution}</Text>
+              <Text style={{ fontSize: 14, color: semanticColors.successText, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>✓ {item.resolution}</Text>
             </View>
           )}
         </View>
@@ -102,13 +102,13 @@ export function SafeguardingTab({ locale }: { locale: string }) {
               width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center',
               backgroundColor: step.done ? colors.sage : colors.mist,
             }}>
-              <Text style={{ fontSize: 12, fontWeight: '900', fontFamily: 'Nunito-Black', color: step.done ? '#fff' : colors.graphite }}>
+              <Text style={{ fontSize: 14, fontWeight: '900', fontFamily: 'Nunito-Black', color: step.done ? '#fff' : colors.graphite }}>
                 {step.done ? '✓' : step.step}
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{step.title}</Text>
-              <Text style={{ fontSize: 12, color: colors.pewter, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>{step.desc}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{step.title}</Text>
+              <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>{step.desc}</Text>
             </View>
           </View>
         ))}
@@ -124,7 +124,7 @@ export function SafeguardingTab({ locale }: { locale: string }) {
                 flex: 1, paddingVertical: 8, borderRadius: 10, alignItems: 'center',
                 backgroundColor: severity === s ? (s === 'critical' ? semanticColors.danger : s === 'high' ? '#F59E0B' : s === 'medium' ? '#3B82F6' : '#22C55E') : colors.mist,
               }}>
-                <Text style={{ fontSize: 11, fontWeight: '800', fontFamily: 'Nunito-Bold', color: severity === s ? '#fff' : colors.graphite }}>{s}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: severity === s ? '#fff' : colors.graphite }}>{s}</Text>
               </TouchableOpacity>
             ))}
           </View>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { colors, semanticColors } from '@haven/ui/src/tokens';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../auth/AuthProvider';
 import { useCarerClient } from '../../hooks/useCarerClient';
 import { enqueueOffline } from '../../services/offlineQueue';
@@ -25,9 +26,9 @@ function getFields(nl: boolean) {
 
 function getRecipients(nl: boolean) {
   return [
-    { id: 'family', label: nl ? '👨‍👩‍👧 Familie' : '👨‍👩‍👧 Family' },
+    { id: 'family', label: nl ? 'Familie' : 'Family', icon: 'account-group' as const },
     { id: 'colleague', label: nl ? 'Collega' : 'Colleague' },
-    { id: 'care-team', label: nl ? '🏥 Zorgteam' : '🏥 Care team' },
+    { id: 'care-team', label: nl ? 'Zorgteam' : 'Care team', icon: 'hospital-building' as const },
   ];
 }
 
@@ -108,8 +109,8 @@ export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
     <ScrollView style={{ flex: 1, backgroundColor: colors.linen }} contentContainerStyle={{ padding: 16, gap: 12 }}>
       {/* BSN warning banner */}
       <View style={{ backgroundColor: '#FFF1F2', borderWidth: 1, borderColor: '#FECDD3', borderRadius: 16, padding: 12, gap: 4 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: '#9F1239' }}>📝 {nl ? 'Handover-notitie (WACHT)' : 'Handover note (WACHT)'}</Text>
-        <Text style={{ fontSize: 12, color: '#BE123C', fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: '#9F1239' }}><MaterialCommunityIcons name="note-text" size={14} color="#9F1239" /> {nl ? 'Handover-notitie (WACHT)' : 'Handover note (WACHT)'}</Text>
+        <Text style={{ fontSize: 14, color: '#BE123C', fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>
           {nl ? 'Schrijf een korte, niet-klinische overdracht voor familie en collega\'s. BSN en gevoelige gegevens worden automatisch geweigerd.' : 'Write a brief, non-clinical handover for family and colleagues. BSN and sensitive data are automatically rejected.'}
         </Text>
       </View>
@@ -128,7 +129,7 @@ export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
       {/* Form fields */}
       {FIELDS.map(({ field, label, placeholder }) => (
         <View key={field} style={{ gap: 4 }}>
-          <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{label}</Text>
+          <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{label}</Text>
           <TextInput
             value={form[field]}
             onChangeText={(v: string) => updateField(field, v)}
@@ -147,7 +148,7 @@ export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
 
       {/* Recipients */}
       <View style={{ gap: 6 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{nl ? 'Ontvangers' : 'Recipients'}</Text>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{nl ? 'Ontvangers' : 'Recipients'}</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {RECIPIENTS.map((r) => (
             <TouchableOpacity
@@ -158,8 +159,8 @@ export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
                 backgroundColor: recipients.includes(r.id) ? semanticColors.danger : colors.mist,
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '800', fontFamily: 'Nunito-Bold', color: recipients.includes(r.id) ? '#fff' : colors.graphite }}>
-                {r.label}
+              <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: recipients.includes(r.id) ? '#fff' : colors.graphite }}>
+                {'icon' in r && <MaterialCommunityIcons name={r.icon} size={14} color={recipients.includes(r.id) ? '#fff' : colors.graphite} />}{' '}{r.label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -180,7 +181,7 @@ export function HandoverTab({ elderName, isOnline, locale }: HandoverTabProps) {
           style={{ flex: 1, paddingVertical: 12, borderRadius: 14, alignItems: 'center', backgroundColor: semanticColors.danger, opacity: submitting ? 0.6 : 1 }}
         >
           <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: '#fff' }}>
-            {submitting ? (nl ? 'Bezig...' : 'Sending...') : isOnline ? (nl ? '📤 Verzenden' : '📤 Send') : (nl ? '💾 Lokaal opslaan' : '💾 Save locally')}
+            {submitting ? (nl ? 'Bezig...' : 'Sending...') : isOnline ? (<><MaterialCommunityIcons name="upload" size={14} color="#fff" /> {nl ? 'Verzenden' : 'Send'}</>) : (<><MaterialCommunityIcons name="content-save" size={14} color="#fff" /> {nl ? 'Lokaal opslaan' : 'Save locally'}</>)}
           </Text>
         </TouchableOpacity>
       </View>

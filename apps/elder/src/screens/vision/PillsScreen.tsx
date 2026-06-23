@@ -287,7 +287,7 @@ function VisionPillsInner({ ctx }: { ctx: ScreenContext }) {
         onPress={() => ctx.onPrimaryAction('SCAN_MED')}
         style={{ borderRadius: 18, padding: 16, backgroundColor: colors.slatePale, borderWidth: 1, borderColor: colors.mist, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: touch.minimum }}
       >
-        <Text style={{ fontSize: 22 }}>📷</Text>
+        <MaterialCommunityIcons name="camera" size={22} color={colors.slate} />
         <Text style={{ fontSize: typeScale.caption, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.slate }}>
 
           {locale === 'nl-NL' ? 'Scan nieuw medicijn' : 'Scan new medication'}

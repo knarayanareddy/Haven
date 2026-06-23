@@ -1,6 +1,7 @@
 // ─── Vision Family Dashboard: Care Tab ───
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { colors } from '@haven/ui/src/tokens';
 import { StatusBadge } from '@haven/ui/src/visionComponents';
 // DEMO: mock care visits — acceptable visual fixture for hackathon
@@ -16,7 +17,7 @@ export function CareTab({ locale }: CareTabProps) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.linen }} contentContainerStyle={{ padding: 16, gap: 12 }}>
       <Text style={{ fontSize: 16, fontWeight: '900', fontFamily: 'Nunito-Black', color: colors.ink }}>
-        🩺 WACHT — {nl ? 'Zorg Overdracht' : 'Care Handover'}
+        <MaterialCommunityIcons name="stethoscope" size={16} color={colors.ink} /> WACHT — {nl ? 'Zorg Overdracht' : 'Care Handover'}
       </Text>
 
       {CARE_VISITS.map((visit) => (

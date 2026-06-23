@@ -101,7 +101,7 @@ function VisionBuurtInner({ ctx }: { ctx: ScreenContext }) {
                   onPress={() => ctx.onPrimaryAction(`BUURT_CONNECT:${match.id}`)}
                   style={{ backgroundColor: colors.sage, borderRadius: 14, paddingVertical: 10, alignItems: 'center', minHeight: touch.minimum }}
                 >
-                  <Text style={{ color: '#fff', fontWeight: '900', fontFamily: 'Nunito-Black' }}>
+                  <Text style={{ color: '#fff', fontWeight: '900', fontFamily: 'Nunito-Black', fontSize: typeScale.caption }}>
                     {locale === 'nl-NL' ? 'Maak contact' : 'Connect'}
                   </Text>
                 </TouchableOpacity>

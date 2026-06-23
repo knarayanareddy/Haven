@@ -127,11 +127,13 @@ export function SubTabBar({ tabs, activeTab, onTabChange }: SubTabBarProps) {
             borderRadius: 12,
             backgroundColor: tab.id === activeTab ? colors.paper : 'transparent',
             alignItems: 'center',
+            minHeight: touch.minimum,
+            justifyContent: 'center',
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             {tab.icon ? <MaterialCommunityIcons name={tab.icon as any} size={16} color={tab.id === activeTab ? colors.ink : colors.pewter} /> : null}
-            <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 16, fontWeight: tab.id === activeTab ? '900' : '700', fontFamily: tab.id === activeTab ? fontFamily.black : fontFamily.bold, color: tab.id === activeTab ? colors.ink : colors.pewter }}>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: typeScale.caption, fontWeight: tab.id === activeTab ? '900' : '700', fontFamily: tab.id === activeTab ? fontFamily.black : fontFamily.bold, color: tab.id === activeTab ? colors.ink : colors.pewter }}>
               {tab.label}
             </Text>
           </View>
@@ -217,9 +219,9 @@ export function MoodPicker({ onSelect, selected }: MoodPickerProps) {
           accessibilityLabel={m.label}
           onPress={() => onSelect(m.value)}
           style={{
-            width: 56,
-            height: 56,
-            borderRadius: 28,
+            width: touch.minimum,
+            height: touch.minimum,
+            borderRadius: 36,
             backgroundColor: selected === m.value ? m.color : colors.paper,
             borderWidth: 2,
             borderColor: selected === m.value ? m.color : colors.mist,

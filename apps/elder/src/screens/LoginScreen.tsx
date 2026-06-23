@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { fontFamily } from '@haven/ui/src/tokens';
+import { fontFamily, typeScale } from '@haven/ui/src/tokens';
 import { useAuth } from '../auth/AuthProvider';
 
 export function LoginScreen() {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
   },
   tagline: {
-    fontSize: 14,
+    fontSize: typeScale.caption,
     color: '#8BA4C4',
     marginTop: 4,
     fontStyle: 'italic',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: typeScale.caption,
     fontFamily: fontFamily.regular,
     color: '#8BA4C4',
     marginBottom: 24,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#FF6B6B',
-    fontSize: 14,
+    fontSize: typeScale.caption,
     marginBottom: 12,
   },
   button: {
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   },
   backLinkText: {
     color: '#8BA4C4',
-    fontSize: 14,
+    fontSize: typeScale.caption,
   },
   demoButton: {
     backgroundColor: 'transparent',
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   demoButtonText: {
     color: '#4A7B5A',
-    fontSize: 16,
+    fontSize: typeScale.caption,
     fontWeight: '600',
   },
 });

@@ -42,7 +42,7 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
           style={{ flex: 1, backgroundColor: colors.rosePale, borderRadius: 16, paddingVertical: 14, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, minHeight: touch.minimum }}
         >
           <MaterialCommunityIcons name="heart" size={18} color={colors.rose} />
-          <Text style={{ color: colors.rose, fontWeight: '900', fontFamily: 'Nunito-Black' }}>{locale === 'nl-NL' ? 'Stuur hartje' : 'Send heart'}</Text>
+          <Text style={{ color: colors.rose, fontWeight: '900', fontFamily: 'Nunito-Black', fontSize: typeScale.caption }}>{locale === 'nl-NL' ? 'Stuur hartje' : 'Send heart'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           accessibilityRole="button"
@@ -51,7 +51,7 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
           style={{ flex: 1, backgroundColor: colors.sagePale, borderRadius: 16, paddingVertical: 14, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, minHeight: touch.minimum }}
         >
           <MaterialCommunityIcons name="thumb-up-outline" size={18} color={colors.sage} />
-          <Text style={{ color: colors.sage, fontWeight: '900', fontFamily: 'Nunito-Black' }}>{locale === 'nl-NL' ? 'Ik ben oké' : "I'm okay"}</Text>
+          <Text style={{ color: colors.sage, fontWeight: '900', fontFamily: 'Nunito-Black', fontSize: typeScale.caption }}>{locale === 'nl-NL' ? 'Ik ben oké' : "I'm okay"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -164,8 +164,8 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
                 <Text style={{ fontSize: 24 }}>{story.emoji}</Text>
                 <Text style={{ fontSize: 18, fontWeight: '900', fontFamily: 'Nunito-Black', color: colors.ink }}>{story.title}</Text>
               </View>
-              <Text style={{ fontSize: 16, color: colors.pewter, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>{story.date}</Text>
-              <Text style={{ fontSize: 16, color: colors.graphite, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }} numberOfLines={3}>{story.content}</Text>
+              <Text style={{ fontSize: typeScale.caption, color: colors.pewter, fontWeight: '700', fontFamily: 'Nunito-Bold' }}>{story.date}</Text>
+              <Text style={{ fontSize: typeScale.caption, color: colors.graphite, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }} numberOfLines={3}>{story.content}</Text>
             </View>
           ))}
         </View>

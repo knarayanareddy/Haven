@@ -77,9 +77,9 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
                   backgroundColor: isElder ? colors.slate : isSystem ? colors.slatePale : colors.paper,
                   borderWidth: isElder || isSystem ? 0 : 1, borderColor: colors.mist,
                 }}>
-                  {!isElder && <Text style={{ fontSize: typeScale.caption, fontWeight: '800', color: isSystem ? colors.pewter : colors.ink, marginBottom: 4 }}>{msg.from}</Text>}
+                  {!isElder && <Text style={{ fontSize: typeScale.caption, fontWeight: '900', color: isSystem ? colors.pewter : colors.ink, marginBottom: 4 }}>{msg.from}</Text>}
                   <Text style={{ fontSize: typeScale.caption, fontWeight: '600', color: isElder ? '#fff' : colors.ink }}>{msg.content}</Text>
-                  <Text style={{ fontSize: typeScale.caption, color: isElder ? 'rgba(255,255,255,0.6)' : colors.pewter, marginTop: 4 }}>
+                  <Text style={{ fontSize: typeScale.detail, color: isElder ? 'rgba(255,255,255,0.6)' : colors.pewter, marginTop: 4 }}>
                     {msg.timestamp instanceof Date ? msg.timestamp.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : ''}
                   </Text>
                 </View>
@@ -162,8 +162,8 @@ function VisionFamilyInner({ ctx }: { ctx: ScreenContext }) {
                 <Text style={{ fontSize: 24 }}>{story.emoji}</Text>
                 <Text style={{ fontSize: 18, fontWeight: '900', color: colors.ink }}>{story.title}</Text>
               </View>
-              <Text style={{ fontSize: typeScale.caption, color: colors.pewter, fontWeight: '700' }}>{story.date}</Text>
-              <Text style={{ fontSize: typeScale.caption, color: colors.graphite, fontWeight: '600' }} numberOfLines={3}>{story.content}</Text>
+              <Text style={{ fontSize: 16, color: colors.pewter, fontWeight: '700' }}>{story.date}</Text>
+              <Text style={{ fontSize: 16, color: colors.graphite, fontWeight: '600' }} numberOfLines={3}>{story.content}</Text>
             </View>
           ))}
         </View>

@@ -224,7 +224,7 @@ function FloatingVoiceButtonComponent({ locale, screenId, voiceFallback, audioVo
     return (
       <View accessibilityRole="toolbar" style={{ height: 44, backgroundColor: '#2C3E6B', borderBottomWidth: 1, borderColor: '#1A2B4C', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <Text style={{ fontSize: 18 }}>{macosVoiceState === 'listening' ? '🔴' : macosVoiceState === 'processing' ? '🟡' : '🎙️'}</Text>
+          <MaterialCommunityIcons name={macosVoiceState === 'listening' ? 'circle' : macosVoiceState === 'processing' ? 'circle' : 'microphone'} size={18} color={macosVoiceState === 'listening' ? '#EF4444' : macosVoiceState === 'processing' ? '#EAB308' : '#fff'} />
           <Text style={{ color: 'white', fontWeight: '700', fontFamily: fontFamily.bold, fontSize: 14 }}>
             {macosVoiceState === 'listening' ? 'HAVEN luistert...' : macosVoiceState === 'processing' ? 'Aan het verwerken...' : 'Cmd+Shift+V om te praten'}
           </Text>

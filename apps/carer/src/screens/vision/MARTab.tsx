@@ -101,8 +101,8 @@ export function MARTab({ locale }: { locale: string }) {
     <ScrollView style={{ flex: 1, backgroundColor: colors.linen }} contentContainerStyle={{ padding: 16, gap: 12 }}>
       {/* Info banner */}
       <View style={{ backgroundColor: '#FFF1F2', borderWidth: 1, borderColor: '#FECDD3', borderRadius: 16, padding: 12, gap: 4 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: '#9F1239' }}>💊 MAR-light ({nl ? 'Medicatietoediening' : 'Medication Administration'})</Text>
-        <Text style={{ fontSize: 12, color: '#BE123C', fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: '#9F1239' }}><MaterialCommunityIcons name="pill" size={14} color="#9F1239" /> MAR-light ({nl ? 'Medicatietoediening' : 'Medication Administration'})</Text>
+        <Text style={{ fontSize: 14, color: '#BE123C', fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>
           {nl ? 'Registreer de toediening van medicatie. Wordt gekoppeld aan medication_reminders indien mogelijk.' : 'Record medication administration. Will be linked to medication_reminders if possible.'}
         </Text>
       </View>
@@ -116,7 +116,7 @@ export function MARTab({ locale }: { locale: string }) {
 
       {/* Medication selector */}
       <View style={{ gap: 6 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{nl ? 'Medicijn' : 'Medication'}</Text>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{nl ? 'Medicijn' : 'Medication'}</Text>
         {MEDICATIONS.map((med) => (
           <TouchableOpacity
             key={med.id}
@@ -136,7 +136,7 @@ export function MARTab({ locale }: { locale: string }) {
 
       {/* Time selector */}
       <View style={{ gap: 6 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{nl ? 'Tijdstip toediening' : 'Administration time'}</Text>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>{nl ? 'Tijdstip toediening' : 'Administration time'}</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           {TIME_OPTIONS.map((t) => (
             <TouchableOpacity
@@ -148,7 +148,7 @@ export function MARTab({ locale }: { locale: string }) {
                 borderWidth: 1, borderColor: selectedTime === t ? semanticColors.danger : colors.mist,
               }}
             >
-              <Text style={{ fontSize: 13, fontWeight: '700', fontFamily: 'Nunito-Bold', color: selectedTime === t ? '#fff' : colors.ink }}>{t}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '700', fontFamily: 'Nunito-Bold', color: selectedTime === t ? '#fff' : colors.ink }}>{t}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -156,7 +156,7 @@ export function MARTab({ locale }: { locale: string }) {
 
       {/* Status selector */}
       <View style={{ gap: 6 }}>
-        <Text style={{ fontSize: 13, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>Status</Text>
+        <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: colors.ink }}>Status</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           {statusOptions.map((opt) => (
             <TouchableOpacity
@@ -168,7 +168,7 @@ export function MARTab({ locale }: { locale: string }) {
                 borderWidth: 1, borderColor: status === opt.value ? opt.color : colors.mist,
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: '800', fontFamily: 'Nunito-Bold', color: status === opt.value ? opt.color : colors.graphite }}>
+              <Text style={{ fontSize: 14, fontWeight: '800', fontFamily: 'Nunito-Bold', color: status === opt.value ? opt.color : colors.graphite }}>
                 {opt.label}
               </Text>
             </TouchableOpacity>
@@ -181,7 +181,7 @@ export function MARTab({ locale }: { locale: string }) {
         onPress={handleSave}
         style={{ backgroundColor: semanticColors.danger, borderRadius: 16, paddingVertical: 14, alignItems: 'center' }}
       >
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '900', fontFamily: 'Nunito-Black' }}>💊 {nl ? 'MAR-registratie opslaan' : 'Save MAR entry'}</Text>
+        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '900', fontFamily: 'Nunito-Black' }}><MaterialCommunityIcons name="pill" size={16} color="#fff" /> {nl ? 'MAR-registratie opslaan' : 'Save MAR entry'}</Text>
       </TouchableOpacity>
 
       {/* Previous entries */}
@@ -196,8 +196,8 @@ export function MARTab({ locale }: { locale: string }) {
             }}>
               <Text style={{ color: colors.sage, fontSize: 16 }}>✓</Text>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, fontWeight: '700', fontFamily: 'Nunito-Bold', color: colors.ink }}>{entry.medication}</Text>
-                <Text style={{ fontSize: 11, color: colors.pewter, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>@ {entry.time} · {entry.status}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '700', fontFamily: 'Nunito-Bold', color: colors.ink }}>{entry.medication}</Text>
+                <Text style={{ fontSize: 14, color: colors.pewter, fontWeight: '600', fontFamily: 'Nunito-SemiBold' }}>@ {entry.time} · {entry.status}</Text>
               </View>
             </View>
           ))}

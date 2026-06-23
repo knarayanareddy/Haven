@@ -284,7 +284,7 @@ function VisionStemInner({ ctx }: { ctx: ScreenContext }) {
         onPress={() => ctx.onPrimaryAction('EMERGENCY')}
         style={{ backgroundColor: colors.rosePale, borderWidth: 1, borderColor: colors.rose, borderRadius: 16, paddingVertical: 14, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8, minHeight: touch.minimum }}
       >
-        <Text style={{ fontSize: 20 }}>🆘</Text>
+        <MaterialCommunityIcons name="alert-octagon" size={20} color={colors.rose} />
         <Text style={{ color: colors.rose, fontSize: typeScale.caption, fontWeight: '900', fontFamily: 'Nunito-Black' }}>
 
           {nl ? 'Noodgeval' : 'Emergency'}

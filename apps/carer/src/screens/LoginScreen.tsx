@@ -93,7 +93,7 @@ export function LoginScreen() {
             onPress={handleBiometric}
             disabled={loading}
           >
-            <Text style={styles.biometricText}>🔐 Inloggen met biometrie</Text>
+            <Text style={styles.biometricText}><MaterialCommunityIcons name="lock" size={16} color="#4A90D9" /> Inloggen met biometrie</Text>
           </TouchableOpacity>
         )}
 

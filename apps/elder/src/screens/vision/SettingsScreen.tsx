@@ -118,7 +118,7 @@ function VisionSettingsInner({ ctx }: { ctx: ScreenContext }) {
             style={{ backgroundColor: colors.slate, borderRadius: 16, paddingVertical: 14, alignItems: 'center', minHeight: touch.minimum }}
           >
             <Text style={{ color: '#fff', fontSize: typeScale.caption, fontWeight: '900', fontFamily: 'Nunito-Black' }}>
-              🎙️ {locale === 'nl-NL' ? 'Start opname' : 'Start recording'}
+              <MaterialCommunityIcons name="microphone" size={18} color="#fff" /> {locale === 'nl-NL' ? 'Start opname' : 'Start recording'}
 
             </Text>
           </TouchableOpacity>
